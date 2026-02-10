@@ -16,10 +16,10 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 md:px-8">
-        <Link href="/" className="text-xl font-extrabold tracking-tight">
-          <span className="rounded-md bg-brand px-1.5 py-0.5 text-brand-dark">STEP</span>
+        <Link href="/" className="flex items-center gap-0.5 text-xl font-extrabold tracking-tight">
+          <span className="rounded-lg bg-brand px-2 py-0.5 text-brand-dark shadow-sm">STEP</span>
           <span className="text-brand-dark">OLOG</span>
         </Link>
 
@@ -35,7 +35,7 @@ export default function Header() {
                 href={link.href}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-brand/20 text-brand-dark"
+                    ? "bg-brand/20 font-semibold text-brand-dark"
                     : "text-muted hover:bg-foreground/5 hover:text-foreground"
                 }`}
               >
@@ -67,11 +67,11 @@ export default function Header() {
 
       {/* Mobile nav */}
       <div
-        className={`overflow-hidden transition-all duration-300 md:hidden ${
-          mobileOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+        className={`overflow-hidden border-t border-border/30 transition-all duration-300 md:hidden ${
+          mobileOpen ? "max-h-64 opacity-100" : "max-h-0 border-t-0 opacity-0"
         }`}
       >
-        <nav className="flex flex-col gap-1 px-5 pb-4">
+        <nav className="flex flex-col gap-1 px-5 pb-4 pt-2">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
@@ -83,7 +83,7 @@ export default function Header() {
                 onClick={() => setMobileOpen(false)}
                 className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-brand/20 text-brand-dark"
+                    ? "bg-brand/20 font-semibold text-brand-dark"
                     : "text-muted hover:bg-foreground/5"
                 }`}
               >
