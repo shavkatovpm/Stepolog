@@ -11,18 +11,18 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center overflow-hidden px-5 py-32 text-center sm:py-40 md:py-48 lg:py-56">
-        <h1 className="animate-slide-right delay-2 font-display text-[clamp(72px,10vw,140px)] leading-[0.9] tracking-[.02em]">
+        <h1 className="animate-slide-right font-display text-[clamp(72px,10vw,140px)] leading-[0.9] tracking-[.02em]">
           STEP<span className="text-brand">OLOG</span>
         </h1>
 
         {/* Animated logo with rotating text */}
-        <AnimatedLogo className="animate-fade-up delay-3 mt-6" />
+        <AnimatedLogo className="animate-fade-up mt-6" />
 
-        <p className="animate-fade-up delay-4 mt-7 font-display text-2xl uppercase tracking-wide text-foreground md:text-4xl" style={{ maxWidth: "clamp(288px, 40vw, 560px)" }}>
+        <p className="animate-fade-up mt-7 font-display text-2xl uppercase tracking-wide text-foreground md:text-4xl" style={{ maxWidth: "clamp(288px, 40vw, 560px)" }}>
           Startap va digital<br className="md:hidden" /> ekotizim platformasi
         </p>
 
-        <div className="animate-fade-up delay-5 mt-12 flex gap-3">
+        <div className="animate-fade-up mt-12 flex gap-3">
           <Link
             href="/learn"
             className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"

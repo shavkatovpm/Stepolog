@@ -16,12 +16,22 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Scroll qilganda menyu yopilsin
+  // Tashqariga bosilganda yoki scroll qilganda menyu yopilsin
   useEffect(() => {
     if (!mobileOpen) return;
-    const handleScroll = () => setMobileOpen(false);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const close = () => setMobileOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    document.addEventListener("touchstart", handleOutsideTouch);
+    document.addEventListener("mousedown", handleOutsideTouch);
+    function handleOutsideTouch(e: Event) {
+      const header = document.querySelector("header");
+      if (header && !header.contains(e.target as Node)) close();
+    }
+    return () => {
+      window.removeEventListener("scroll", close);
+      document.removeEventListener("touchstart", handleOutsideTouch);
+      document.removeEventListener("mousedown", handleOutsideTouch);
+    };
   }, [mobileOpen]);
 
   return (
