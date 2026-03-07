@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative flex min-h-[calc(100vh-80px)] flex-col items-center justify-center overflow-hidden px-5 pb-28 text-center">
+      <section className="relative flex flex-col items-center justify-center overflow-hidden px-5 py-32 text-center sm:py-40 md:py-48 lg:py-56">
         <h1 className="animate-slide-right delay-2 font-display text-[clamp(72px,10vw,140px)] leading-[0.9] tracking-[.02em]">
           STEP<span className="text-brand">OLOG</span>
         </h1>
@@ -25,33 +25,18 @@ export default function Home() {
         <div className="animate-fade-up delay-5 mt-12 flex gap-3">
           <Link
             href="/learn"
-            className="rounded-md border border-border bg-background px-8 py-3.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"
+            className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"
           >
             Startup asoslari
           </Link>
           <Link
             href="/kasblar"
-            className="rounded-md border border-border bg-background px-8 py-3.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"
+            className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"
           >
             Kasblar xaritasi
           </Link>
         </div>
 
-        {/* Stats bar */}
-        <div className="animate-fade-in delay-5 absolute bottom-0 left-0 right-0 flex border-t border-border">
-          <div className="flex-1 border-r border-border px-5 py-6 md:px-20">
-            <div className="font-display text-4xl text-brand">50K+</div>
-            <div className="mt-0.5 text-xs uppercase tracking-[.08em] text-muted-strong">Oylik Traffic</div>
-          </div>
-          <div className="flex-1 border-r border-border px-5 py-6 md:px-20">
-            <div className="font-display text-4xl text-brand">3</div>
-            <div className="mt-0.5 text-xs uppercase tracking-[.08em] text-muted-strong">Xizmat</div>
-          </div>
-          <div className="flex-1 px-5 py-6 md:px-20">
-            <div className="font-display text-4xl text-brand">UZ</div>
-            <div className="mt-0.5 text-xs uppercase tracking-[.08em] text-muted-strong">Bozor</div>
-          </div>
-        </div>
       </section>
 
       {/* Content sections */}

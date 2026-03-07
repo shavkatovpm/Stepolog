@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StepologLogo from "@/components/StepologLogo";
 
 const navLinks = [
@@ -15,6 +15,14 @@ const navLinks = [
 export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Scroll qilganda menyu yopilsin
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleScroll = () => setMobileOpen(false);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mobileOpen]);
 
   return (
     <header className="sticky top-0 z-50 animate-fade-in bg-background/80 px-5 py-6 backdrop-blur-xl md:px-20">
@@ -69,11 +77,11 @@ export default function Header() {
 
       {/* Mobile nav */}
       <div
-        className={`absolute left-0 right-0 top-full border-b border-border bg-background/95 backdrop-blur-xl transition-all duration-300 md:hidden ${
+        className={`absolute left-0 right-0 top-full border-b border-border bg-background backdrop-blur-xl transition-all duration-300 md:hidden ${
           mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
-        <nav className="flex flex-col gap-1 px-5 py-4">
+        <nav className="flex flex-col gap-2 px-5 py-4">
           {navLinks.map((link) => {
             const isActive =
               pathname === link.href ||
@@ -83,7 +91,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`rounded-md px-3 py-2.5 text-[13px] font-medium transition-colors ${
+                className={`rounded-md border border-border px-3 py-3 text-center text-[13px] font-medium transition-colors ${
                   isActive
                     ? "text-foreground"
                     : "text-muted-strong hover:text-foreground"
