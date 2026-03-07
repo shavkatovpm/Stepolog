@@ -1,25 +1,25 @@
 import Link from "next/link";
+import StepologLogo from "@/components/StepologLogo";
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-border/50 bg-surface">
-      <div className="mx-auto max-w-5xl px-5 py-12 md:px-8">
-        <div className="flex flex-col gap-10 md:flex-row md:justify-between">
+    <footer className="border-t border-border">
+      <div className="mx-auto max-w-5xl px-5 py-16 md:px-8">
+        <div className="flex flex-col gap-12 md:flex-row md:justify-between">
           <div className="max-w-sm">
-            <Link href="/" className="flex items-center gap-0.5 text-xl font-extrabold tracking-tight">
-              <span className="rounded-lg bg-brand px-2 py-0.5 text-brand-dark shadow-sm">STEP</span>
-              <span className="text-brand-dark">OLOG</span>
+            <Link href="/" className="flex items-center gap-2.5">
+              <StepologLogo size={24} className="text-brand" />
+              <span className="font-display text-[22px] tracking-[.08em] text-brand">STEPOLOG</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              O&apos;zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.
+              O&apos;zbekiston startap ekotizimini rivojlantiruvchi bilim, xizmat va PR platformasi.
             </p>
-            {/* Social links */}
             <div className="mt-5 flex gap-3">
               <a
                 href="https://t.me/stepolog"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-muted transition-all hover:-translate-y-0.5 hover:bg-brand/20 hover:text-brand-dark"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-all hover:border-brand/40 hover:text-brand"
                 aria-label="Telegram"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -30,7 +30,7 @@ export default function Footer() {
                 href="https://instagram.com/stepolog.uz"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5 text-muted transition-all hover:-translate-y-0.5 hover:bg-brand/20 hover:text-brand-dark"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-all hover:border-brand/40 hover:text-brand"
                 aria-label="Instagram"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -42,34 +42,40 @@ export default function Footer() {
 
           <div className="flex gap-16">
             <div>
-              <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-muted">Sahifalar</h4>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">Sahifalar</h4>
               <ul className="flex flex-col gap-3 text-sm">
-                <li><Link href="/" className="text-foreground/70 transition-colors hover:text-foreground">Asosiy</Link></li>
-                <li><Link href="/blog" className="text-foreground/70 transition-colors hover:text-foreground">Bloglar</Link></li>
-                <li><Link href="/learn" className="text-foreground/70 transition-colors hover:text-foreground">O&apos;rganish</Link></li>
-                <li><Link href="/contact" className="text-foreground/70 transition-colors hover:text-foreground">Aloqa</Link></li>
+                <li><Link href="/" className="text-muted-strong transition-colors hover:text-foreground">Asosiy</Link></li>
+                <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">Biz haqimizda</Link></li>
+                <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">Maqolalar</Link></li>
+                <li><Link href="/learn" className="text-muted-strong transition-colors hover:text-foreground">Startap asoslari</Link></li>
+                <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">Kasblar xaritasi</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-muted">Tarmoqlar</h4>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">Tarmoqlar</h4>
               <ul className="flex flex-col gap-3 text-sm">
                 <li>
-                  <a href="https://t.me/stepolog" target="_blank" rel="noopener noreferrer" className="text-foreground/70 transition-colors hover:text-foreground">
+                  <a href="https://t.me/stepolog" target="_blank" rel="noopener noreferrer" className="text-muted-strong transition-colors hover:text-foreground">
                     Telegram
                   </a>
                 </li>
                 <li>
-                  <a href="https://instagram.com/stepolog.uz" target="_blank" rel="noopener noreferrer" className="text-foreground/70 transition-colors hover:text-foreground">
+                  <a href="https://instagram.com/stepolog.uz" target="_blank" rel="noopener noreferrer" className="text-muted-strong transition-colors hover:text-foreground">
                     Instagram
                   </a>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-muted-strong transition-colors hover:text-foreground">
+                    Aloqa
+                  </Link>
                 </li>
               </ul>
             </div>
           </div>
         </div>
 
-        <div className="mt-10 border-t border-border/50 pt-6 text-center text-xs text-muted">
+        <div className="mt-12 border-t border-border pt-6 text-center text-xs text-muted">
           &copy; {new Date().getFullYear()} Stepolog.uz — Barcha huquqlar himoyalangan.
         </div>
       </div>

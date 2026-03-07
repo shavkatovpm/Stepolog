@@ -1,21 +1,72 @@
 import Link from "next/link";
-import ArticleCard from "@/components/ArticleCard";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import { getAllArticles } from "@/lib/content";
+import StepologLogo from "@/components/StepologLogo";
+
+const careers = [
+  {
+    title: "Frontend Developer",
+    description: "Veb-saytlar va ilovalarning foydalanuvchi interfeysini yaratish",
+    skills: ["HTML/CSS", "JavaScript", "React", "Next.js"],
+    level: "Boshlang'ich",
+  },
+  {
+    title: "Backend Developer",
+    description: "Server tomoni, API va ma'lumotlar bazasi bilan ishlash",
+    skills: ["Node.js", "Python", "PostgreSQL", "REST API"],
+    level: "O'rta",
+  },
+  {
+    title: "UI/UX Designer",
+    description: "Foydalanuvchi tajribasini loyihalash va interfeys dizayni",
+    skills: ["Figma", "Prototyping", "User Research", "Design Systems"],
+    level: "Boshlang'ich",
+  },
+  {
+    title: "Mobile Developer",
+    description: "iOS va Android ilovalarni yaratish",
+    skills: ["React Native", "Flutter", "Swift", "Kotlin"],
+    level: "O'rta",
+  },
+];
+
+const levelColor: Record<string, string> = {
+  "Boshlang'ich": "bg-green-500/10 text-green-500",
+  "O'rta": "bg-yellow-500/10 text-yellow-500",
+  Yuqori: "bg-red-500/10 text-red-500",
+};
+
+const learnTopics = [
+  {
+    number: "01",
+    title: "G'oyadan MVPgacha",
+    description: "Startap g'oyangizni tekshirish va minimal mahsulot yaratish bosqichlari",
+  },
+  {
+    number: "02",
+    title: "Biznes model",
+    description: "To'g'ri biznes modelni tanlash va daromad strategiyasini ishlab chiqish",
+  },
+  {
+    number: "03",
+    title: "Jamoa qurish",
+    description: "Ko'funderni topish, jamoani shakllantirish va boshqarish",
+  },
+  {
+    number: "04",
+    title: "Investitsiya jalb qilish",
+    description: "Pitch deck tayyorlash, investorlar bilan ishlash va moliyalashtirish",
+  },
+];
 
 export default function Home() {
-  const blogArticles = getAllArticles("blog").slice(0, 3);
-  const learnArticles = getAllArticles("learn").slice(0, 3);
-
   return (
     <div>
-      {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center overflow-hidden px-5 py-32 text-center sm:py-40 md:py-48 lg:py-56">
+      {/* 1. Hero */}
+      <section className="relative flex flex-col items-center justify-center overflow-hidden px-5 pt-[6.4rem] pb-32 text-center sm:pt-32 sm:pb-40 md:pt-[9.6rem] md:pb-48 lg:pt-[11.2rem] lg:pb-56">
         <h1 className="animate-slide-right font-display text-[clamp(72px,10vw,140px)] leading-[0.9] tracking-[.02em]">
           STEP<span className="text-brand">OLOG</span>
         </h1>
 
-        {/* Animated logo with rotating text */}
         <AnimatedLogo className="animate-fade-up mt-6" />
 
         <p className="animate-fade-up mt-7 font-display text-2xl uppercase tracking-wide text-foreground md:text-4xl" style={{ maxWidth: "clamp(288px, 40vw, 560px)" }}>
@@ -27,7 +78,7 @@ export default function Home() {
             href="/learn"
             className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground transition-all hover:border-brand hover:text-brand"
           >
-            Startup asoslari
+            Startap asoslari
           </Link>
           <Link
             href="/kasblar"
@@ -36,73 +87,204 @@ export default function Home() {
             Kasblar xaritasi
           </Link>
         </div>
-
       </section>
 
-      {/* Content sections */}
-      <div className="mx-auto max-w-5xl px-5 py-20">
-        {/* So'nggi blog maqolalar */}
-        {blogArticles.length > 0 && (
-          <section className="mb-20">
-            <div className="mb-8 flex items-end justify-between">
-              <div>
-                <h2 className="font-display text-3xl uppercase tracking-wide md:text-4xl">So&apos;nggi maqolalar</h2>
-                <p className="mt-1 text-sm text-muted">Startaplar haqida yangliklar va tahlillar</p>
-              </div>
-              <Link href="/blog" className="hidden text-sm font-semibold text-muted transition-colors hover:text-foreground sm:block">
-                Barchasi &rarr;
+      {/* 2. STEPOLOG kim? */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
+          <div className="grid items-center gap-12 md:grid-cols-2">
+            <div>
+              <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Biz haqimizda</span>
+              <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">
+                STEPOLOG<br />kim?
+              </h2>
+              <p className="mt-6 leading-relaxed text-muted">
+                Stepolog — O&apos;zbekiston startap ekotizimini rivojlantirishga xizmat qiluvchi platforma.
+                Biz yosh tadbirkorlar va IT mutaxassislariga bilim, tajriba va foydali resurslar
+                orqali g&apos;oyalarini rivojlantirish va keng auditoriyaga olib chiqishda yordam beramiz.
+              </p>
+              <Link
+                href="/about"
+                className="mt-8 inline-block text-sm font-bold text-foreground transition-colors hover:text-brand"
+              >
+                Batafsil &rarr;
               </Link>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {blogArticles.map((article) => (
-                <ArticleCard key={article.slug} {...article} type="blog" />
-              ))}
-            </div>
-            <Link href="/blog" className="mt-5 block text-center text-sm font-semibold text-muted sm:hidden">
-              Barcha maqolalar &rarr;
-            </Link>
-          </section>
-        )}
 
-        {/* So'nggi o'rganish maqolalar */}
-        {learnArticles.length > 0 && (
-          <section className="mb-20">
-            <div className="mb-8 flex items-end justify-between">
-              <div>
-                <h2 className="font-display text-3xl uppercase tracking-wide md:text-4xl">O&apos;rganish materiallari</h2>
-                <p className="mt-1 text-sm text-muted">Startap boshlash bo&apos;yicha qo&apos;llanmalar</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl border border-border bg-surface p-6">
+                <div className="mb-3 font-display text-3xl text-brand">01</div>
+                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Bilim</h3>
+                <p className="text-xs leading-relaxed text-muted">Startap asoslari va IT loyihalar bo&apos;yicha materiallar</p>
               </div>
-              <Link href="/learn" className="hidden text-sm font-semibold text-muted transition-colors hover:text-foreground sm:block">
-                Barchasi &rarr;
-              </Link>
+              <div className="rounded-xl border border-border bg-surface p-6">
+                <div className="mb-3 font-display text-3xl text-brand">02</div>
+                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Amaliyot</h3>
+                <p className="text-xs leading-relaxed text-muted">Real loyihalar ustida ishlash va tajriba orttirish</p>
+              </div>
+              <div className="rounded-xl border border-border bg-surface p-6">
+                <div className="mb-3 font-display text-3xl text-brand">03</div>
+                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Investitsiya</h3>
+                <p className="text-xs leading-relaxed text-muted">Startaplarga investitsiya jalb qilish va rivojlantirish</p>
+              </div>
+              <div className="flex items-center justify-center rounded-xl border border-brand/20 bg-brand/5 p-6">
+                <StepologLogo size={64} className="text-brand" />
+              </div>
             </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {learnArticles.map((article) => (
-                <ArticleCard key={article.slug} {...article} type="learn" />
-              ))}
-            </div>
-            <Link href="/learn" className="mt-5 block text-center text-sm font-semibold text-muted sm:hidden">
-              Barcha materiallar &rarr;
-            </Link>
-          </section>
-        )}
+          </div>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <section className="mb-8 overflow-hidden rounded-2xl bg-brand p-10 text-center md:p-14">
-          <h2 className="mb-3 font-display text-3xl uppercase tracking-wide text-brand-dark md:text-4xl">
-            Startapingiz haqida yozamizmi?
-          </h2>
-          <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-brand-dark/60">
-            Biz bilan bog&apos;laning — startapingiz haqida bepul maqola yozamiz va minglab o&apos;quvchilarga yetkazamiz
-          </p>
-          <Link
-            href="/contact"
-            className="inline-block rounded-md bg-brand-dark px-8 py-3.5 text-sm font-bold text-brand transition-all hover:-translate-y-[3px] hover:shadow-lg"
-          >
-            Bog&apos;lanish
-          </Link>
-        </section>
-      </div>
+      {/* 3. Xizmatlar */}
+      <section className="border-t border-border bg-surface">
+        <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
+          <div className="mb-14 text-center">
+            <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Xizmatlar</span>
+            <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">Nima qilamiz?</h2>
+            <p className="mx-auto mt-4 max-w-lg text-muted">
+              Startapingizni boshlash va rivojlantirishda har tomonlama yordam beramiz
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="group rounded-xl border border-border bg-background p-8 transition-all hover:border-brand/40">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-brand/10">
+                <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+              </div>
+              <h3 className="mb-2 font-display text-xl uppercase tracking-wide">Bilim platformasi</h3>
+              <p className="text-sm leading-relaxed text-muted">
+                Startap boshlash, rivojlantirish va kengaytirish bo&apos;yicha
+                bepul o&apos;quv materiallar va qo&apos;llanmalar
+              </p>
+            </div>
+
+            <div className="group rounded-xl border border-border bg-background p-8 transition-all hover:border-brand/40">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-brand/10">
+                <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                </svg>
+              </div>
+              <h3 className="mb-2 font-display text-xl uppercase tracking-wide">PR va maqolalar</h3>
+              <p className="text-sm leading-relaxed text-muted">
+                Startapingiz haqida professional maqola yozamiz va
+                minglab o&apos;quvchilarga yetkazamiz
+              </p>
+            </div>
+
+            <div className="group rounded-xl border border-border bg-background p-8 transition-all hover:border-brand/40">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-brand/10">
+                <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+                </svg>
+              </div>
+              <h3 className="mb-2 font-display text-xl uppercase tracking-wide">Konsalting</h3>
+              <p className="text-sm leading-relaxed text-muted">
+                Biznes model, mahsulot strategiyasi va investitsiya
+                jalb qilish bo&apos;yicha maslahat
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Kasblar xaritasi */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
+          <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Kasblar</span>
+              <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">Kasblar xaritasi</h2>
+              <p className="mt-4 max-w-lg text-muted">
+                IT sohasidagi asosiy yo&apos;nalishlar — qaysi kasbni tanlash va nimalarni o&apos;rganish kerak
+              </p>
+            </div>
+            <Link
+              href="/kasblar"
+              className="text-sm font-bold text-foreground transition-colors hover:text-brand"
+            >
+              Barchasi &rarr;
+            </Link>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {careers.map((career) => (
+              <div
+                key={career.title}
+                className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="font-display text-xl uppercase tracking-wide">
+                    {career.title}
+                  </h3>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelColor[career.level]}`}
+                  >
+                    {career.level}
+                  </span>
+                </div>
+                <p className="mb-4 text-sm leading-relaxed text-muted">
+                  {career.description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {career.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-md border border-border px-2 py-0.5 text-[11px] text-muted-strong"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Startap asoslari */}
+      <section className="border-t border-border bg-surface">
+        <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
+          <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">O&apos;rganish</span>
+              <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">Startap asoslari</h2>
+              <p className="mt-4 max-w-lg text-muted">
+                G&apos;oyadan mahsulotgacha — bosqichma-bosqich qo&apos;llanmalar va bilimlar
+              </p>
+            </div>
+            <Link
+              href="/learn"
+              className="text-sm font-bold text-foreground transition-colors hover:text-brand"
+            >
+              Barchasi &rarr;
+            </Link>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {learnTopics.map((topic) => (
+              <Link
+                key={topic.number}
+                href="/learn"
+                className="group flex gap-5 rounded-xl border border-border bg-background p-6 transition-all hover:border-brand/40"
+              >
+                <div className="font-display text-4xl text-brand/30 transition-colors group-hover:text-brand">
+                  {topic.number}
+                </div>
+                <div>
+                  <h3 className="mb-1 font-display text-xl uppercase tracking-wide">
+                    {topic.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted">
+                    {topic.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import StepologLogo from "@/components/StepologLogo";
 const navLinks = [
   { href: "/about", label: "Biz haqimizda" },
   { href: "/blog", label: "Maqolalar" },
-  { href: "/learn", label: "Startup asoslari" },
+  { href: "/learn", label: "Startap asoslari" },
   { href: "/kasblar", label: "Kasblar xaritasi" },
 ];
 
