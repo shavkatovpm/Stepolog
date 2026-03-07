@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Manrope, Bebas_Neue } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -30,12 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uz">
-      <body className={`${geistSans.variable} antialiased`}>
+    <html lang="uz" className="dark">
+      <body className={`${manrope.variable} ${bebasNeue.variable} antialiased`}>
         <Header />
-        <main className="mx-auto min-h-[calc(100vh-160px)] max-w-5xl px-5 py-8">
-          {children}
-        </main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

@@ -1,23 +1,63 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-background: #FAFAFA;
-  --color-foreground: #111111;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-background: #F5F5F5;
+  --color-foreground: #1A1A1A;
   --color-brand: #FFDE59;
   --color-brand-dark: #111111;
   --color-brand-light: #FFF8DC;
   --color-border: #E5E5E5;
   --color-surface: #FFFFFF;
-  --color-muted: #6B7280;
-  --color-accent: #FF6B35;
-  --color-accent-light: #FFF0EB;
-  --font-sans: var(--font-geist-sans);
+  --color-muted: #999999;
+  --color-muted-strong: #555555;
+}
+
+.dark {
+  --color-background: #1A1A1A;
+  --color-foreground: #F5F5F5;
+  --color-brand: #FFDE59;
+  --color-brand-dark: #1A1A1A;
+  --color-border: #2A2A2A;
+  --color-surface: #222222;
+  --color-muted: #666666;
+  --color-muted-strong: #444444;
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-brand: var(--color-brand);
+  --color-brand-dark: var(--color-brand-dark);
+  --color-border: var(--color-border);
+  --color-surface: var(--color-surface);
+  --color-muted: var(--color-muted);
+  --color-muted-strong: var(--color-muted-strong);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-bebas);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-right {
+  from { opacity: 0; transform: translateX(-36px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 a {
@@ -27,69 +67,23 @@ a {
 
 ::selection {
   background: var(--color-brand);
-  color: var(--color-foreground);
-}
-
-/* Animations */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-.animate-fade-up {
-  animation: fade-up 0.6s ease-out forwards;
+  color: var(--color-brand-dark);
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in 0.6s ease both;
 }
 
-.animate-slide-in-right {
-  animation: slide-in-right 0.5s ease-out forwards;
+.animate-slide-right {
+  animation: slide-right 0.7s ease both;
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+.animate-fade-up {
+  animation: fade-up 0.7s ease both;
 }
 
-.animate-pulse-soft {
-  animation: pulse-soft 3s ease-in-out infinite;
-}
-
-.animation-delay-100 { animation-delay: 0.1s; }
-.animation-delay-200 { animation-delay: 0.2s; }
-.animation-delay-300 { animation-delay: 0.3s; }
-.animation-delay-400 { animation-delay: 0.4s; }
-.animation-delay-500 { animation-delay: 0.5s; }
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.35s; }
+.delay-3 { animation-delay: 0.5s; }
+.delay-4 { animation-delay: 0.65s; }
+.delay-5 { animation-delay: 0.85s; }
