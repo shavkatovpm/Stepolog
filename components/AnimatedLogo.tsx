@@ -86,7 +86,6 @@ export default function AnimatedLogo({ className }: { className?: string }) {
             className="overflow-hidden transition-all duration-700 ease-[cubic-bezier(.4,0,.2,1)]"
             style={{
               maxWidth: isOpen ? 700 : 0,
-              opacity: isOpen ? 1 : 0,
             }}
           >
             <span className="block whitespace-nowrap px-4 font-display text-4xl uppercase tracking-wide text-brand md:px-6 md:text-6xl lg:text-7xl">
