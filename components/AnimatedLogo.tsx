@@ -68,30 +68,21 @@ export default function AnimatedLogo({ className }: { className?: string }) {
           <LogoLeft className="h-14 w-7 text-brand md:h-20 md:w-10 lg:h-24 lg:w-12" />
         </div>
 
-        {/* Text with top/bottom lines */}
-        <div className="relative">
+        {/* Text wrapper — collapses to bring logos together */}
+        <div
+          className="relative flex h-14 items-center justify-center overflow-hidden transition-all duration-700 ease-[cubic-bezier(.4,0,.2,1)] md:h-20 lg:h-24"
+          style={{
+            maxWidth: isOpen ? 700 : 0,
+          }}
+        >
           {/* Top line */}
-          <div
-            className="absolute left-0 right-0 top-0 h-px bg-brand/30 transition-opacity duration-500"
-            style={{ opacity: isOpen ? 1 : 0 }}
-          />
+          <div className="absolute left-0 right-0 top-[14%] h-px bg-brand/30" />
           {/* Bottom line */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-px bg-brand/30 transition-opacity duration-500"
-            style={{ opacity: isOpen ? 1 : 0 }}
-          />
+          <div className="absolute bottom-[14%] left-0 right-0 h-px bg-brand/30" />
 
-          {/* Text wrapper — collapses to bring logos together */}
-          <div
-            className="overflow-hidden transition-all duration-700 ease-[cubic-bezier(.4,0,.2,1)]"
-            style={{
-              maxWidth: isOpen ? 700 : 0,
-            }}
-          >
-            <span className="block whitespace-nowrap px-4 font-display text-4xl uppercase tracking-wide text-brand md:px-6 md:text-6xl lg:text-7xl">
-              {phrases[index]}
-            </span>
-          </div>
+          <span className="shrink-0 translate-y-[0.05em] whitespace-nowrap px-4 font-display text-4xl uppercase leading-none tracking-wide text-brand md:px-6 md:text-6xl lg:text-7xl">
+            {phrases[index]}
+          </span>
         </div>
 
         {/* Right half of logo */}
