@@ -4,21 +4,20 @@ export const STORAGE_KEY = "stepolog_moded";
 
 export const DEFAULT_PROMPT_ROLE = `Sen professional SEO va GEO (AI optimizatsiya) mutaxassisi sifatida quyidagi maqolani yozishingiz kerak.`;
 
-export const DEFAULT_PROMPT_SEO = `- Asosiy keyword sarlavha, birinchi paragraf va H2 larda ishlatilsin
-- Qo'shimcha keywordlar matn ichida tabiiy tarzda ishlatilsin
-- Maqola ichida tegishli internal linklar avtomatik qo'shilsin`;
+export const DEFAULT_PROMPT_SEO = `- Asosiy keyword H1, H2 va birinchi paragrafda ishlatilsin
+- LSI keywordlar matn ichida tabiiy tarzda tarqatilsin
+- Keyword stuffing YO'Q — tabiiy oqim saqlانsin
+- FAQ bo'limi featured snippet uchun yozilsin`;
 
-export const DEFAULT_PROMPT_GEO = `- Ishonchli manbalardan foydalanilsin (gov.uz, lex.uz, stat.uz)
-- Faktlar va statistikalar aniq manbalar bilan boyitilsin
-- Brand nomi maqolada organik tarzda tilga olinsin
-- AI tizimlar uchun qisqa va aniq javoblar berilsin`;
+export const DEFAULT_PROMPT_GEO = `- Faqat ishonchli manbalar: gov.uz, lex.uz, stat.uz
+- Faktlar va raqamlar aniq manbalar bilan boyitilsin
+- Brand nomi organik, majburlovsiz tilga olinsin
+- AI tizimlar uchun qisqa, aniq javoblar berilsin`;
 
-export const DEFAULT_PROMPT_WRITING = `- Maqola o'zbek tilida, professional va tushunarli uslubda yozilsin
-- H1, H2, H3 sarlavhalar to'g'ri ishlatilsin (SEO uchun)
-- Paragraflar qisqa va o'qishga qulay bo'lsin
-- Faktlar va statistikalar bilan boyitilsin
-- Kamida 1500 so'z bo'lsin
-- CTA (call-to-action) qo'shilsin
+export const DEFAULT_PROMPT_WRITING = `- O'zbek tilida, sodda + professional uslubda
+- Qisqa gaplar — o'qilishi oson
+- AI yozgandek emas, ekspert yozgandek
+- H1, H2, H3 to'g'ri ierarxiyada
 - Markdown formatida yoz`;
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -31,8 +30,9 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const INTENT_LABELS: Record<string, string> = {
-  informational: "Informational",
-  commercial: "Commercial",
+  informational: "Informational (tushuntirish)",
+  commercial: "Commercial (taqqoslash)",
+  transactional: "Transactional (sotuv / action)",
   navigational: "Navigational",
 };
 
