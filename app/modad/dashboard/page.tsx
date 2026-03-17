@@ -70,17 +70,17 @@ export default function ModadDashboard() {
   const [cTitle, setCTitle] = useState("");
   const [cDate, setCDate] = useState("");
   const [cStatus, setCStatus] = useState<Content["status"]>("planned");
-  const [cNote, setCNote] = useState("");
+  const [cNote] = useState("");
   const [cKeyword, setCKeyword] = useState("");
   const [cKeywords2, setCKeywords2] = useState("");
   const [cInternalLink, setCInternalLink] = useState("");
   const [cIntent, setCIntent] = useState("informational");
   const [contentStep, setContentStep] = useState(0);
-  const [cSource, setCSource] = useState("");
+  const [cSource] = useState("");
   const [cFacts, setCFacts] = useState("");
-  const [cBrandCount, setCBrandCount] = useState("");
+  const [cBrandCount] = useState("");
   const [cMainQuestion, setCMainQuestion] = useState("");
-  const [cBlogTopics, setCBlogTopics] = useState<string[]>([""]);
+  const [cBlogTopics] = useState<string[]>([]);
 
   const [pasteText, setPasteText] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -211,9 +211,9 @@ export default function ModadDashboard() {
   function openContentModal() {
     setEditContentId(null); setContentStep(0);
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
-    setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
-    setCInternalLink(""); setCIntent(""); setCSource("");
-    setCFacts(""); setCBrandCount(""); setCMainQuestion(""); setCBlogTopics([""]);
+    setCStatus("planned"); setCKeyword(""); setCKeywords2("");
+    setCInternalLink(""); setCIntent("");
+    setCFacts(""); setCMainQuestion("");
     setContentModalOpen(true);
   }
 
@@ -223,10 +223,9 @@ export default function ModadDashboard() {
     if (!c) return;
     setEditContentId(id);
     setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status as Content["status"]);
-    setCNote(c.note); setCKeyword(c.keyword); setCKeywords2(c.keywords2);
-    setCInternalLink(c.internalLink); setCIntent(c.intent); setCSource(c.source);
+    setCKeyword(c.keyword); setCKeywords2(c.keywords2);
+    setCInternalLink(c.internalLink); setCIntent(c.intent);
     setCFacts(c.facts); setCBrandCount(c.brandCount); setCMainQuestion(c.mainQuestion);
-    setCBlogTopics(c.blogTopics ? c.blogTopics.split("\n") : [""]);
     setContentModalOpen(true);
   }
 
@@ -235,10 +234,10 @@ export default function ModadDashboard() {
     setSaving(true);
     try {
       const data = {
-        title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote.trim(),
+        title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote,
         keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
-        intent: cIntent, source: cSource.trim(), facts: cFacts.trim(),
-        brandCount: cBrandCount || "3", mainQuestion: cMainQuestion.trim(),
+        intent: cIntent, source: cSource, facts: cFacts.trim(),
+        brandCount: cBrandCount, mainQuestion: cMainQuestion.trim(),
         blogTopics: cBlogTopics.map(t => t.trim()).filter(Boolean).join("\n"),
       };
       if (editContentId) {
@@ -747,7 +746,6 @@ export default function ModadDashboard() {
                   <div className="m-form-group m-form-full"><label className="m-form-label">Kontent sarlavhasi *</label><input className="m-form-input" value={cTitle} onChange={(e) => setCTitle(e.target.value)} placeholder="Masalan: O'zbekistonda startap qanday ochiladi?" /></div>
                   <div className="m-form-group"><label className="m-form-label">Chiqish sanasi *</label><DatePicker value={cDate} onChange={setCDate} /></div>
                   <div className="m-form-group"><label className="m-form-label">Holat</label><select className="m-form-select" value={cStatus} onChange={(e) => setCStatus(e.target.value as Content["status"])}><option value="planned">📋 Rejada</option><option value="ready">✅ Tayyor</option><option value="published">🚀 Joylashtirildi</option></select></div>
-                  <div className="m-form-group m-form-full"><label className="m-form-label">Izoh</label><input className="m-form-input" value={cNote} onChange={(e) => setCNote(e.target.value)} placeholder="Qo'shimcha eslatma..." /></div>
                 </div>
               </div>
             )}
@@ -757,28 +755,13 @@ export default function ModadDashboard() {
                   <div className="m-form-group"><label className="m-form-label">Asosiy keyword *</label><input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" /></div>
                   <div className="m-form-group"><label className="m-form-label">Kontent turi *</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} /></div>
                   <div className="m-form-group m-form-full"><label className="m-form-label">Qo&apos;shimcha keywordlar</label><input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="biznes ochish, startap ro'yxatdan o'tkazish, ... (vergul bilan)" /></div>
-                  <div className="m-form-group m-form-full">
-                    <label className="m-form-label">Blog mavzulari</label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {cBlogTopics.map((topic: string, i: number) => (
-                        <div key={i} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                          <span style={{ color: "var(--m-text3)", fontSize: 12, minWidth: 20 }}>{i + 1}.</span>
-                          <input className="m-form-input" value={topic} onChange={(e) => { const updated = [...cBlogTopics]; updated[i] = e.target.value; setCBlogTopics(updated); }} placeholder={`Mavzu ${i + 1}`} />
-                          {cBlogTopics.length > 1 && <button type="button" className="m-btn-action m-btn-ghost" style={{ padding: "4px 8px", fontSize: 14 }} onClick={() => setCBlogTopics(cBlogTopics.filter((_: string, j: number) => j !== i))}>✕</button>}
-                        </div>
-                      ))}
-                      <button type="button" className="m-btn-action m-btn-ghost" style={{ alignSelf: "flex-start", marginLeft: 26, fontSize: 13 }} onClick={() => setCBlogTopics([...cBlogTopics, ""])}>+ Mavzu qo&apos;shish</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
             {contentStep === 2 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
-                  <div className="m-form-group m-form-full"><label className="m-form-label">Asosiy manba</label><input className="m-form-input" value={cSource} onChange={(e) => setCSource(e.target.value)} placeholder="gov.uz, lex.uz, stat.uz ..." /></div>
                   <div className="m-form-group m-form-full"><label className="m-form-label">Faktlar / statistika</label><textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: O'zbekistonda 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." /></div>
-                  <div className="m-form-group"><label className="m-form-label">Brand nomi soni</label><input className="m-form-input" type="number" value={cBrandCount} onChange={(e) => setCBrandCount(e.target.value)} placeholder="3" min={1} max={20} /></div>
                   <div className="m-form-group"><label className="m-form-label">Asosiy savol</label><input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" /></div>
                 </div>
               </div>
@@ -823,13 +806,10 @@ export default function ModadDashboard() {
                   </div>
                   <div>
                     <div className="m-detail-section-title">🤖 GEO</div>
-                    <DetailRow label="Manba sayt" value={cardContent.source} />
-                    <DetailRow label="Brand nomi soni" value={cardContent.brandCount} />
                     <DetailRow label="Asosiy savol" value={cardContent.mainQuestion} />
                   </div>
                 </div>
                 {cardContent.facts && <div style={{ marginBottom: 14 }}><DetailRow label="Faktlar / statistika" value="" /><div className="m-facts-box">{cardContent.facts}</div></div>}
-                {cardContent.note && <DetailRow label="Izoh" value={cardContent.note} />}
                 {cardContent.status === "ready" && <div><div className="m-detail-section-title">Tayyor kontent matni</div><textarea className="m-card-textarea" placeholder="AI yozgan tayyor blog matnini shu yerga paste qiling..." defaultValue={cardContent.contentText || ""} onBlur={(e) => saveContentText(cardContent.id, e.target.value)} /></div>}
                 {cardContent.status === "published" && cardContent.contentText && <div><div className="m-detail-section-title">Joylashtirilgan kontent</div><div className="m-facts-box" style={{ maxHeight: 300 }}>{cardContent.contentText}</div></div>}
               </div>

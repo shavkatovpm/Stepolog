@@ -77,18 +77,12 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   lines.push("");
 
   // 6. GEO
-  const hasGeo = c.source || c.facts || c.brandCount;
+  const hasGeo = !!c.facts;
   if (hasGeo) {
     lines.push("6. GEO (LOKAL OPTIMALLASHTIRISH)");
     lines.push("");
-    if (c.source) lines.push(`Asosiy manba: ${c.source}`);
-    if (c.facts) {
-      lines.push("Ishlatilishi kerak bo'lgan faktlar / statistika:");
-      lines.push(c.facts);
-    }
-    if (project?.name && c.brandCount) {
-      lines.push(`"${project.name}" brendi maqolada ${c.brandCount} marta organik tarzda tilga olinsin`);
-    }
+    lines.push("Ishlatilishi kerak bo'lgan faktlar / statistika:");
+    lines.push(c.facts);
     lines.push(s.promptGeo);
     lines.push("");
   }
