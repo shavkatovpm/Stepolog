@@ -331,7 +331,6 @@ export default function ModadDashboard() {
       <div className="m-topbar">
         <div className="m-topbar-left">
           <div className="m-logo" onClick={showProjects} style={{ cursor: "pointer" }}>STEPOLOG</div>
-          <div className="m-logo-badge">/modad</div>
         </div>
         <div className="m-topbar-right">
           {!state.currentProjectId && (
