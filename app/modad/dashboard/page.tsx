@@ -548,6 +548,7 @@ export default function ModadDashboard() {
 
               {/* TABLE VIEW */}
               {currentView === "table" && (
+                <>
                 <div className="m-table-wrap">
                   <table>
                     <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Keyword</th><th>Turi</th></tr></thead>
@@ -575,6 +576,21 @@ export default function ModadDashboard() {
                     </tbody>
                   </table>
                 </div>
+                <div className="m-table-wrap" style={{ marginTop: -1 }}>
+                  <table>
+                    <tbody>
+                      <tr onClick={openContentModal} style={{ cursor: "pointer" }}>
+                        <td colSpan={5} style={{ color: "var(--m-text3)", fontSize: 13, fontWeight: 600, padding: "12px 16px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ width: 18, height: 18, border: "1.5px dashed var(--m-border2)", borderRadius: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "var(--m-text3)" }}>+</span>
+                            Yangi kontent qo&apos;shish
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                </>
               )}
             </div>
           )}
