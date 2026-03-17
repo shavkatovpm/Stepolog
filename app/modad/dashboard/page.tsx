@@ -349,10 +349,21 @@ export default function ModadDashboard() {
   const deleteContent_ = deleteConfirmId ? state.contents.find((c) => c.id === deleteConfirmId) : null;
   const deleteProject_ = deleteProjectConfirmId ? state.projects.find((p) => p.id === deleteProjectConfirmId) : null;
 
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+
   async function handleLogout() {
     await api.logout();
     router.push("/modad");
   }
+
+  // Prevent accidental back navigation
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // ===== PDF EXPORT =====
   function exportPDF() {
@@ -408,7 +419,7 @@ export default function ModadDashboard() {
               <span>+</span> Yangi Loyiha
             </button>
           )}
-          <button className="m-btn-logout" onClick={handleLogout}>Chiqish</button>
+          <button className="m-btn-logout" onClick={() => setLogoutConfirmOpen(true)}>Chiqish</button>
         </div>
       </div>
 
@@ -665,7 +676,7 @@ export default function ModadDashboard() {
                 {/* Chiqish */}
                 <div className="m-form-section">
                   <div className="m-form-section-title"><span className="m-form-section-icon">🚪</span> SESSIYA</div>
-                  <button className="m-btn-action m-btn-ghost" onClick={handleLogout}>Chiqish</button>
+                  <button className="m-btn-action m-btn-ghost" onClick={() => setLogoutConfirmOpen(true)}>Chiqish</button>
                 </div>
               </div>
             </div>
@@ -904,6 +915,19 @@ export default function ModadDashboard() {
               </div>
             </>
           )}
+        </div>
+      </div>
+
+      {/* LOGOUT CONFIRM */}
+      <div className={`m-modal-overlay ${logoutConfirmOpen ? "open" : ""}`} onClick={() => setLogoutConfirmOpen(false)}>
+        <div className="m-modal m-delete-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="m-delete-icon">🚪</div>
+          <div className="m-delete-title">CHIQISHNI TASDIQLANG</div>
+          <div className="m-delete-desc">Admin paneldan chiqishni xohlaysizmi?</div>
+          <div className="m-delete-actions">
+            <button className="m-btn-cancel" onClick={() => setLogoutConfirmOpen(false)}>Bekor qilish</button>
+            <button className="m-btn-action m-btn-danger" onClick={handleLogout}>Ha, chiqish</button>
+          </div>
         </div>
       </div>
 
