@@ -232,6 +232,12 @@
 .m-pc-dot-wrap { display: flex; align-items: center; gap: 8px; }
 .m-pc-dot { width: 10px; height: 10px; border-radius: 50%; }
 .m-pc-domain { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--m-text3); }
+.m-pc-badge {
+  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 4px; line-height: 1.4;
+}
+.m-pc-badge-red { background: rgba(255,95,95,.15); color: var(--m-red); border: 1px solid rgba(255,95,95,.25); }
+.m-pc-badge-yellow { background: rgba(255,222,89,.12); color: var(--m-yellow); border: 1px solid rgba(255,222,89,.2); }
 .m-pc-menu {
   background: var(--m-bg3); border: 1px solid var(--m-border2); color: var(--m-text2);
   cursor: pointer; padding: 0; width: 28px; height: 28px; border-radius: 6px;

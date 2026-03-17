@@ -479,12 +479,17 @@ export default function ModadDashboard() {
                 {state.projects.map((p, i) => {
                   const contents = state.contents.filter((c) => c.projectId === p.id);
                   const ready = contents.filter((c) => c.status === "ready" || c.status === "published").length;
+                  const today = new Date().toISOString().split("T")[0];
+                  const todayCount = contents.filter((c) => c.publishDate === today && c.status !== "published").length;
+                  const overdueCount = contents.filter((c) => c.publishDate && c.publishDate < today && c.status !== "published").length;
                   return (
                     <div key={p.id} className="m-project-card" style={{ animationDelay: `${i * 0.07}s`, "--card-color": COLOR_HEX[p.color] || "var(--m-border)" } as React.CSSProperties} onClick={() => openProject(p.id)}>
                       <div className="m-pc-header">
                         <div className="m-pc-dot-wrap">
                           <div className={`m-pc-dot m-${p.color}`} />
                           <span className="m-pc-domain">{p.domain || "domen yo'q"}</span>
+                          {overdueCount > 0 && <span className="m-pc-badge m-pc-badge-red">{overdueCount}</span>}
+                          {todayCount > 0 && <span className="m-pc-badge m-pc-badge-yellow">{todayCount}</span>}
                         </div>
                         <div style={{ position: "relative" }}>
                           <button className="m-pc-menu" onClick={(e) => { e.stopPropagation(); setProjectMenuId(projectMenuId === p.id ? null : p.id); }}>⋯</button>
