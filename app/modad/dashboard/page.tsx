@@ -27,6 +27,18 @@ function getDateColor(publishDate: string, status: string): string {
   return "var(--m-text3)";
 }
 
+function getStatusDisplay(status: string, publishDate: string): { label: string; color: string } {
+  if (status === "published") return { label: "Joylashtirildi", color: "var(--m-green)" };
+  if (status === "ready") return { label: "Tayyor", color: "var(--m-blue)" };
+  // planned
+  if (publishDate) {
+    const today = new Date().toISOString().split("T")[0];
+    if (publishDate < today) return { label: "Kechikdi", color: "var(--m-red)" };
+    if (publishDate === today) return { label: "Bugun", color: "var(--m-yellow)" };
+  }
+  return { label: "Rejada", color: "var(--m-yellow)" };
+}
+
 export default function ModadDashboard() {
   const router = useRouter();
   const [state, setState] = useState<State>({
@@ -515,10 +527,12 @@ export default function ModadDashboard() {
                             <td className="m-td-title">{c.title}</td>
                             <td className="m-td-date" style={{ color: getDateColor(c.publishDate, c.status) }}>{c.publishDate || "—"}</td>
                             <td>
-                              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, color: STATUS_CONFIG[c.status]?.color }}>
-                                <span style={{ width: 6, height: 6, borderRadius: "50%", background: STATUS_CONFIG[c.status]?.color, flexShrink: 0, display: "inline-block" }} />
-                                {STATUS_CONFIG[c.status]?.label}
+                              {(() => { const s = getStatusDisplay(c.status, c.publishDate); return (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, color: s.color }}>
+                                <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color, flexShrink: 0, display: "inline-block" }} />
+                                {s.label}
                               </span>
+                              ); })()}
                             </td>
                             <td className="m-td-keyword">{c.keyword || "—"}</td>
                             <td><span className={`m-cc-intent m-intent-${c.intent}`} style={{ fontSize: 10 }}>{INTENT_LABELS[c.intent] || c.intent}</span></td>
@@ -715,7 +729,7 @@ export default function ModadDashboard() {
                 <div style={{ flex: 1 }}>
                   <div className="m-modal-title" style={{ fontSize: 20 }}>{cardContent.title}</div>
                   <div style={{ fontSize: 11, color: "var(--m-text3)", marginTop: 3 }}>
-                    <span style={{ color: STATUS_CONFIG[cardContent.status]?.color, fontWeight: 700 }}>{STATUS_CONFIG[cardContent.status]?.icon} {STATUS_CONFIG[cardContent.status]?.label}</span>
+                    {(() => { const s = getStatusDisplay(cardContent.status, cardContent.publishDate); return <span style={{ color: s.color, fontWeight: 700 }}>{s.label}</span>; })()}
                     {cardContent.publishDate && <> &nbsp;·&nbsp; 📅 {cardContent.publishDate}</>}
                     {cardContent.keyword && <> &nbsp;·&nbsp; 🔑 {cardContent.keyword}</>}
                   </div>
