@@ -99,18 +99,22 @@ export default function ModadDashboard() {
       ]);
       const projects: Project[] = projectsRaw.map((p) => ({
         id: p.id, name: p.name, domain: p.domain,
-        desc: p.desc, color: p.color, createdAt: p.createdAt,
+        desc: p.desc, color: p.color, customIntents: p.customIntents, createdAt: p.createdAt,
       }));
-      setState((s) => ({
-        ...s, projects, contents, customIntents: s.customIntents,
-        settings: {
-          promptRole: settingsRaw.promptRole || DEFAULT_SETTINGS.promptRole,
-          promptSeo: settingsRaw.promptSeo || DEFAULT_SETTINGS.promptSeo,
-          promptGeo: settingsRaw.promptGeo || DEFAULT_SETTINGS.promptGeo,
-          promptWriting: settingsRaw.promptWriting || DEFAULT_SETTINGS.promptWriting,
-          adminLogin: "", adminPassword: "",
-        },
-      }));
+      setState((s) => {
+        const currentProj = s.currentProjectId ? projects.find((p) => p.id === s.currentProjectId) : null;
+        const intents: { name: string; color: string }[] = currentProj?.customIntents ? JSON.parse(currentProj.customIntents) : s.customIntents;
+        return {
+          ...s, projects, contents, customIntents: intents,
+          settings: {
+            promptRole: settingsRaw.promptRole || DEFAULT_SETTINGS.promptRole,
+            promptSeo: settingsRaw.promptSeo || DEFAULT_SETTINGS.promptSeo,
+            promptGeo: settingsRaw.promptGeo || DEFAULT_SETTINGS.promptGeo,
+            promptWriting: settingsRaw.promptWriting || DEFAULT_SETTINGS.promptWriting,
+            adminLogin: "", adminPassword: "",
+          },
+        };
+      });
     } catch { /* ignore */ }
   }, []);
 
