@@ -214,7 +214,7 @@
 
 /* ===== PAGE HEADER ===== */
 .m-page-header { margin-bottom: 28px; }
-.m-page-title { font-family: var(--font-bebas), 'Bebas Neue', sans-serif; font-size: 72px; color: var(--m-text); letter-spacing: .04em; line-height: 1; margin-bottom: 6px; }
+.m-page-title { font-family: var(--font-bebas), 'Bebas Neue', sans-serif; font-size: 36px; color: var(--m-text); letter-spacing: .04em; line-height: 1; margin-bottom: 6px; }
 .m-page-sub { font-size: 13px; color: var(--m-text3); font-weight: 300; }
 
 /* ===== PROJECT CARDS ===== */
@@ -767,7 +767,7 @@
   .m-btn-logout { padding: 6px 10px; font-size: 11px; }
 
   /* Page header */
-  .m-page-title { font-size: 52px; }
+  .m-page-title { font-size: 26px; }
 
   /* Project cards */
   .m-projects-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -939,7 +939,7 @@
 }
 .m-sp-card:hover { border-color: var(--m-border); background: var(--m-bg3); }
 .m-sp-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.m-sp-card-title { font-size: 14px; font-weight: 700; color: var(--m-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.m-sp-card-title { font-size: 28px; font-weight: 700; color: var(--m-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
 .m-sp-card-purpose {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
   color: var(--m-text3); margin-top: 2px;
@@ -949,4 +949,11 @@
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.m-sp-card-date { font-size: 10px; color: var(--m-text3); margin-top: auto; }
+.m-sp-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.m-sp-card-date { font-size: 10px; color: var(--m-text3); }
+.m-sp-copy-btn {
+  background: var(--m-bg3); border: 1px solid var(--m-border2); border-radius: 6px;
+  color: var(--m-text2); font-size: 11px; padding: 4px 10px; cursor: pointer;
+  transition: all .15s;
+}
+.m-sp-copy-btn:hover { border-color: var(--m-yellow); color: var(--m-yellow); }

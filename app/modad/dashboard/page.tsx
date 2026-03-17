@@ -683,7 +683,10 @@ export default function ModadDashboard() {
                       </div>
                     </div>
                     <div className="m-sp-card-preview">{sp.content}</div>
-                    <div className="m-sp-card-date">{sp.createdAt.split("T")[0]}</div>
+                    <div className="m-sp-card-footer">
+                      <span className="m-sp-card-date">{sp.createdAt.split("T")[0]}</span>
+                      <button className="m-sp-copy-btn" onClick={(e) => { e.stopPropagation(); copyToClipboard(sp.content); showToast("✓ Nusxa olindi!"); }}>📋 Nusxa</button>
+                    </div>
                   </div>
                 ))}
                 <div className="m-add-project-card" onClick={() => { setSpTitle(""); setSpPurpose(""); setSpContent(""); setSpModalOpen(true); }}>
