@@ -601,7 +601,7 @@ export default function ModadDashboard() {
                 <>
                 <div className="m-table-wrap">
                   <table>
-                    <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Keyword</th><th>Turi</th></tr></thead>
+                    <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Kontent</th><th>Turi</th></tr></thead>
                     <tbody>
                       {projectContents.length === 0 ? (
                         <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Hali kontent yo&apos;q</td></tr>
@@ -618,7 +618,11 @@ export default function ModadDashboard() {
                               </span>
                               ); })()}
                             </td>
-                            <td className="m-td-keyword">{c.keyword || "—"}</td>
+                            <td>
+                              <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 5, background: c.contentType === "brand" ? "rgba(192,132,252,0.12)" : "rgba(91,156,246,0.12)", color: c.contentType === "brand" ? "var(--m-purple, #C084FC)" : "var(--m-blue)" }}>
+                                {c.contentType === "brand" ? "◈ Boshqa" : "✦ Shaxsiy"}
+                              </span>
+                            </td>
                             <td><span className="m-cc-intent" style={{ fontSize: 10, background: `${getIntentColor(c.intent)}22`, color: getIntentColor(c.intent) }}>{c.intent || "—"}</span></td>
                           </tr>
                         ))
@@ -801,12 +805,6 @@ export default function ModadDashboard() {
                       <option value="published">🚀 Joylashtirildi</option>
                     </select>
                   </div>
-                  {cContentType === "own" && (
-                    <div className="m-form-group m-form-full">
-                      <label className="m-form-label">Kontent turi *</label>
-                      <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
-                    </div>
-                  )}
                   {cContentType === "brand" && (
                     <div className="m-form-group m-form-full">
                       <label className="m-form-label">Brend nomi *</label>
@@ -825,12 +823,10 @@ export default function ModadDashboard() {
                     <label className="m-form-label">Asosiy keyword *</label>
                     <input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" />
                   </div>
-                  {cContentType === "brand" && (
-                    <div className="m-form-group">
-                      <label className="m-form-label">Kontent turi</label>
-                      <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
-                    </div>
-                  )}
+                  <div className="m-form-group">
+                    <label className="m-form-label">Kontent turi</label>
+                    <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
+                  </div>
                   <div className="m-form-group m-form-full">
                     <label className="m-form-label">LSI keywordlar</label>
                     <input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="vergul bilan ajrating: biznes ochish, kichik biznes, ..." />
@@ -845,12 +841,10 @@ export default function ModadDashboard() {
                     <label className="m-form-label">AI uchun asosiy savol</label>
                     <input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" />
                   </div>
-                  {cContentType === "own" && (
-                    <div className="m-form-group m-form-full">
-                      <label className="m-form-label">Faktlar / statistika</label>
-                      <textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." />
-                    </div>
-                  )}
+                  <div className="m-form-group m-form-full">
+                    <label className="m-form-label">Faktlar / statistika</label>
+                    <textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." />
+                  </div>
                 </div>
               </div>
             )}

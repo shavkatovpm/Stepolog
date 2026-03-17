@@ -115,7 +115,7 @@ function generateBrandPrompt(c: Content, project?: Project, settings?: Settings)
   lines.push("");
   lines.push(`Mavzu: ${c.title}`);
   lines.push(`Asosiy keyword: ${c.keyword || "—"}`);
-  if (c.facts) lines.push(`GEO: ${c.facts}`);
+  if (c.intent) lines.push(`Kontent turi: ${INTENT_LABELS[c.intent] || c.intent}`);
   lines.push("");
   lines.push("Mention qilinadigan loyiha:");
   lines.push(`  Nomi: ${c.note || "—"}`);
@@ -200,10 +200,11 @@ function generateBrandPrompt(c: Content, project?: Project, settings?: Settings)
   lines.push("");
 
   if (c.facts) {
-    lines.push("8. GEO");
+    lines.push("8. GEO / FAKTLAR");
     lines.push("");
-    lines.push("Lokal kontekst yozilsin");
-    lines.push("Real foydalanuvchi holatlari qo'shilsin");
+    lines.push("Quyidagi faktlar / statistikalardan foydalanilsin:");
+    lines.push(c.facts);
+    lines.push("Lokal kontekst va real foydalanuvchi holatlari qo'shilsin");
     lines.push(s.promptGeo);
     lines.push("");
   }
