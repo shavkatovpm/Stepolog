@@ -214,7 +214,7 @@
 
 /* ===== PAGE HEADER ===== */
 .m-page-header { margin-bottom: 28px; }
-.m-page-title { font-family: var(--font-bebas), 'Bebas Neue', sans-serif; font-size: 36px; color: var(--m-text); letter-spacing: .04em; line-height: 1; margin-bottom: 6px; }
+.m-page-title { font-family: var(--font-bebas), 'Bebas Neue', sans-serif; font-size: 72px; color: var(--m-text); letter-spacing: .04em; line-height: 1; margin-bottom: 6px; }
 .m-page-sub { font-size: 13px; color: var(--m-text3); font-weight: 300; }
 
 /* ===== PROJECT CARDS ===== */
@@ -767,7 +767,7 @@
   .m-btn-logout { padding: 6px 10px; font-size: 11px; }
 
   /* Page header */
-  .m-page-title { font-size: 26px; }
+  .m-page-title { font-size: 52px; }
 
   /* Project cards */
   .m-projects-grid { grid-template-columns: 1fr; gap: 12px; }
