@@ -371,7 +371,7 @@
 .m-table-wrap tbody tr:hover { background: var(--m-bg3); }
 .m-table-wrap tbody td { padding: 12px 16px; font-size: 13px; color: var(--m-text2); }
 .m-td-title { color: var(--m-text) !important; font-weight: 600; }
-.m-td-keyword { font-family: 'Space Mono', monospace; font-size: 11px !important; color: var(--m-yellow) !important; }
+.m-td-keyword { font-family: 'Space Mono', monospace; font-size: 11px !important; color: var(--m-text) !important; }
 .m-td-date { font-family: 'Space Mono', monospace; font-size: 11px !important; white-space: nowrap; }
 
 /* ===== MODALS ===== */

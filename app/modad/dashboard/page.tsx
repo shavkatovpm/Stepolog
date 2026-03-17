@@ -564,7 +564,7 @@ export default function ModadDashboard() {
                               ); })()}
                             </td>
                             <td className="m-td-keyword">{c.keyword || "—"}</td>
-                            <td><span className={`m-cc-intent m-intent-${c.intent}`} style={{ fontSize: 10 }}>{INTENT_LABELS[c.intent] || c.intent}</span></td>
+                            <td><span className="m-cc-intent" style={{ fontSize: 10, background: `${getIntentColor(c.intent)}22`, color: getIntentColor(c.intent) }}>{c.intent || "—"}</span></td>
                           </tr>
                         ))
                       )}
@@ -696,7 +696,7 @@ export default function ModadDashboard() {
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
                   <div className="m-form-group"><label className="m-form-label">Asosiy keyword *</label><input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" /></div>
-                  <div className="m-form-group"><label className="m-form-label">Kontent turi</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} /></div>
+                  <div className="m-form-group"><label className="m-form-label">Kontent turi *</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} /></div>
                   <div className="m-form-group m-form-full"><label className="m-form-label">Qo&apos;shimcha keywordlar</label><input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="biznes ochish, startap ro'yxatdan o'tkazish, ... (vergul bilan)" /></div>
                   <div className="m-form-group m-form-full">
                     <label className="m-form-label">Blog mavzulari</label>
@@ -727,7 +727,7 @@ export default function ModadDashboard() {
           </div>
           <div className="m-modal-footer">
             {contentStep > 0 ? <button className="m-btn-action m-btn-ghost" onClick={() => setContentStep(contentStep - 1)} disabled={saving}>← Orqaga</button> : <button className="m-btn-cancel" onClick={() => setContentModalOpen(false)} disabled={saving}>Bekor</button>}
-            {contentStep < 2 ? <button className="m-btn-save" onClick={() => { if (contentStep === 0 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; } setContentStep(contentStep + 1); }}>Keyingi →</button> : <button className="m-btn-save" onClick={saveContent} disabled={saving}>{saving ? "Saqlanmoqda..." : editContentId ? "Yangilash" : "Saqlash"}</button>}
+            {contentStep < 2 ? <button className="m-btn-save" onClick={() => { if (contentStep === 0 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; } if (contentStep === 1 && !cIntent.trim()) { showToast("Kontent turini tanlang!"); return; } setContentStep(contentStep + 1); }}>Keyingi →</button> : <button className="m-btn-save" onClick={saveContent} disabled={saving}>{saving ? "Saqlanmoqda..." : editContentId ? "Yangilash" : "Saqlash"}</button>}
           </div>
         </div>
       </div>
