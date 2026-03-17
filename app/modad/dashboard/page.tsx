@@ -479,7 +479,7 @@ export default function ModadDashboard() {
                         </div>
                         <div className="m-col-cards">
                           {cards.length === 0 ? (
-                            <div className="m-empty-col">Kontent qo&apos;shish</div>
+                            <div className="m-empty-col"><button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;shish</button></div>
                           ) : (
                             cards.map((c) => (
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
@@ -508,7 +508,7 @@ export default function ModadDashboard() {
                     <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Keyword</th><th>Turi</th></tr></thead>
                     <tbody>
                       {projectContents.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Kontent qo&apos;shish</td></tr>
+                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40 }}><button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;shish</button></td></tr>
                       ) : (
                         projectContents.map((c) => (
                           <tr key={c.id} onClick={() => setCardModalId(c.id)}>
