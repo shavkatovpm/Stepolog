@@ -829,6 +829,8 @@
   /* Login */
   .modad-login-card { padding: 28px 20px; }
   .modad-login-logo { font-size: 28px; }
+  .modad-form-input { font-size: 16px; }
+  .m-form-input, .m-form-select, .m-form-textarea { font-size: 16px; }
 }
 
 /* ===== DATE PICKER ===== */
