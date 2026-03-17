@@ -88,6 +88,8 @@ export default function ModadDashboard() {
   const [projectMenuId, setProjectMenuId] = useState<string | null>(null);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [dragProjectId, setDragProjectId] = useState<string | null>(null);
+  const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
 
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
@@ -184,6 +186,20 @@ export default function ModadDashboard() {
     const intents: { name: string; color: string }[] = project?.customIntents ? JSON.parse(project.customIntents) : [];
     setState((s) => ({ ...s, currentProjectId: id, customIntents: intents }));
     setCurrentPage("projects");
+  }
+
+  function handleProjectDrop(targetId: string) {
+    if (!dragProjectId || dragProjectId === targetId) return;
+    const projects = [...state.projects];
+    const fromIdx = projects.findIndex((p) => p.id === dragProjectId);
+    const toIdx = projects.findIndex((p) => p.id === targetId);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const [moved] = projects.splice(fromIdx, 1);
+    projects.splice(toIdx, 0, moved);
+    setState((s) => ({ ...s, projects }));
+    setDragProjectId(null);
+    setDragOverProjectId(null);
+    api.reorderProjects(projects.map((p) => p.id));
   }
 
   function showProjects() {
@@ -408,7 +424,18 @@ export default function ModadDashboard() {
                 state.projects.map((p) => {
                   const count = state.contents.filter((c) => c.projectId === p.id).length;
                   return (
-                    <div key={p.id} className={`m-project-item ${state.currentProjectId === p.id ? "active" : ""}`} onClick={() => openProject(p.id)}>
+                    <div
+                      key={p.id}
+                      className={`m-project-item ${state.currentProjectId === p.id ? "active" : ""}${dragOverProjectId === p.id ? " drag-over" : ""}`}
+                      draggable
+                      onDragStart={(e) => { setDragProjectId(p.id); e.dataTransfer.effectAllowed = "move"; }}
+                      onDragOver={(e) => { e.preventDefault(); setDragOverProjectId(p.id); }}
+                      onDragLeave={() => setDragOverProjectId(null)}
+                      onDrop={(e) => { e.preventDefault(); handleProjectDrop(p.id); }}
+                      onDragEnd={() => { setDragProjectId(null); setDragOverProjectId(null); }}
+                      onClick={() => openProject(p.id)}
+                    >
+                      <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
                       <div className={`m-project-dot m-${p.color}`} />
                       <span className="m-project-name">{p.name}</span>
                       <span className="m-project-count">{count}</span>

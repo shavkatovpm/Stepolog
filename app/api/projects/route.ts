@@ -9,7 +9,7 @@ export async function GET() {
   if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });
 
   const projects = await prisma.project.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     include: { _count: { select: { contents: true } } },
   });
 

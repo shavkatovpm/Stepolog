@@ -42,6 +42,10 @@ export async function deleteProject(id: string) {
   await request(`/api/projects/${id}`, { method: "DELETE" });
 }
 
+export async function reorderProjects(ids: string[]) {
+  await request("/api/projects/reorder", { method: "PUT", body: JSON.stringify({ ids }) });
+}
+
 // Contents
 export async function fetchContents(projectId?: string): Promise<Content[]> {
   const url = projectId ? `/api/contents?projectId=${projectId}` : "/api/contents";

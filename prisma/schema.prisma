@@ -22,6 +22,7 @@ model Project {
   desc          String    @default("")
   color         String    @default("color-1")
   customIntents String    @default("[]")
+  sortOrder     Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   contents      Content[]
