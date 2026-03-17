@@ -735,15 +735,86 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  /* Layout */
   .m-sidebar { display: none; }
-  .m-main { margin-left: 0 !important; }
+  .m-main { margin-left: 0 !important; padding: 16px !important; }
+
+  /* Topbar */
+  .m-topbar { padding: 0 12px; height: 48px; }
+  .m-logo { font-size: 18px; }
+  .m-topbar-right { gap: 6px; }
+  .m-btn-new-project { padding: 6px 10px; font-size: 11px; }
+  .m-btn-logout { padding: 6px 10px; font-size: 11px; }
+
+  /* Page header */
+  .m-page-title { font-size: 26px; }
+
+  /* Project cards */
+  .m-projects-grid { grid-template-columns: 1fr; gap: 12px; }
+  .m-add-project-card { min-height: 100px; }
+
+  /* Detail header */
+  .m-detail-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .m-detail-project-name { font-size: 24px; }
+  .m-detail-actions { width: 100%; flex-wrap: wrap; gap: 6px; }
+  .m-btn-add-content { font-size: 11px; padding: 7px 12px; }
+
+  /* Stats row */
+  .m-kanban-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .m-ks { padding: 10px 12px; }
+  .m-ks-n { font-size: 18px; }
+
+  /* Kanban */
   .m-kanban { grid-template-columns: 1fr; }
-  .m-detail-header { flex-direction: column; align-items: flex-start; }
-  .m-detail-actions { width: 100%; }
+  .m-content-card { height: auto; min-height: auto; }
+
+  /* Table */
+  .m-table-wrap { font-size: 12px; }
+  .m-table-wrap th { padding: 8px 10px; font-size: 9px; }
+  .m-table-wrap td { padding: 8px 10px; font-size: 11px; }
+
+  /* Modals */
+  .m-modal-overlay { padding: 8px; }
+  .m-modal { border-radius: 12px; max-height: 95vh; }
+  .m-modal-header { padding: 14px 16px 12px; }
+  .m-modal-body { padding: 14px 16px; }
+  .m-modal-footer { padding: 12px 16px; flex-wrap: wrap; gap: 6px; }
+  .m-modal-title { font-size: 18px; }
+
+  /* Wizard */
+  .m-modal-wizard { height: auto; max-height: 95vh; }
+  .m-wizard-top-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .m-wizard-section-name { font-size: 11px; }
+  .m-steps { gap: 0; flex-wrap: wrap; }
+  .m-step { padding: 5px 8px; }
+  .m-step-num { width: 22px; height: 22px; font-size: 10px; }
+  .m-step-label { font-size: 11px; }
+  .m-step-line { width: 12px; }
+
+  /* Forms */
   .m-form-grid { grid-template-columns: 1fr; }
-  .m-modal-footer { flex-wrap: wrap; }
+  .m-form-input, .m-form-select, .m-form-textarea { font-size: 14px; padding: 10px 12px; }
+
+  /* Delete modal */
+  .m-delete-modal { padding: 24px 20px; }
+
+  /* Stats page */
   .m-stats-cards { grid-template-columns: repeat(2, 1fr); }
   .m-stats-grid { grid-template-columns: 1fr; }
+  .m-stat-card-n { font-size: 22px; }
+
+  /* Buttons */
+  .m-btn-action { padding: 7px 12px; font-size: 11px; }
+  .m-btn-save { padding: 8px 14px; font-size: 12px; }
+  .m-btn-cancel { padding: 8px 14px; font-size: 11px; }
+
+  /* Card detail modal */
+  .m-modal[style*="780"] { max-width: 100% !important; }
+  .m-date-row { flex-wrap: wrap; gap: 16px; }
+
+  /* Login */
+  .modad-login-card { padding: 28px 20px; }
+  .modad-login-logo { font-size: 28px; }
 }
 
 /* ===== DATE PICKER ===== */

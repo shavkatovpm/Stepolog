@@ -331,7 +331,7 @@ export default function ModadDashboard() {
       <div className="m-topbar">
         <div className="m-topbar-left">
           <div className="m-logo" onClick={showProjects} style={{ cursor: "pointer" }}>STEPOLOG</div>
-          <div className="m-logo-badge">/moded</div>
+          <div className="m-logo-badge">/modad</div>
         </div>
         <div className="m-topbar-right">
           {!state.currentProjectId && (
@@ -471,7 +471,7 @@ export default function ModadDashboard() {
                         </div>
                         <div className="m-col-cards">
                           {cards.length === 0 ? (
-                            <div className="m-empty-col">Hali kontent yo&apos;q</div>
+                            <div className="m-empty-col">Kontent qo&apos;shish</div>
                           ) : (
                             cards.map((c) => (
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
@@ -500,7 +500,7 @@ export default function ModadDashboard() {
                     <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Keyword</th><th>Turi</th></tr></thead>
                     <tbody>
                       {projectContents.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Hali kontent yo&apos;q</td></tr>
+                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Kontent qo&apos;shish</td></tr>
                       ) : (
                         projectContents.map((c) => (
                           <tr key={c.id} onClick={() => setCardModalId(c.id)}>

@@ -40,7 +40,6 @@ export default function ModadLogin() {
     <div className="modad-login-page">
       <form className="modad-login-card" onSubmit={handleSubmit}>
         <div className="modad-login-logo">STEPOLOG</div>
-        <div className="modad-login-badge">/moded</div>
         <p className="modad-login-sub">Admin paneliga kirish</p>
 
         <div className="modad-form-group">
