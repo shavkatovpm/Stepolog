@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../modad.css";
 
-import type { Content, State } from "./types";
+import type { Content, Project, Settings, State } from "./types";
 import {
-  STORAGE_KEY, DEFAULT_SETTINGS, STATUS_CONFIG, INTENT_LABELS,
+  DEFAULT_SETTINGS, STATUS_CONFIG, INTENT_LABELS,
   COLORS, COLOR_HEX,
   DEFAULT_PROMPT_ROLE, DEFAULT_PROMPT_SEO, DEFAULT_PROMPT_GEO, DEFAULT_PROMPT_WRITING,
 } from "./constants";
 import { generatePrompt } from "./prompt";
+import * as api from "./api";
 import DatePicker from "./components/DatePicker";
 import IntentSelect from "./components/IntentSelect";
 import CredentialsEditor from "./components/CredentialsEditor";
@@ -30,6 +31,7 @@ export default function ModadDashboard() {
   const [currentView, setCurrentView] = useState<"kanban" | "table">("table");
   const [currentPage, setCurrentPage] = useState<"projects" | "stats" | "settings">("projects");
   const [toast, setToast] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Modals
   const [projectModalOpen, setProjectModalOpen] = useState(false);
@@ -65,51 +67,51 @@ export default function ModadDashboard() {
   const [projectMenuId, setProjectMenuId] = useState<string | null>(null);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
 
-  // Auth check
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem("modad_auth") !== "true") {
-      router.push("/modad");
-    }
-  }, [router]);
-
-  // Load state
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setState((s) => ({ ...s, projects: parsed.projects || [], contents: parsed.contents || [], customIntents: parsed.customIntents || [], settings: { ...DEFAULT_SETTINGS, ...(parsed.settings || {}) } }));
-      } catch { /* ignore */ }
-    }
+  // ===== LOAD DATA =====
+  const loadData = useCallback(async () => {
+    try {
+      const [projectsRaw, contents, settingsRaw] = await Promise.all([
+        api.fetchProjects(),
+        api.fetchContents(),
+        api.fetchSettings(),
+      ]);
+      const projects: Project[] = projectsRaw.map((p) => ({
+        id: p.id, name: p.name, domain: p.domain,
+        desc: p.desc, color: p.color, createdAt: p.createdAt,
+      }));
+      const customIntents: string[] = settingsRaw.customIntents ? JSON.parse(settingsRaw.customIntents) : [];
+      setState((s) => ({
+        ...s, projects, contents, customIntents,
+        settings: {
+          promptRole: settingsRaw.promptRole || DEFAULT_SETTINGS.promptRole,
+          promptSeo: settingsRaw.promptSeo || DEFAULT_SETTINGS.promptSeo,
+          promptGeo: settingsRaw.promptGeo || DEFAULT_SETTINGS.promptGeo,
+          promptWriting: settingsRaw.promptWriting || DEFAULT_SETTINGS.promptWriting,
+          adminLogin: "", adminPassword: "",
+        },
+      }));
+    } catch { /* ignore */ }
   }, []);
 
-  // Save state
-  const saveState = useCallback(
-    (newState: State) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects: newState.projects, contents: newState.contents, customIntents: newState.customIntents, settings: newState.settings }));
-    },
-    []
-  );
+  useEffect(() => {
+    async function init() {
+      const ok = await api.checkAuth();
+      if (!ok) { router.push("/modad"); return; }
+      await loadData();
+      setLoading(false);
+    }
+    init();
+  }, [router, loadData]);
 
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(""), 2500);
   }
 
-  function updateState(updater: (s: State) => State) {
-    setState((prev) => {
-      const next = updater(prev);
-      saveState(next);
-      return next;
-    });
-  }
-
   // ===== PROJECTS =====
   function openProjectModal() {
     setEditProjectId(null);
-    setPName("");
-    setPDomain("");
-    setPDesc("");
+    setPName(""); setPDomain(""); setPDesc("");
     setState((s) => ({ ...s, selectedColor: "color-1" }));
     setProjectModalOpen(true);
   }
@@ -118,52 +120,32 @@ export default function ModadDashboard() {
     const p = state.projects.find((pr) => pr.id === id);
     if (!p) return;
     setEditProjectId(id);
-    setPName(p.name);
-    setPDomain(p.domain);
-    setPDesc(p.desc);
+    setPName(p.name); setPDomain(p.domain); setPDesc(p.desc);
     setState((s) => ({ ...s, selectedColor: p.color }));
     setProjectMenuId(null);
     setProjectModalOpen(true);
   }
 
-  function saveProject() {
+  async function saveProject() {
     if (!pName.trim()) { showToast("Loyiha nomini kiriting!"); return; }
     if (editProjectId) {
-      updateState((s) => ({
-        ...s,
-        projects: s.projects.map((p) =>
-          p.id === editProjectId
-            ? { ...p, name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor }
-            : p
-        ),
-      }));
-      setEditProjectId(null);
-      setProjectModalOpen(false);
+      await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
       showToast("✓ Loyiha tahrirlandi");
-      return;
+    } else {
+      await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
+      showToast("✓ Loyiha qo'shildi");
     }
-    const project = {
-      id: "p_" + Date.now(),
-      name: pName.trim(),
-      domain: pDomain.trim(),
-      desc: pDesc.trim(),
-      color: state.selectedColor,
-      createdAt: new Date().toISOString(),
-    };
-    updateState((s) => ({ ...s, projects: [...s.projects, project] }));
+    setEditProjectId(null);
     setProjectModalOpen(false);
-    showToast("✓ Loyiha qo'shildi");
+    await loadData();
   }
 
-  function deleteProject(id: string) {
-    updateState((s) => ({
-      ...s,
-      projects: s.projects.filter((p) => p.id !== id),
-      contents: s.contents.filter((c) => c.projectId !== id),
-      currentProjectId: s.currentProjectId === id ? null : s.currentProjectId,
-    }));
+  async function deleteProject(id: string) {
+    await api.deleteProject(id);
+    setState((s) => ({ ...s, currentProjectId: s.currentProjectId === id ? null : s.currentProjectId }));
     setDeleteProjectConfirmId(null);
     showToast("Loyiha o'chirildi");
+    await loadData();
   }
 
   function openProject(id: string) {
@@ -178,8 +160,7 @@ export default function ModadDashboard() {
 
   // ===== CONTENT =====
   function openContentModal() {
-    setEditContentId(null);
-    setContentStep(0);
+    setEditContentId(null); setContentStep(0);
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
     setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
     setCInternalLink(""); setCIntent("informational"); setCSource("");
@@ -192,7 +173,7 @@ export default function ModadDashboard() {
     const c = state.contents.find((x) => x.id === id);
     if (!c) return;
     setEditContentId(id);
-    setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status);
+    setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status as Content["status"]);
     setCNote(c.note); setCKeyword(c.keyword); setCKeywords2(c.keywords2);
     setCInternalLink(c.internalLink); setCIntent(c.intent); setCSource(c.source);
     setCFacts(c.facts); setCBrandCount(c.brandCount); setCMainQuestion(c.mainQuestion);
@@ -200,7 +181,7 @@ export default function ModadDashboard() {
     setContentModalOpen(true);
   }
 
-  function saveContent() {
+  async function saveContent() {
     if (!cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
     const data = {
       title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote.trim(),
@@ -210,38 +191,32 @@ export default function ModadDashboard() {
       blogTopics: cBlogTopics.map(t => t.trim()).filter(Boolean).join("\n"),
     };
     if (editContentId) {
-      updateState((s) => ({ ...s, contents: s.contents.map((c) => c.id === editContentId ? { ...c, ...data } : c) }));
-      setContentModalOpen(false);
+      await api.updateContent(editContentId, data);
       showToast("✓ Kontent yangilandi");
     } else {
-      const content: Content = { ...data, id: "c_" + Date.now(), projectId: state.currentProjectId!, createdAt: new Date().toISOString() };
-      updateState((s) => ({ ...s, contents: [...s.contents, content] }));
-      setContentModalOpen(false);
+      await api.createContent({ ...data, projectId: state.currentProjectId! });
       showToast("✓ Kontent qo'shildi");
     }
+    setContentModalOpen(false);
+    await loadData();
   }
 
-  function deleteContent(id: string) {
-    updateState((s) => ({ ...s, contents: s.contents.filter((c) => c.id !== id) }));
+  async function deleteContent(id: string) {
+    await api.deleteContentApi(id);
     setDeleteConfirmId(null);
     setCardModalId(null);
     showToast("Kontent o'chirildi");
+    await loadData();
   }
 
-  function changeStatus(id: string, status: Content["status"]) {
-    updateState((s) => ({
-      ...s,
-      contents: s.contents.map((c) =>
-        c.id === id
-          ? { ...c, status, ...(status === "ready" ? { readyAt: new Date().toISOString() } : {}), ...(status === "published" ? { publishedAt: new Date().toISOString() } : {}) }
-          : c
-      ),
-    }));
+  async function changeStatus(id: string, status: Content["status"]) {
+    await api.updateContent(id, { status });
     showToast("✓ Holat o'zgartirildi");
+    await loadData();
   }
 
-  function saveContentText(id: string, text: string) {
-    updateState((s) => ({ ...s, contents: s.contents.map((c) => (c.id === id ? { ...c, contentText: text } : c)) }));
+  async function saveContentText(id: string, text: string) {
+    await api.updateContent(id, { contentText: text });
   }
 
   function copyToClipboard(text: string) {
@@ -255,17 +230,42 @@ export default function ModadDashboard() {
     setPasteModalId(id);
   }
 
-  function confirmPaste() {
+  async function confirmPaste() {
     if (!pasteModalId) return;
-    updateState((s) => ({
-      ...s,
-      contents: s.contents.map((c) =>
-        c.id === pasteModalId ? { ...c, status: "ready" as const, contentText: pasteText, readyAt: new Date().toISOString() } : c
-      ),
-    }));
+    await api.updateContent(pasteModalId, { status: "ready", contentText: pasteText });
     setPasteModalId(null);
     setCardModalId(null);
     showToast("✓ Kontent saqlandi, holat: Tayyor");
+    await loadData();
+  }
+
+  // ===== SETTINGS =====
+  async function updateSettingsField(key: string, value: string) {
+    setState((s) => ({ ...s, settings: { ...s.settings, [key]: value } }));
+    await api.updateSettings({ [key]: value });
+  }
+
+  async function addCustomIntent(name: string) {
+    const updated = [...state.customIntents, name];
+    setState((s) => ({ ...s, customIntents: updated }));
+    await api.updateSettings({ customIntents: JSON.stringify(updated) });
+  }
+
+  async function removeCustomIntent(name: string) {
+    const updated = state.customIntents.filter((i) => i !== name);
+    setState((s) => ({ ...s, customIntents: updated }));
+    await api.updateSettings({ customIntents: JSON.stringify(updated) });
+  }
+
+  async function resetPrompts() {
+    await api.updateSettings({ promptRole: DEFAULT_PROMPT_ROLE, promptSeo: DEFAULT_PROMPT_SEO, promptGeo: DEFAULT_PROMPT_GEO, promptWriting: DEFAULT_PROMPT_WRITING });
+    setState((s) => ({ ...s, settings: { ...s.settings, promptRole: DEFAULT_PROMPT_ROLE, promptSeo: DEFAULT_PROMPT_SEO, promptGeo: DEFAULT_PROMPT_GEO, promptWriting: DEFAULT_PROMPT_WRITING } }));
+    showToast("Barcha shablonlar qayta tiklandi");
+  }
+
+  async function updateCredentials(login: string, password: string) {
+    await api.updateSettings({ adminLogin: login, adminPassword: password });
+    showToast("✓ Kirish ma'lumotlari yangilandi");
   }
 
   // ===== COMPUTED =====
@@ -279,8 +279,8 @@ export default function ModadDashboard() {
   const deleteContent_ = deleteConfirmId ? state.contents.find((c) => c.id === deleteConfirmId) : null;
   const deleteProject_ = deleteProjectConfirmId ? state.projects.find((p) => p.id === deleteProjectConfirmId) : null;
 
-  function handleLogout() {
-    sessionStorage.removeItem("modad_auth");
+  async function handleLogout() {
+    await api.logout();
     router.push("/modad");
   }
 
@@ -314,6 +314,14 @@ export default function ModadDashboard() {
     win.document.write(html);
     win.document.close();
     setTimeout(() => { win.print(); }, 300);
+  }
+
+  if (loading) {
+    return (
+      <div className="modad-app" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+        <div style={{ color: "var(--m-text3)", fontSize: 14 }}>Yuklanmoqda...</div>
+      </div>
+    );
   }
 
   // ===== RENDER =====
@@ -381,12 +389,7 @@ export default function ModadDashboard() {
                   const contents = state.contents.filter((c) => c.projectId === p.id);
                   const ready = contents.filter((c) => c.status === "ready" || c.status === "published").length;
                   return (
-                    <div
-                      key={p.id}
-                      className="m-project-card"
-                      style={{ animationDelay: `${i * 0.07}s`, "--card-color": COLOR_HEX[p.color] || "var(--m-border)" } as React.CSSProperties}
-                      onClick={() => openProject(p.id)}
-                    >
+                    <div key={p.id} className="m-project-card" style={{ animationDelay: `${i * 0.07}s`, "--card-color": COLOR_HEX[p.color] || "var(--m-border)" } as React.CSSProperties} onClick={() => openProject(p.id)}>
                       <div className="m-pc-header">
                         <div className="m-pc-dot-wrap">
                           <div className={`m-pc-dot m-${p.color}`} />
@@ -504,9 +507,9 @@ export default function ModadDashboard() {
                             <td className="m-td-title">{c.title}</td>
                             <td className="m-td-date">{c.publishDate || "—"}</td>
                             <td>
-                              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, color: STATUS_CONFIG[c.status].color }}>
-                                <span style={{ width: 6, height: 6, borderRadius: "50%", background: STATUS_CONFIG[c.status].color, flexShrink: 0, display: "inline-block" }} />
-                                {STATUS_CONFIG[c.status].label}
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, color: STATUS_CONFIG[c.status]?.color }}>
+                                <span style={{ width: 6, height: 6, borderRadius: "50%", background: STATUS_CONFIG[c.status]?.color, flexShrink: 0, display: "inline-block" }} />
+                                {STATUS_CONFIG[c.status]?.label}
                               </span>
                             </td>
                             <td className="m-td-keyword">{c.keyword || "—"}</td>
@@ -549,7 +552,7 @@ export default function ModadDashboard() {
                       state.customIntents.map((intent) => (
                         <div key={intent} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--m-bg3)", border: "1px solid var(--m-border2)", borderRadius: 6, padding: "6px 12px", fontSize: 13, color: "var(--m-text2)" }}>
                           {intent}
-                          <button style={{ background: "none", border: "none", color: "var(--m-red)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1 }} onClick={() => updateState((s) => ({ ...s, customIntents: s.customIntents.filter((i) => i !== intent) }))}>✕</button>
+                          <button style={{ background: "none", border: "none", color: "var(--m-red)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1 }} onClick={() => removeCustomIntent(intent)}>✕</button>
                         </div>
                       ))
                     )}
@@ -557,32 +560,33 @@ export default function ModadDashboard() {
                 </div>
 
                 {/* Prompt shablonlari */}
-                {[
+                {([
                   { key: "promptRole", icon: "🎭", title: "PROMPT: ROL", desc: "AI ga beriladigan asosiy rol ta'rifi.", minH: 80 },
                   { key: "promptSeo", icon: "🔍", title: "PROMPT: SEO TALABLARI", desc: "SEO bo'yicha qo'shimcha ko'rsatmalar.", minH: 100 },
                   { key: "promptGeo", icon: "🤖", title: "PROMPT: GEO (AI INDEKSATSIYA)", desc: "AI indeksatsiya uchun ko'rsatmalar.", minH: 100 },
                   { key: "promptWriting", icon: "✍️", title: "PROMPT: YOZISH QO'LLANMASI", desc: "Kontent yozish uslubi va formati.", minH: 120 },
-                ].map(({ key, icon, title, desc, minH }) => (
+                ] as const).map(({ key, icon, title, desc, minH }) => (
                   <div className="m-form-section" key={key}>
                     <div className="m-form-section-title"><span className="m-form-section-icon">{icon}</span> {title}</div>
                     <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 10 }}>{desc}</p>
                     <textarea
                       className="m-form-textarea"
                       style={{ minHeight: minH, fontFamily: "'Space Mono', monospace", fontSize: 12 }}
-                      value={state.settings[key as keyof typeof state.settings]}
-                      onChange={(e) => updateState((s) => ({ ...s, settings: { ...s.settings, [key]: e.target.value } }))}
+                      value={state.settings[key]}
+                      onBlur={(e) => updateSettingsField(key, e.target.value)}
+                      onChange={(e) => setState((s) => ({ ...s, settings: { ...s.settings, [key]: e.target.value } }))}
                     />
                   </div>
                 ))}
 
-                <button className="m-btn-action m-btn-ghost" style={{ fontSize: 12 }} onClick={() => { updateState((s) => ({ ...s, settings: { ...s.settings, promptRole: DEFAULT_PROMPT_ROLE, promptSeo: DEFAULT_PROMPT_SEO, promptGeo: DEFAULT_PROMPT_GEO, promptWriting: DEFAULT_PROMPT_WRITING } })); showToast("Barcha shablonlar qayta tiklandi"); }}>
+                <button className="m-btn-action m-btn-ghost" style={{ fontSize: 12 }} onClick={resetPrompts}>
                   Barcha shablonlarni standart holatga qaytarish
                 </button>
 
                 {/* Login/Parol */}
                 <div className="m-form-section">
                   <div className="m-form-section-title"><span className="m-form-section-icon">🔐</span> KIRISH MA&apos;LUMOTLARI</div>
-                  <CredentialsEditor currentLogin={state.settings.adminLogin} currentPassword={state.settings.adminPassword} onSave={(login, password) => { updateState((s) => ({ ...s, settings: { ...s.settings, adminLogin: login, adminPassword: password } })); showToast("✓ Kirish ma'lumotlari yangilandi"); }} />
+                  <CredentialsEditor currentLogin={state.settings.adminLogin} currentPassword={state.settings.adminPassword} onSave={updateCredentials} />
                 </div>
 
                 {/* Chiqish */}
@@ -644,7 +648,6 @@ export default function ModadDashboard() {
             </div>
           </div>
           <div className="m-modal-body">
-            {/* STEP 1 */}
             {contentStep === 0 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
@@ -655,12 +658,11 @@ export default function ModadDashboard() {
                 </div>
               </div>
             )}
-            {/* STEP 2 */}
             {contentStep === 1 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
                   <div className="m-form-group"><label className="m-form-label">Asosiy keyword *</label><input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" /></div>
-                  <div className="m-form-group"><label className="m-form-label">Kontent turi</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={(name) => updateState((s) => ({ ...s, customIntents: [...s.customIntents, name] }))} onRemove={(name) => updateState((s) => ({ ...s, customIntents: s.customIntents.filter((i) => i !== name) }))} /></div>
+                  <div className="m-form-group"><label className="m-form-label">Kontent turi</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} /></div>
                   <div className="m-form-group m-form-full"><label className="m-form-label">Qo&apos;shimcha keywordlar</label><input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="biznes ochish, startap ro'yxatdan o'tkazish, ... (vergul bilan)" /></div>
                   <div className="m-form-group m-form-full">
                     <label className="m-form-label">Blog mavzulari</label>
@@ -678,7 +680,6 @@ export default function ModadDashboard() {
                 </div>
               </div>
             )}
-            {/* STEP 3 */}
             {contentStep === 2 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
@@ -706,7 +707,7 @@ export default function ModadDashboard() {
                 <div style={{ flex: 1 }}>
                   <div className="m-modal-title" style={{ fontSize: 20 }}>{cardContent.title}</div>
                   <div style={{ fontSize: 11, color: "var(--m-text3)", marginTop: 3 }}>
-                    <span style={{ color: STATUS_CONFIG[cardContent.status].color, fontWeight: 700 }}>{STATUS_CONFIG[cardContent.status].icon} {STATUS_CONFIG[cardContent.status].label}</span>
+                    <span style={{ color: STATUS_CONFIG[cardContent.status]?.color, fontWeight: 700 }}>{STATUS_CONFIG[cardContent.status]?.icon} {STATUS_CONFIG[cardContent.status]?.label}</span>
                     {cardContent.publishDate && <> &nbsp;·&nbsp; 📅 {cardContent.publishDate}</>}
                     {cardContent.keyword && <> &nbsp;·&nbsp; 🔑 {cardContent.keyword}</>}
                   </div>
@@ -716,9 +717,9 @@ export default function ModadDashboard() {
               <div className="m-modal-body">
                 <div className="m-date-row">
                   <DetailRow label="Chiqish sanasi" value={cardContent.publishDate} />
-                  <DetailRow label="Yaratilgan" value={cardContent.createdAt?.split("T")[0]} />
-                  {cardContent.readyAt && <DetailRow label="Tayyor bo'lgan" value={cardContent.readyAt.split("T")[0]} />}
-                  {cardContent.publishedAt && <DetailRow label="Joylashtirilgan" value={cardContent.publishedAt.split("T")[0]} />}
+                  <DetailRow label="Yaratilgan" value={typeof cardContent.createdAt === 'string' ? cardContent.createdAt.split("T")[0] : ""} />
+                  {cardContent.readyAt && <DetailRow label="Tayyor bo'lgan" value={typeof cardContent.readyAt === 'string' ? cardContent.readyAt.split("T")[0] : ""} />}
+                  {cardContent.publishedAt && <DetailRow label="Joylashtirilgan" value={typeof cardContent.publishedAt === 'string' ? cardContent.publishedAt.split("T")[0] : ""} />}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 16 }}>
                   <div>
@@ -771,11 +772,11 @@ export default function ModadDashboard() {
               <div className="m-modal-header"><div className="m-modal-title">TAYYOR PROMPT</div><button className="m-modal-close" onClick={() => setPromptModalId(null)}>✕</button></div>
               <div className="m-modal-body">
                 <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>Quyidagi promptni nusxa olib ChatGPT yoki Claude ga yapishtirishingiz mumkin:</p>
-                <div className="m-prompt-box">{generatePrompt(promptContent, state.projects.find((p) => p.id === promptContent.projectId), state.settings)}</div>
+                <div className="m-prompt-box">{generatePrompt(promptContent as Content, state.projects.find((p) => p.id === promptContent.projectId), state.settings)}</div>
               </div>
               <div className="m-modal-footer">
                 <button className="m-btn-cancel" onClick={() => setPromptModalId(null)}>Yopish</button>
-                <button className="m-copy-btn" onClick={() => { const project = state.projects.find((p) => p.id === promptContent.projectId); copyToClipboard(generatePrompt(promptContent, project, state.settings)); }}>📋 Nusxa olish</button>
+                <button className="m-copy-btn" onClick={() => { const project = state.projects.find((p) => p.id === promptContent.projectId); copyToClipboard(generatePrompt(promptContent as Content, project, state.settings)); }}>📋 Nusxa olish</button>
               </div>
             </>
           )}

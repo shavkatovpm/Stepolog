@@ -11,24 +11,29 @@ export default function ModadLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      const saved = localStorage.getItem("stepolog_moded");
-      const settings = saved ? JSON.parse(saved).settings : null;
-      const adminLogin = settings?.adminLogin || "stepologad";
-      const adminPassword = settings?.adminPassword || "stepologad321";
-      if (login === adminLogin && password === adminPassword) {
-        sessionStorage.setItem("modad_auth", "true");
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login, password }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
         router.push("/modad/dashboard");
       } else {
-        setError("Login yoki parol noto'g'ri");
+        setError(data.error || "Login yoki parol noto'g'ri");
         setLoading(false);
       }
-    }, 400);
+    } catch {
+      setError("Server xatosi");
+      setLoading(false);
+    }
   }
 
   return (

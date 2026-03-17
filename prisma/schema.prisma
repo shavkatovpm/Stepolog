@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  login     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id        String    @id @default(cuid())
+  name      String
+  domain    String    @default("")
+  desc      String    @default("")
+  color     String    @default("color-1")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  contents  Content[]
+}
+
+model Content {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title        String
+  publishDate  String   @default("")
+  status       String   @default("planned")
+  note         String   @default("")
+  keyword      String   @default("")
+  keywords2    String   @default("")
+  internalLink String   @default("")
+  intent       String   @default("")
+  source       String   @default("")
+  facts        String   @default("")
+  brandCount   String   @default("3")
+  mainQuestion String   @default("")
+  blogTopics   String   @default("")
+  contentText  String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  readyAt      DateTime?
+  publishedAt  DateTime?
+}
+
+model Settings {
+  id            String @id @default("default")
+  promptRole    String @default("")
+  promptSeo     String @default("")
+  promptGeo     String @default("")
+  promptWriting String @default("")
+  customIntents String @default("[]")
+}
