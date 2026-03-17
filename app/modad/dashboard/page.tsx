@@ -490,7 +490,6 @@ export default function ModadDashboard() {
                     <button className={`m-vt-btn ${currentView === "table" ? "active" : ""}`} onClick={() => setCurrentView("table")}>☰ Jadval</button>
                   </div>
                   <button className="m-btn-action m-btn-ghost" onClick={exportPDF}>↓ PDF</button>
-                  <button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;sh</button>
                 </div>
               </div>
 
