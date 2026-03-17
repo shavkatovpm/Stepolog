@@ -36,10 +36,19 @@ export async function PUT(req: Request) {
 
   // Parol o'zgartirish
   if (data.adminLogin && data.adminPassword) {
+    if (typeof data.adminLogin !== "string" || data.adminLogin.trim().length < 3) {
+      return NextResponse.json({ error: "Login kamida 3 ta belgi bo'lsin" }, { status: 400 });
+    }
+    if (typeof data.adminPassword !== "string" || data.adminPassword.length < 6) {
+      return NextResponse.json({ error: "Parol kamida 6 ta belgi bo'lsin" }, { status: 400 });
+    }
+    if (data.adminLogin.length > 100 || data.adminPassword.length > 200) {
+      return NextResponse.json({ error: "Login yoki parol juda uzun" }, { status: 400 });
+    }
     const hashed = await hashPassword(data.adminPassword);
     await prisma.user.update({
       where: { id: userId },
-      data: { login: data.adminLogin, password: hashed },
+      data: { login: data.adminLogin.trim(), password: hashed },
     });
   }
 

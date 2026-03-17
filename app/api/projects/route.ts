@@ -20,8 +20,16 @@ export async function POST(req: Request) {
   const userId = await getAuthUser();
   if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });
 
-  const { name, domain, desc, color } = await req.json();
+  let body;
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
+  }
+
+  const { name, domain, desc, color } = body;
   if (!name?.trim()) return NextResponse.json({ error: "Loyiha nomini kiriting" }, { status: 400 });
+  if (name.length > 200 || (domain && domain.length > 200) || (desc && desc.length > 1000)) {
+    return NextResponse.json({ error: "Matn juda uzun" }, { status: 400 });
+  }
 
   const project = await prisma.project.create({
     data: { name: name.trim(), domain: domain?.trim() || "", desc: desc?.trim() || "", color: color || "color-1" },

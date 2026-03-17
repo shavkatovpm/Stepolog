@@ -23,9 +23,16 @@ export async function POST(req: Request) {
   const userId = await getAuthUser();
   if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });
 
-  const data = await req.json();
+  let data;
+  try { data = await req.json(); } catch {
+    return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
+  }
+
   if (!data.title?.trim()) return NextResponse.json({ error: "Sarlavhani kiriting" }, { status: 400 });
   if (!data.projectId) return NextResponse.json({ error: "Loyiha tanlang" }, { status: 400 });
+  if (data.title.length > 500 || (data.keyword && data.keyword.length > 200) || (data.contentText && data.contentText.length > 100000)) {
+    return NextResponse.json({ error: "Matn juda uzun" }, { status: 400 });
+  }
 
   const content = await prisma.content.create({
     data: {
