@@ -18,6 +18,15 @@ import CredentialsEditor from "./components/CredentialsEditor";
 import DetailRow from "./components/DetailRow";
 import StatsView from "./components/StatsView";
 
+function getDateColor(publishDate: string, status: string): string {
+  if (!publishDate) return "var(--m-text3)";
+  if (status === "published") return "var(--m-green)";
+  const today = new Date().toISOString().split("T")[0];
+  if (publishDate === today) return "var(--m-yellow)";
+  if (publishDate < today) return "var(--m-red)";
+  return "var(--m-text3)";
+}
+
 export default function ModadDashboard() {
   const router = useRouter();
   const [state, setState] = useState<State>({
@@ -476,7 +485,7 @@ export default function ModadDashboard() {
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
                                 <div className="m-cc-top">
                                   <span className={`m-cc-intent m-intent-${c.intent}`}>{INTENT_LABELS[c.intent] || c.intent}</span>
-                                  <span className="m-cc-date">{c.publishDate || "—"}</span>
+                                  <span className="m-cc-date" style={{ color: getDateColor(c.publishDate, c.status) }}>{c.publishDate || "—"}</span>
                                 </div>
                                 <div className="m-cc-title">{c.title}</div>
                                 {c.keyword && <div className="m-cc-keyword">🔑 {c.keyword}</div>}
@@ -504,7 +513,7 @@ export default function ModadDashboard() {
                         projectContents.map((c) => (
                           <tr key={c.id} onClick={() => setCardModalId(c.id)}>
                             <td className="m-td-title">{c.title}</td>
-                            <td className="m-td-date">{c.publishDate || "—"}</td>
+                            <td className="m-td-date" style={{ color: getDateColor(c.publishDate, c.status) }}>{c.publishDate || "—"}</td>
                             <td>
                               <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700, color: STATUS_CONFIG[c.status]?.color }}>
                                 <span style={{ width: 6, height: 6, borderRadius: "50%", background: STATUS_CONFIG[c.status]?.color, flexShrink: 0, display: "inline-block" }} />
