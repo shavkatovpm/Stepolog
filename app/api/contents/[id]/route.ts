@@ -18,7 +18,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (data.contentText && data.contentText.length > 100000) return NextResponse.json({ error: "Kontent juda uzun" }, { status: 400 });
 
   const updateData: Record<string, unknown> = {};
-  const fields = ["title", "publishDate", "status", "note", "keyword", "keywords2", "internalLink", "intent", "source", "facts", "brandCount", "mainQuestion", "blogTopics", "contentText"];
+  const fields = ["title", "publishDate", "status", "note", "keyword", "keywords2", "internalLink", "intent", "source", "facts", "brandCount", "mainQuestion", "blogTopics", "contentText", "contentType"];
   for (const key of fields) {
     if (data[key] !== undefined) updateData[key] = data[key];
   }

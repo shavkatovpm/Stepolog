@@ -70,7 +70,7 @@ export default function ModadDashboard() {
   const [cTitle, setCTitle] = useState("");
   const [cDate, setCDate] = useState("");
   const [cStatus, setCStatus] = useState<Content["status"]>("planned");
-  const [cNote] = useState("");
+  const [cNote, setCNote] = useState(""); // brand content uchun brend nomi
   const [cKeyword, setCKeyword] = useState("");
   const [cKeywords2, setCKeywords2] = useState("");
   const [cInternalLink, setCInternalLink] = useState("");
@@ -81,6 +81,7 @@ export default function ModadDashboard() {
   const [cBrandCount] = useState("");
   const [cMainQuestion, setCMainQuestion] = useState("");
   const [cBlogTopics] = useState<string[]>([]);
+  const [cContentType, setCContentType] = useState<"own" | "brand">("own");
 
   const [pasteText, setPasteText] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -211,21 +212,23 @@ export default function ModadDashboard() {
   function openContentModal() {
     setEditContentId(null); setContentStep(0);
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
-    setCStatus("planned"); setCKeyword(""); setCKeywords2("");
+    setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
     setCInternalLink(""); setCIntent("");
     setCFacts(""); setCMainQuestion("");
+    setCContentType("own");
     setContentModalOpen(true);
   }
 
   function openEditContentModal(id: string) {
-    setContentStep(0);
+    setContentStep(1);
     const c = state.contents.find((x) => x.id === id);
     if (!c) return;
     setEditContentId(id);
     setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status as Content["status"]);
-    setCKeyword(c.keyword); setCKeywords2(c.keywords2);
+    setCNote(c.note); setCKeyword(c.keyword); setCKeywords2(c.keywords2);
     setCInternalLink(c.internalLink); setCIntent(c.intent);
-    setCFacts(c.facts); setCBrandCount(c.brandCount); setCMainQuestion(c.mainQuestion);
+    setCFacts(c.facts); setCMainQuestion(c.mainQuestion);
+    setCContentType((c.contentType as "own" | "brand") || "own");
     setContentModalOpen(true);
   }
 
@@ -234,11 +237,12 @@ export default function ModadDashboard() {
     setSaving(true);
     try {
       const data = {
-        title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote,
+        title: cTitle.trim(), publishDate: cDate, status: cStatus,
+        note: cNote.trim(), contentType: cContentType,
         keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
         intent: cIntent, source: cSource, facts: cFacts.trim(),
         brandCount: cBrandCount, mainQuestion: cMainQuestion.trim(),
-        blogTopics: cBlogTopics.map(t => t.trim()).filter(Boolean).join("\n"),
+        blogTopics: cBlogTopics.filter(Boolean).join("\n"),
       };
       if (editContentId) {
         await api.updateContent(editContentId, data);
@@ -725,51 +729,140 @@ export default function ModadDashboard() {
           <div className="m-modal-header m-wizard-header">
             <div className="m-wizard-top-row">
               <div className="m-modal-title">{editContentId ? "KONTENTNI TAHRIRLASH" : "KONTENT QO\u0027SH"}</div>
-              <div className="m-wizard-section-name">{["📋 Umumiy ma\u0027lumot", "🔍 SEO ma\u0027lumotlari", "🤖 AI indeksatsiya"][contentStep]}</div>
-            </div>
-            <div className="m-steps">
-              {["Umumiy", "SEO", "GEO"].map((label, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 0 }}>
-                  {i > 0 && <div className={`m-step-line ${contentStep > i - 1 ? "done" : ""}`} />}
-                  <div className={`m-step ${contentStep === i ? "active" : ""} ${contentStep > i ? "done" : ""}`} onClick={() => setContentStep(i)}>
-                    <span className="m-step-num">{contentStep > i ? "✓" : i + 1}</span>
-                    <span className="m-step-label">{label}</span>
-                  </div>
+              {contentStep > 0 && (
+                <div className="m-wizard-section-name">
+                  {cContentType === "own"
+                    ? ["", "📋 Asosiy ma\u0027lumot", "🔍 SEO"][contentStep]
+                    : ["", "📋 Asosiy ma\u0027lumot", "🔍 SEO"][contentStep]}
                 </div>
-              ))}
+              )}
             </div>
+            {contentStep > 0 && (
+              <div className="m-steps">
+                {["Umumiy", "SEO"].map((label, i) => {
+                  const stepIdx = i + 1;
+                  return (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                      {i > 0 && <div className={`m-step-line ${contentStep > stepIdx - 1 ? "done" : ""}`} />}
+                      <div className={`m-step ${contentStep === stepIdx ? "active" : ""} ${contentStep > stepIdx ? "done" : ""}`} onClick={() => setContentStep(stepIdx)}>
+                        <span className="m-step-num">{contentStep > stepIdx ? "✓" : stepIdx}</span>
+                        <span className="m-step-label">{label}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
+
           <div className="m-modal-body">
+            {/* STEP 0: Tur tanlash */}
             {contentStep === 0 && (
-              <div className="m-form-section" style={{ marginBottom: 0 }}>
-                <div className="m-form-grid">
-                  <div className="m-form-group m-form-full"><label className="m-form-label">Kontent sarlavhasi *</label><input className="m-form-input" value={cTitle} onChange={(e) => setCTitle(e.target.value)} placeholder="Masalan: O'zbekistonda startap qanday ochiladi?" /></div>
-                  <div className="m-form-group"><label className="m-form-label">Chiqish sanasi *</label><DatePicker value={cDate} onChange={setCDate} /></div>
-                  <div className="m-form-group"><label className="m-form-label">Holat</label><select className="m-form-select" value={cStatus} onChange={(e) => setCStatus(e.target.value as Content["status"])}><option value="planned">📋 Rejada</option><option value="ready">✅ Tayyor</option><option value="published">🚀 Joylashtirildi</option></select></div>
+              <div className="m-type-select">
+                <p className="m-type-select-hint">Qanday kontent qo&apos;shmoqchisiz?</p>
+                <div className="m-type-cards">
+                  <div
+                    className={`m-type-card ${cContentType === "own" ? "active" : ""}`}
+                    onClick={() => setCContentType("own")}
+                  >
+                    <div className="m-type-card-icon">✦</div>
+                    <div className="m-type-card-title">Shaxsiy kontent</div>
+                    <div className="m-type-card-desc">O&apos;z saytingiz uchun maqola</div>
+                  </div>
+                  <div
+                    className={`m-type-card ${cContentType === "brand" ? "active" : ""}`}
+                    onClick={() => setCContentType("brand")}
+                  >
+                    <div className="m-type-card-icon">◈</div>
+                    <div className="m-type-card-title">Boshqa brend</div>
+                    <div className="m-type-card-desc">Boshqa brend haqida maqola</div>
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* STEP 1: Asosiy ma'lumot */}
             {contentStep === 1 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
-                  <div className="m-form-group"><label className="m-form-label">Asosiy keyword *</label><input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" /></div>
-                  <div className="m-form-group"><label className="m-form-label">Kontent turi *</label><IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} /></div>
-                  <div className="m-form-group m-form-full"><label className="m-form-label">Qo&apos;shimcha keywordlar</label><input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="biznes ochish, startap ro'yxatdan o'tkazish, ... (vergul bilan)" /></div>
+                  <div className="m-form-group m-form-full">
+                    <label className="m-form-label">Kontent sarlavhasi *</label>
+                    <input className="m-form-input" value={cTitle} onChange={(e) => setCTitle(e.target.value)} placeholder="Masalan: O'zbekistonda startap qanday ochiladi?" />
+                  </div>
+                  <div className="m-form-group">
+                    <label className="m-form-label">Chiqish sanasi *</label>
+                    <DatePicker value={cDate} onChange={setCDate} />
+                  </div>
+                  <div className="m-form-group">
+                    <label className="m-form-label">Holat</label>
+                    <select className="m-form-select" value={cStatus} onChange={(e) => setCStatus(e.target.value as Content["status"])}>
+                      <option value="planned">📋 Rejada</option>
+                      <option value="ready">✅ Tayyor</option>
+                      <option value="published">🚀 Joylashtirildi</option>
+                    </select>
+                  </div>
+                  {cContentType === "own" && (
+                    <div className="m-form-group m-form-full">
+                      <label className="m-form-label">Kontent turi *</label>
+                      <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
+                    </div>
+                  )}
+                  {cContentType === "brand" && (
+                    <div className="m-form-group m-form-full">
+                      <label className="m-form-label">Brend nomi *</label>
+                      <input className="m-form-input" value={cNote} onChange={(e) => setCNote(e.target.value)} placeholder="Masalan: Uzum Market, Kapitalbank, ..." />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
+
+            {/* STEP 2: SEO */}
             {contentStep === 2 && (
               <div className="m-form-section" style={{ marginBottom: 0 }}>
                 <div className="m-form-grid">
-                  <div className="m-form-group m-form-full"><label className="m-form-label">Faktlar / statistika</label><textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: O'zbekistonda 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." /></div>
-                  <div className="m-form-group"><label className="m-form-label">Asosiy savol</label><input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" /></div>
+                  <div className="m-form-group">
+                    <label className="m-form-label">Asosiy keyword *</label>
+                    <input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" />
+                  </div>
+                  {cContentType === "brand" && (
+                    <div className="m-form-group">
+                      <label className="m-form-label">Kontent turi</label>
+                      <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
+                    </div>
+                  )}
+                  <div className="m-form-group m-form-full">
+                    <label className="m-form-label">LSI keywordlar</label>
+                    <input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="vergul bilan ajrating: biznes ochish, kichik biznes, ..." />
+                  </div>
+                  <div className="m-form-group m-form-full">
+                    <label className="m-form-label">Asosiy savol</label>
+                    <input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" />
+                  </div>
+                  {cContentType === "own" && (
+                    <div className="m-form-group m-form-full">
+                      <label className="m-form-label">Faktlar / statistika</label>
+                      <textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
+
           <div className="m-modal-footer">
-            {contentStep > 0 ? <button className="m-btn-action m-btn-ghost" onClick={() => setContentStep(contentStep - 1)} disabled={saving}>← Orqaga</button> : <button className="m-btn-cancel" onClick={() => setContentModalOpen(false)} disabled={saving}>Bekor</button>}
-            {contentStep < 2 ? <button className="m-btn-save" onClick={() => { if (contentStep === 0 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; } if (contentStep === 1 && !cIntent.trim()) { showToast("Kontent turini tanlang!"); return; } setContentStep(contentStep + 1); }}>Keyingi →</button> : <button className="m-btn-save" onClick={saveContent} disabled={saving}>{saving ? "Saqlanmoqda..." : editContentId ? "Yangilash" : "Saqlash"}</button>}
+            {contentStep === 0
+              ? <button className="m-btn-cancel" onClick={() => setContentModalOpen(false)} disabled={saving}>Bekor</button>
+              : <button className="m-btn-action m-btn-ghost" onClick={() => setContentStep(contentStep - 1)} disabled={saving}>← Orqaga</button>
+            }
+            {contentStep < 2
+              ? <button className="m-btn-save" onClick={() => {
+                  if (contentStep === 1 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
+                  if (contentStep === 1 && cContentType === "brand" && !cNote.trim()) { showToast("Brend nomini kiriting!"); return; }
+                  setContentStep(contentStep + 1);
+                }}>Keyingi →</button>
+              : <button className="m-btn-save" onClick={saveContent} disabled={saving}>{saving ? "Saqlanmoqda..." : editContentId ? "Yangilash" : "Saqlash"}</button>
+            }
           </div>
         </div>
       </div>
@@ -783,6 +876,8 @@ export default function ModadDashboard() {
                 <div style={{ flex: 1 }}>
                   <div className="m-modal-title" style={{ fontSize: 20 }}>{cardContent.title}</div>
                   <div style={{ fontSize: 11, color: "var(--m-text3)", marginTop: 3 }}>
+                    <span style={{ color: "var(--m-text3)", fontWeight: 600 }}>{cardContent.contentType === "brand" ? "◈ Boshqa brend" : "✦ Shaxsiy"}</span>
+                    &nbsp;·&nbsp;
                     {(() => { const s = getStatusDisplay(cardContent.status, cardContent.publishDate); return <span style={{ color: s.color, fontWeight: 700 }}>{s.label}</span>; })()}
                     {cardContent.publishDate && <> &nbsp;·&nbsp; 📅 {cardContent.publishDate}</>}
                     {cardContent.keyword && <> &nbsp;·&nbsp; 🔑 {cardContent.keyword}</>}
@@ -801,11 +896,14 @@ export default function ModadDashboard() {
                   <div>
                     <div className="m-detail-section-title">🔍 SEO</div>
                     <DetailRow label="Asosiy keyword" value={cardContent.keyword} />
-                    <DetailRow label="Qo'shimcha keywordlar" value={cardContent.keywords2} />
+                    <DetailRow label="LSI keywordlar" value={cardContent.keywords2} />
                     <DetailRow label="Kontent turi" value={INTENT_LABELS[cardContent.intent] || cardContent.intent} />
+                    {cardContent.contentType === "brand" && cardContent.note && (
+                      <DetailRow label="Brend nomi" value={cardContent.note} />
+                    )}
                   </div>
                   <div>
-                    <div className="m-detail-section-title">🤖 GEO</div>
+                    <div className="m-detail-section-title">🤖 AI</div>
                     <DetailRow label="Asosiy savol" value={cardContent.mainQuestion} />
                   </div>
                 </div>

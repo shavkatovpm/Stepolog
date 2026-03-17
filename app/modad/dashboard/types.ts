@@ -25,6 +25,7 @@ export interface Content {
   mainQuestion: string;
   blogTopics: string;
   contentText?: string;
+  contentType: "own" | "brand";
   createdAt: string;
   readyAt?: string;
   publishedAt?: string;

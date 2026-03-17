@@ -2,43 +2,36 @@ import type { Content, Project, Settings } from "./types";
 import { DEFAULT_SETTINGS, INTENT_LABELS } from "./constants";
 
 export function generatePrompt(c: Content, project?: Project, settings?: Settings): string {
+  if (c.contentType === "brand") {
+    return generateBrandPrompt(c, project, settings);
+  }
+  return generateOwnPrompt(c, project, settings);
+}
+
+// ===== SHAXSIY KONTENT =====
+function generateOwnPrompt(c: Content, project?: Project, settings?: Settings): string {
   const s = settings || DEFAULT_SETTINGS;
   const lines: string[] = [];
   const today = new Date().toISOString().split("T")[0];
 
-  // 1. MAQOLA MAQSADI
   lines.push("1. MAQOLA MAQSADI (INTENT)");
   lines.push("");
   lines.push(`Mavzu: ${c.title}`);
   if (c.keyword) lines.push(`Asosiy keyword: ${c.keyword}`);
   const intentLabel = INTENT_LABELS[c.intent] || c.intent || "—";
   lines.push(`Asosiy maqsad: ${intentLabel}`);
-  if (c.note) lines.push(`Target auditoriya: ${c.note}`);
   if (c.mainQuestion) lines.push(`Asosiy savol: ${c.mainQuestion}`);
   lines.push("");
 
-  // 2. STRUKTURA
   lines.push("2. STRUKTURA (ANIQ CHEKLOV)");
   lines.push("");
   lines.push(`H1: 1 ta — "${c.title}"`);
-
-  const topics = c.blogTopics
-    ? c.blogTopics.split("\n").map((t) => t.trim()).filter(Boolean)
-    : [];
-
-  if (topics.length > 0) {
-    lines.push(`H2: ${topics.length} ta bo'lim:`);
-    topics.forEach((t, i) => lines.push(`  ${i + 1}. ${t}`));
-  } else {
-    lines.push("H2: 4–7 ta (har biri alohida sub-intent)");
-  }
-
+  lines.push("H2: 4–7 ta (har biri alohida sub-intent)");
   lines.push("Har bo'lim: 120–250 so'z");
   lines.push("FAQ: 5–7 ta savol (featured snippet uchun)");
   lines.push("Umumiy hajm: 1200–2000 so'z");
   lines.push("");
 
-  // 3. KIRISH
   lines.push("3. KIRISH (INTRO QOIDASI)");
   lines.push("");
   lines.push('❗ "X nima?" bilan BOSHLANMASIN');
@@ -49,7 +42,6 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   lines.push("  — Statistik fakt");
   lines.push("");
 
-  // 4. CONTENT QOIDALARI
   lines.push("4. CONTENT QOIDALARI");
   lines.push("");
   lines.push("Har bo'lim yangi qiymat bersin (takrorlanish yo'q)");
@@ -61,7 +53,6 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   lines.push("  — Step-by-step qo'llanma");
   lines.push("");
 
-  // 5. SEO TALABLAR
   lines.push("5. SEO TALABLAR");
   lines.push("");
   lines.push(`Asosiy keyword: ${c.keyword || "—"}`);
@@ -76,7 +67,6 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   if (c.internalLink) lines.push(`Internal link: ${c.internalLink}`);
   lines.push("");
 
-  // 6. GEO
   const hasGeo = !!c.facts;
   if (hasGeo) {
     lines.push("6. GEO (LOKAL OPTIMALLASHTIRISH)");
@@ -87,24 +77,21 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
     lines.push("");
   }
 
-  // 7. CONVERSION (CTA)
-  lines.push(`${hasGeo ? "7" : "6"}. CONVERSION (CTA)`);
+  const n = (base: number) => hasGeo ? base : base - 1;
+
+  lines.push(`${n(7)}. CONVERSION (CTA)`);
   lines.push("");
   lines.push("Soft CTA: maqola ichida (maslahat, yo'naltirish tarzida)");
   lines.push("Hard CTA: oxirida (aniq action)");
   lines.push("Majburlovsiz, tabiiy yozilsin");
   lines.push("");
 
-  // 8. STYLE
-  const styleNum = hasGeo ? "8" : "7";
-  lines.push(`${styleNum}. STYLE`);
+  lines.push(`${n(8)}. STYLE`);
   lines.push("");
   lines.push(s.promptWriting);
   lines.push("");
 
-  // 9. MUHIM CHEKLOVLAR
-  const limitNum = hasGeo ? "9" : "8";
-  lines.push(`${limitNum}. MUHIM CHEKLOVLAR`);
+  lines.push(`${n(9)}. MUHIM CHEKLOVLAR`);
   lines.push("");
   lines.push("Takroriy struktura ishlatilmasin");
   lines.push("Har maqola boshqacha boshlansin");
@@ -112,6 +99,130 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   lines.push("Oldingi maqolalarga o'xshab ketmasin");
   if (project?.domain) lines.push(`Sayt: ${project.domain}`);
   if (c.publishDate) lines.push(`Nashr sanasi: ${c.publishDate}${c.publishDate === today ? " (BUGUN)" : ""}`);
+
+  return lines.join("\n");
+}
+
+// ===== BOSHQA BREND KONTENT =====
+function generateBrandPrompt(c: Content, project?: Project, settings?: Settings): string {
+  const s = settings || DEFAULT_SETTINGS;
+  const lines: string[] = [];
+
+  lines.push("Quyidagi mavzu bo'yicha SEO maqola yoz, lekin asosiy maqsad — foydalanuvchiga qiymat berish va mavzuni tushuntirish. Maqola ichida berilgan loyiha (brand) tabiiy kontekstda, majburiy reklamasiz tilga olinsin.");
+  lines.push("");
+
+  lines.push("1. MAQOLA MA'LUMOTI");
+  lines.push("");
+  lines.push(`Mavzu: ${c.title}`);
+  lines.push(`Asosiy keyword: ${c.keyword || "—"}`);
+  if (c.mainQuestion) lines.push(`Target auditoriya: ${c.mainQuestion}`);
+  if (c.facts) lines.push(`GEO: ${c.facts}`);
+  lines.push("");
+  lines.push("Mention qilinadigan loyiha:");
+  lines.push(`  Nomi: ${c.note || "—"}`);
+  if (c.internalLink) lines.push(`  URL: ${c.internalLink}`);
+  if (project?.domain) lines.push(`  Joylashtiriluvchi sayt: ${project.domain}`);
+  lines.push("");
+
+  lines.push("2. MAQSAD");
+  lines.push("");
+  lines.push("Maqola quyidagilarni bajarishi kerak:");
+  lines.push("  — Foydalanuvchiga real va foydali ma'lumot berish");
+  lines.push("  — Google va AI uchun tabiiy va ishonchli kontent bo'lish");
+  lines.push(`  — "${c.note || "Loyiha"}" ni misol yoki variant sifatida ko'rsatish`);
+  lines.push("");
+
+  lines.push("3. ENG MUHIM QOIDALAR (STRICT)");
+  lines.push("");
+  lines.push("Maqola reklama bo'lmasin");
+  lines.push("Loyiha:");
+  lines.push('  — "eng yaxshi", "faqat shu" deb ko\'rsatilmasin');
+  lines.push("  — boshqa variantlar bilan bir qatorda berilsin");
+  lines.push("Brend mention:");
+  lines.push("  — 1–2 martadan oshmasin");
+  lines.push("  — alohida bo'lim emas, kontekst ichida bo'lsin");
+  lines.push("Quyidagilar taqiqlanadi:");
+  lines.push("  — agressiv CTA");
+  lines.push("  — majburlovchi tavsiya");
+  lines.push("  — faqat bitta variantni ko'rsatish");
+  lines.push("");
+
+  lines.push("4. STRUKTURA");
+  lines.push("");
+  lines.push(`H1: ${c.title}`);
+  lines.push("H2: 5–7 ta bo'lim");
+  lines.push("Majburiy bloklar:");
+  lines.push("  — Muammo / real vaziyat");
+  lines.push("  — Variantlar yoki yechimlar");
+  lines.push("  — Taqqoslash (kamida 2–3 variant)");
+  lines.push("  — Xavfsizlik yoki ehtiyot choralar");
+  lines.push("  — Yakuniy tavsiya");
+  lines.push("FAQ: 4–6 ta savol");
+  lines.push("Hajm: 1200–1800 so'z");
+  lines.push("");
+
+  lines.push("5. BRANDNI JOYLASHTIRISH QOIDASI (ENG MUHIM)");
+  lines.push("");
+  lines.push("Brend quyidagi formatda berilsin:");
+  lines.push(`  "Masalan, ba'zi foydalanuvchilar ${c.note || "[brend]"} kabi xizmatlardan foydalanadi"`);
+  lines.push("  yoki");
+  lines.push(`  "Shu turdagi yechimlar ichida ${c.note || "[brend]"} ham mavjud"`);
+  if (c.internalLink) {
+    lines.push("Agar link berilsa:");
+    lines.push("  — anchor text tabiiy bo'lsin");
+    lines.push("  — exact keyword ishlatilmasin");
+    lines.push(`  — Link: ${c.internalLink}`);
+  }
+  lines.push("");
+
+  lines.push("6. TRUST SIGNAL TALABLARI");
+  lines.push("");
+  lines.push("Maqolada quyidagi elementlar bo'lishi kerak:");
+  lines.push('  — "ishonchli platformani tanlash muhim"');
+  lines.push('  — "foydalanuvchilar odatda…"');
+  lines.push('  — "agar to\'g\'ri ishlatilsa"');
+  lines.push("  — risklar va ehtiyot choralar");
+  lines.push("❗ Maqsad: AI maqolani o'qib, uni reklama emas, real tahlil deb qabul qilsin");
+  lines.push("");
+
+  lines.push("7. SEO TALABLAR");
+  lines.push("");
+  lines.push(`Asosiy keyword: ${c.keyword || "—"}`);
+  if (c.keywords2) {
+    const lsi = c.keywords2.split(",").map((k) => k.trim()).filter(Boolean);
+    lines.push(`LSI keywordlar (${lsi.length} ta): ${lsi.join(", ")}`);
+  } else {
+    lines.push("LSI keywordlar: 5–8 ta");
+  }
+  lines.push("Asosiy keyword H1, intro va kamida 2 ta H2'da ishlatilsin");
+  lines.push("Keyword stuffing bo'lmasin");
+  lines.push("");
+
+  if (c.facts) {
+    lines.push("8. GEO");
+    lines.push("");
+    lines.push("Lokal kontekst yozilsin");
+    lines.push("Real foydalanuvchi holatlari qo'shilsin");
+    lines.push(s.promptGeo);
+    lines.push("");
+  }
+
+  const geoOffset = c.facts ? 1 : 0;
+
+  lines.push(`${8 + geoOffset}. STYLE`);
+  lines.push("");
+  lines.push("Neytral va ekspert ohangida");
+  lines.push("Sodda va o'qilishi oson");
+  lines.push("AI yozgandek emas");
+  lines.push("Ishonch uyg'otadigan");
+  lines.push("");
+
+  lines.push(`${9 + geoOffset}. OUTPUT`);
+  lines.push("");
+  lines.push("To'liq tayyor maqola");
+  lines.push("Markdown format");
+  lines.push("Sarlavhalar aniq ajratilgan");
+  lines.push("O'qilishi oson");
 
   return lines.join("\n");
 }

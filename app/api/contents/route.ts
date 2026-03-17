@@ -50,6 +50,7 @@ export async function POST(req: Request) {
       brandCount: data.brandCount || "3",
       mainQuestion: data.mainQuestion?.trim() || "",
       blogTopics: data.blogTopics || "",
+      contentType: data.contentType || "own",
     },
   });
 

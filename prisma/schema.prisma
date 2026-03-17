@@ -46,6 +46,7 @@ model Content {
   mainQuestion String   @default("")
   blogTopics   String   @default("")
   contentText  String   @default("")
+  contentType  String   @default("own")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   readyAt      DateTime?
