@@ -3,6 +3,7 @@ import { Manrope, Bebas_Neue } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
+import { LayoutContent } from "@/components/LayoutContent";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -38,9 +39,9 @@ export default function RootLayout({
   return (
     <html lang="uz" className="dark">
       <body className={`${manrope.variable} ${bebasNeue.variable} antialiased`}>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <LayoutContent header={<Header />} footer={<Footer />}>
+          {children}
+        </LayoutContent>
       </body>
     </html>
   );
