@@ -490,6 +490,7 @@ export default function ModadDashboard() {
                     <button className={`m-vt-btn ${currentView === "table" ? "active" : ""}`} onClick={() => setCurrentView("table")}>☰ Jadval</button>
                   </div>
                   <button className="m-btn-action m-btn-ghost" onClick={exportPDF}>↓ PDF</button>
+                  <button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;sh</button>
                 </div>
               </div>
 
@@ -523,7 +524,7 @@ export default function ModadDashboard() {
                         </div>
                         <div className="m-col-cards">
                           {cards.length === 0 ? (
-                            <div className="m-empty-col"><button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;shish</button></div>
+                            <div className="m-empty-col"><button className="m-btn-action m-btn-ghost" onClick={openContentModal}>+ Kontent qo&apos;shish</button></div>
                           ) : (
                             cards.map((c) => (
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
@@ -552,7 +553,7 @@ export default function ModadDashboard() {
                     <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Keyword</th><th>Turi</th></tr></thead>
                     <tbody>
                       {projectContents.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40 }}><button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;shish</button></td></tr>
+                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Hali kontent yo&apos;q</td></tr>
                       ) : (
                         projectContents.map((c) => (
                           <tr key={c.id} onClick={() => setCardModalId(c.id)}>
@@ -571,14 +572,6 @@ export default function ModadDashboard() {
                           </tr>
                         ))
                       )}
-                      <tr onClick={openContentModal} style={{ cursor: "pointer" }}>
-                        <td colSpan={5} style={{ color: "var(--m-text3)", fontSize: 12, fontWeight: 600, padding: "12px 16px" }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ width: 18, height: 18, border: "1.5px dashed var(--m-border2)", borderRadius: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "var(--m-text3)" }}>+</span>
-                            Yangi kontent qo&apos;sh
-                          </span>
-                        </td>
-                      </tr>
                     </tbody>
                   </table>
                 </div>
