@@ -4,6 +4,7 @@ export interface Project {
   domain: string;
   desc: string;
   color: string;
+  customIntents?: string;
   createdAt: string;
 }
 
@@ -43,6 +44,6 @@ export interface State {
   contents: Content[];
   currentProjectId: string | null;
   selectedColor: string;
-  customIntents: string[];
+  customIntents: { name: string; color: string }[];
   settings: Settings;
 }

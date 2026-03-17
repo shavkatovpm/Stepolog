@@ -36,7 +36,7 @@ function getStatusDisplay(status: string, publishDate: string): { label: string;
     if (publishDate < today) return { label: "Kechikdi", color: "var(--m-red)" };
     if (publishDate === today) return { label: "Bugun", color: "var(--m-yellow)" };
   }
-  return { label: "Rejada", color: "var(--m-yellow)" };
+  return { label: "Rejada", color: "var(--m-text3)" };
 }
 
 export default function ModadDashboard() {
@@ -87,6 +87,7 @@ export default function ModadDashboard() {
   const [deleteProjectConfirmId, setDeleteProjectConfirmId] = useState<string | null>(null);
   const [projectMenuId, setProjectMenuId] = useState<string | null>(null);
   const [editProjectId, setEditProjectId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
@@ -100,9 +101,8 @@ export default function ModadDashboard() {
         id: p.id, name: p.name, domain: p.domain,
         desc: p.desc, color: p.color, createdAt: p.createdAt,
       }));
-      const customIntents: string[] = settingsRaw.customIntents ? JSON.parse(settingsRaw.customIntents) : [];
       setState((s) => ({
-        ...s, projects, contents, customIntents,
+        ...s, projects, contents, customIntents: s.customIntents,
         settings: {
           promptRole: settingsRaw.promptRole || DEFAULT_SETTINGS.promptRole,
           promptSeo: settingsRaw.promptSeo || DEFAULT_SETTINGS.promptSeo,
@@ -149,28 +149,36 @@ export default function ModadDashboard() {
 
   async function saveProject() {
     if (!pName.trim()) { showToast("Loyiha nomini kiriting!"); return; }
-    if (editProjectId) {
-      await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
-      showToast("✓ Loyiha tahrirlandi");
-    } else {
-      await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
-      showToast("✓ Loyiha qo'shildi");
-    }
-    setEditProjectId(null);
-    setProjectModalOpen(false);
-    await loadData();
+    setSaving(true);
+    try {
+      if (editProjectId) {
+        await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
+        showToast("✓ Loyiha tahrirlandi");
+      } else {
+        await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
+        showToast("✓ Loyiha qo'shildi");
+      }
+      setEditProjectId(null);
+      setProjectModalOpen(false);
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   async function deleteProject(id: string) {
-    await api.deleteProject(id);
-    setState((s) => ({ ...s, currentProjectId: s.currentProjectId === id ? null : s.currentProjectId }));
-    setDeleteProjectConfirmId(null);
-    showToast("Loyiha o'chirildi");
-    await loadData();
+    setSaving(true);
+    try {
+      await api.deleteProject(id);
+      setState((s) => ({ ...s, currentProjectId: s.currentProjectId === id ? null : s.currentProjectId }));
+      setDeleteProjectConfirmId(null);
+      showToast("Loyiha o'chirildi");
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   function openProject(id: string) {
-    setState((s) => ({ ...s, currentProjectId: id }));
+    const project = state.projects.find((p) => p.id === id);
+    const intents: { name: string; color: string }[] = project?.customIntents ? JSON.parse(project.customIntents) : [];
+    setState((s) => ({ ...s, currentProjectId: id, customIntents: intents }));
     setCurrentPage("projects");
   }
 
@@ -204,36 +212,45 @@ export default function ModadDashboard() {
 
   async function saveContent() {
     if (!cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
-    const data = {
-      title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote.trim(),
-      keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
-      intent: cIntent, source: cSource.trim(), facts: cFacts.trim(),
-      brandCount: cBrandCount || "3", mainQuestion: cMainQuestion.trim(),
-      blogTopics: cBlogTopics.map(t => t.trim()).filter(Boolean).join("\n"),
-    };
-    if (editContentId) {
-      await api.updateContent(editContentId, data);
-      showToast("✓ Kontent yangilandi");
-    } else {
-      await api.createContent({ ...data, projectId: state.currentProjectId! });
-      showToast("✓ Kontent qo'shildi");
-    }
-    setContentModalOpen(false);
-    await loadData();
+    setSaving(true);
+    try {
+      const data = {
+        title: cTitle.trim(), publishDate: cDate, status: cStatus, note: cNote.trim(),
+        keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
+        intent: cIntent, source: cSource.trim(), facts: cFacts.trim(),
+        brandCount: cBrandCount || "3", mainQuestion: cMainQuestion.trim(),
+        blogTopics: cBlogTopics.map(t => t.trim()).filter(Boolean).join("\n"),
+      };
+      if (editContentId) {
+        await api.updateContent(editContentId, data);
+        showToast("✓ Kontent yangilandi");
+      } else {
+        await api.createContent({ ...data, projectId: state.currentProjectId! });
+        showToast("✓ Kontent qo'shildi");
+      }
+      setContentModalOpen(false);
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   async function deleteContent(id: string) {
-    await api.deleteContentApi(id);
-    setDeleteConfirmId(null);
-    setCardModalId(null);
-    showToast("Kontent o'chirildi");
-    await loadData();
+    setSaving(true);
+    try {
+      await api.deleteContentApi(id);
+      setDeleteConfirmId(null);
+      setCardModalId(null);
+      showToast("Kontent o'chirildi");
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   async function changeStatus(id: string, status: Content["status"]) {
-    await api.updateContent(id, { status });
-    showToast("✓ Holat o'zgartirildi");
-    await loadData();
+    setSaving(true);
+    try {
+      await api.updateContent(id, { status });
+      showToast("✓ Holat o'zgartirildi");
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   async function saveContentText(id: string, text: string) {
@@ -253,11 +270,14 @@ export default function ModadDashboard() {
 
   async function confirmPaste() {
     if (!pasteModalId) return;
-    await api.updateContent(pasteModalId, { status: "ready", contentText: pasteText });
-    setPasteModalId(null);
-    setCardModalId(null);
-    showToast("✓ Kontent saqlandi, holat: Tayyor");
-    await loadData();
+    setSaving(true);
+    try {
+      await api.updateContent(pasteModalId, { status: "ready", contentText: pasteText });
+      setPasteModalId(null);
+      setCardModalId(null);
+      showToast("✓ Kontent saqlandi, holat: Tayyor");
+      await loadData();
+    } finally { setSaving(false); }
   }
 
   // ===== SETTINGS =====
@@ -266,16 +286,25 @@ export default function ModadDashboard() {
     await api.updateSettings({ [key]: value });
   }
 
-  async function addCustomIntent(name: string) {
-    const updated = [...state.customIntents, name];
+  async function addCustomIntent(name: string, color: string) {
+    if (!state.currentProjectId) return;
+    const updated = [...state.customIntents, { name, color }];
     setState((s) => ({ ...s, customIntents: updated }));
-    await api.updateSettings({ customIntents: JSON.stringify(updated) });
+    await api.updateProject(state.currentProjectId, { customIntents: JSON.stringify(updated) });
+    await loadData();
   }
 
   async function removeCustomIntent(name: string) {
-    const updated = state.customIntents.filter((i) => i !== name);
+    if (!state.currentProjectId) return;
+    const updated = state.customIntents.filter((i) => i.name !== name);
     setState((s) => ({ ...s, customIntents: updated }));
-    await api.updateSettings({ customIntents: JSON.stringify(updated) });
+    await api.updateProject(state.currentProjectId, { customIntents: JSON.stringify(updated) });
+    await loadData();
+  }
+
+  function getIntentColor(intent: string): string {
+    const found = state.customIntents.find((i) => i.name === intent);
+    return found?.color || "var(--m-text3)";
   }
 
   async function resetPrompts() {
@@ -496,7 +525,7 @@ export default function ModadDashboard() {
                             cards.map((c) => (
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
                                 <div className="m-cc-top">
-                                  <span className={`m-cc-intent m-intent-${c.intent}`}>{INTENT_LABELS[c.intent] || c.intent}</span>
+                                  <span className="m-cc-intent" style={{ background: `${getIntentColor(c.intent)}22`, color: getIntentColor(c.intent) }}>{c.intent || "—"}</span>
                                   <span className="m-cc-date" style={{ color: getDateColor(c.publishDate, c.status) }}>{c.publishDate || "—"}</span>
                                 </div>
                                 <div className="m-cc-title">{c.title}</div>
@@ -564,23 +593,6 @@ export default function ModadDashboard() {
             <div className="m-view">
               <div className="m-page-header"><div className="m-page-title">SOZLAMALAR</div></div>
               <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 24 }}>
-                {/* Kontent turlari */}
-                <div className="m-form-section">
-                  <div className="m-form-section-title"><span className="m-form-section-icon">📝</span> KONTENT TURLARI</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-                    {state.customIntents.length === 0 ? (
-                      <span style={{ color: "var(--m-text3)", fontSize: 13 }}>Hali kontent turi qo&apos;shilmagan</span>
-                    ) : (
-                      state.customIntents.map((intent) => (
-                        <div key={intent} style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--m-bg3)", border: "1px solid var(--m-border2)", borderRadius: 6, padding: "6px 12px", fontSize: 13, color: "var(--m-text2)" }}>
-                          {intent}
-                          <button style={{ background: "none", border: "none", color: "var(--m-red)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1 }} onClick={() => removeCustomIntent(intent)}>✕</button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-
                 {/* Prompt shablonlari */}
                 {([
                   { key: "promptRole", icon: "🎭", title: "PROMPT: ROL", desc: "AI ga beriladigan asosiy rol ta'rifi.", minH: 80 },
@@ -643,8 +655,8 @@ export default function ModadDashboard() {
             </div>
           </div>
           <div className="m-modal-footer">
-            <button className="m-btn-cancel" onClick={() => setProjectModalOpen(false)}>Bekor</button>
-            <button className="m-btn-save" onClick={saveProject}>Saqlash</button>
+            <button className="m-btn-cancel" onClick={() => setProjectModalOpen(false)} disabled={saving}>Bekor</button>
+            <button className="m-btn-save" onClick={saveProject} disabled={saving}>{saving ? "Saqlanmoqda..." : "Saqlash"}</button>
           </div>
         </div>
       </div>
@@ -714,8 +726,8 @@ export default function ModadDashboard() {
             )}
           </div>
           <div className="m-modal-footer">
-            {contentStep > 0 ? <button className="m-btn-action m-btn-ghost" onClick={() => setContentStep(contentStep - 1)}>← Orqaga</button> : <button className="m-btn-cancel" onClick={() => setContentModalOpen(false)}>Bekor</button>}
-            {contentStep < 2 ? <button className="m-btn-save" onClick={() => { if (contentStep === 0 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; } setContentStep(contentStep + 1); }}>Keyingi →</button> : <button className="m-btn-save" onClick={saveContent}>{editContentId ? "Yangilash" : "Saqlash"}</button>}
+            {contentStep > 0 ? <button className="m-btn-action m-btn-ghost" onClick={() => setContentStep(contentStep - 1)} disabled={saving}>← Orqaga</button> : <button className="m-btn-cancel" onClick={() => setContentModalOpen(false)} disabled={saving}>Bekor</button>}
+            {contentStep < 2 ? <button className="m-btn-save" onClick={() => { if (contentStep === 0 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; } setContentStep(contentStep + 1); }}>Keyingi →</button> : <button className="m-btn-save" onClick={saveContent} disabled={saving}>{saving ? "Saqlanmoqda..." : editContentId ? "Yangilash" : "Saqlash"}</button>}
           </div>
         </div>
       </div>
@@ -760,23 +772,23 @@ export default function ModadDashboard() {
                 {cardContent.facts && <div style={{ marginBottom: 14 }}><DetailRow label="Faktlar / statistika" value="" /><div className="m-facts-box">{cardContent.facts}</div></div>}
                 {cardContent.note && <DetailRow label="Izoh" value={cardContent.note} />}
                 {cardContent.status === "ready" && <div><div className="m-detail-section-title">Tayyor kontent matni</div><textarea className="m-card-textarea" placeholder="AI yozgan tayyor blog matnini shu yerga paste qiling..." defaultValue={cardContent.contentText || ""} onBlur={(e) => saveContentText(cardContent.id, e.target.value)} /></div>}
-                {cardContent.status === "published" && cardContent.contentText && <div><div className="m-detail-section-title">Joylashtirilgan kontent</div><div className="m-facts-box" style={{ maxHeight: 140 }}>{cardContent.contentText.substring(0, 500)}{cardContent.contentText.length > 500 ? "..." : ""}</div></div>}
+                {cardContent.status === "published" && cardContent.contentText && <div><div className="m-detail-section-title">Joylashtirilgan kontent</div><div className="m-facts-box" style={{ maxHeight: 300 }}>{cardContent.contentText}</div></div>}
               </div>
               <div className="m-modal-footer">
-                <button className="m-btn-action m-btn-dim" style={{ marginRight: "auto" }} onClick={() => { setCardModalId(null); setTimeout(() => setDeleteConfirmId(cardContent.id), 100); }}>O&apos;chirish</button>
-                <button className="m-btn-action m-btn-ghost" onClick={() => { setCardModalId(null); setTimeout(() => openEditContentModal(cardContent.id), 100); }}>Tahrirlash</button>
-                {cardContent.status === "planned" && <button className="m-btn-action m-btn-blue" onClick={() => { setCardModalId(null); setTimeout(() => openPasteModal(cardContent.id), 100); }}>✓ Tayyor</button>}
+                <button className="m-btn-action m-btn-dim" style={{ marginRight: "auto" }} disabled={saving} onClick={() => { setCardModalId(null); setTimeout(() => setDeleteConfirmId(cardContent.id), 100); }}>O&apos;chirish</button>
+                <button className="m-btn-action m-btn-ghost" disabled={saving} onClick={() => { setCardModalId(null); setTimeout(() => openEditContentModal(cardContent.id), 100); }}>Tahrirlash</button>
+                {cardContent.status === "planned" && <button className="m-btn-action m-btn-blue" disabled={saving} onClick={() => { setCardModalId(null); setTimeout(() => openPasteModal(cardContent.id), 100); }}>✓ Tayyor</button>}
                 {cardContent.status === "ready" && (
                   <>
-                    <button className="m-btn-action m-btn-ghost" onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "planned"); }}>← Rejaga</button>
+                    <button className="m-btn-action m-btn-ghost" disabled={saving} onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "planned"); }}>← Rejaga</button>
                     <button className="m-btn-action m-btn-ghost" onClick={() => cardContent.contentText && copyToClipboard(cardContent.contentText)}>Nusxa</button>
-                    <button className="m-btn-action m-btn-green" onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "published"); }}>Joylashtir</button>
+                    <button className="m-btn-action m-btn-green" disabled={saving} onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "published"); }}>Joylashtir</button>
                   </>
                 )}
                 {cardContent.status === "published" && (
                   <>
                     <button className="m-btn-action m-btn-ghost" onClick={() => cardContent.contentText && copyToClipboard(cardContent.contentText)}>Nusxa</button>
-                    <button className="m-btn-action m-btn-ghost" onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "ready"); }}>← Tayyorga</button>
+                    <button className="m-btn-action m-btn-ghost" disabled={saving} onClick={() => { setCardModalId(null); changeStatus(cardContent.id, "ready"); }}>← Tayyorga</button>
                   </>
                 )}
                 <button className="m-btn-action m-btn-purple" onClick={() => { setCardModalId(null); setTimeout(() => setPromptModalId(cardContent.id), 100); }}>✦ Prompt</button>
@@ -816,7 +828,7 @@ export default function ModadDashboard() {
                 <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>AI yozgan tayyor blog matnini quyiga paste qiling:</p>
                 <textarea className="m-card-textarea" style={{ minHeight: 260 }} placeholder="Tayyor blog matnini bu yerga paste qiling..." value={pasteText} onChange={(e) => setPasteText(e.target.value)} />
               </div>
-              <div className="m-modal-footer"><button className="m-btn-cancel" onClick={() => setPasteModalId(null)}>Bekor</button><button className="m-btn-save" onClick={confirmPaste}>✓ Joyladim</button></div>
+              <div className="m-modal-footer"><button className="m-btn-cancel" onClick={() => setPasteModalId(null)} disabled={saving}>Bekor</button><button className="m-btn-save" onClick={confirmPaste} disabled={saving}>{saving ? "Saqlanmoqda..." : "✓ Joyladim"}</button></div>
             </>
           )}
         </div>
@@ -831,8 +843,8 @@ export default function ModadDashboard() {
               <div className="m-delete-title">Kontentni o&apos;chirish</div>
               <div className="m-delete-desc"><strong>&quot;{deleteContent_.title}&quot;</strong> kontenti butunlay o&apos;chiriladi. Bu amalni qaytarib bo&apos;lmaydi.</div>
               <div className="m-delete-actions">
-                <button className="m-btn-action m-btn-ghost" onClick={() => setDeleteConfirmId(null)}>Bekor</button>
-                <button className="m-btn-action m-btn-danger" onClick={() => deleteContent(deleteContent_.id)}>O&apos;chirish</button>
+                <button className="m-btn-action m-btn-ghost" onClick={() => setDeleteConfirmId(null)} disabled={saving}>Bekor</button>
+                <button className="m-btn-action m-btn-danger" onClick={() => deleteContent(deleteContent_.id)} disabled={saving}>{saving ? "O'chirilmoqda..." : "O'chirish"}</button>
               </div>
             </>
           )}
@@ -848,8 +860,8 @@ export default function ModadDashboard() {
               <div className="m-delete-title">Loyihani o&apos;chirish</div>
               <div className="m-delete-desc"><strong>&quot;{deleteProject_.name}&quot;</strong> loyihasi va uning barcha kontentlari butunlay o&apos;chiriladi. Bu amalni qaytarib bo&apos;lmaydi.</div>
               <div className="m-delete-actions">
-                <button className="m-btn-action m-btn-ghost" onClick={() => setDeleteProjectConfirmId(null)}>Bekor</button>
-                <button className="m-btn-action m-btn-danger" onClick={() => deleteProject(deleteProject_.id)}>O&apos;chirish</button>
+                <button className="m-btn-action m-btn-ghost" onClick={() => setDeleteProjectConfirmId(null)} disabled={saving}>Bekor</button>
+                <button className="m-btn-action m-btn-danger" onClick={() => deleteProject(deleteProject_.id)} disabled={saving}>{saving ? "O'chirilmoqda..." : "O'chirish"}</button>
               </div>
             </>
           )}

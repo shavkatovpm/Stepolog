@@ -9,11 +9,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });
 
   const { id } = await params;
-  const { name, domain, desc, color } = await req.json();
+  const { name, domain, desc, color, customIntents } = await req.json();
+
+  const updateData: Record<string, unknown> = {};
+  if (name !== undefined) updateData.name = name?.trim();
+  if (domain !== undefined) updateData.domain = domain?.trim();
+  if (desc !== undefined) updateData.desc = desc?.trim();
+  if (color !== undefined) updateData.color = color;
+  if (customIntents !== undefined) updateData.customIntents = customIntents;
 
   const project = await prisma.project.update({
     where: { id },
-    data: { name: name?.trim(), domain: domain?.trim(), desc: desc?.trim(), color },
+    data: updateData,
   });
 
   return NextResponse.json(project);

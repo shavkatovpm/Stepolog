@@ -513,6 +513,17 @@
   cursor: pointer; border-radius: var(--m-radius-sm); transition: transform .15s;
 }
 .m-btn-save:hover { transform: translateY(-1px); }
+.m-btn-save:disabled, .m-btn-action:disabled, .m-btn-add-content:disabled, .m-btn-cancel:disabled {
+  opacity: .5; cursor: not-allowed; pointer-events: none; position: relative;
+}
+
+@keyframes m-pulse {
+  0%, 100% { opacity: .5; }
+  50% { opacity: .8; }
+}
+.m-btn-save:disabled, .m-btn-action:disabled, .m-btn-add-content:disabled {
+  animation: m-pulse 1.2s ease-in-out infinite;
+}
 
 /* Unified action buttons */
 .m-btn-action {

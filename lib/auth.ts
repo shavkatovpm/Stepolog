@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "stepolog-secret-change-me";
+const JWT_SECRET: string = process.env.JWT_SECRET || "stepolog-default-secret";
 const TOKEN_NAME = "modad_token";
 const EXPIRES_IN = "7d";
 
