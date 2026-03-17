@@ -358,11 +358,13 @@ export default function ModadDashboard() {
 
   // Prevent accidental back navigation
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
+    history.pushState(null, "", window.location.href);
+    const handlePopState = () => {
+      history.pushState(null, "", window.location.href);
+      setLogoutConfirmOpen(true);
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   // ===== PDF EXPORT =====
@@ -433,7 +435,9 @@ export default function ModadDashboard() {
                 <div style={{ padding: "8px 12px", fontSize: 12, color: "var(--m-text3)" }}>Hali loyiha yo&apos;q</div>
               ) : (
                 state.projects.map((p) => {
-                  const count = state.contents.filter((c) => c.projectId === p.id).length;
+                  const pContents = state.contents.filter((c) => c.projectId === p.id);
+                  const count = pContents.length;
+                  const publishedCount = pContents.filter((c) => c.status === "published").length;
                   return (
                     <div
                       key={p.id}
@@ -449,7 +453,7 @@ export default function ModadDashboard() {
                       <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
                       <div className={`m-project-dot m-${p.color}`} />
                       <span className="m-project-name">{p.name}</span>
-                      <span className="m-project-count">{count}</span>
+                      <span className="m-project-count">{publishedCount}/{count}</span>
                     </div>
                   );
                 })
