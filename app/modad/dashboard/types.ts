@@ -31,6 +31,14 @@ export interface Content {
   publishedAt?: string;
 }
 
+export interface SavedPrompt {
+  id: string;
+  title: string;
+  purpose: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface Settings {
   promptRole: string;
   promptSeo: string;

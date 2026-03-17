@@ -920,3 +920,30 @@
 .m-type-card-desc {
   font-size: 12px; color: var(--m-text2); line-height: 1.4;
 }
+
+/* ===== SAVED PROMPTS ===== */
+.m-sp-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .m-sp-layout { grid-template-columns: 1fr; }
+}
+.m-sp-form { position: sticky; top: 24px; }
+.m-sp-list { display: flex; flex-direction: column; gap: 10px; }
+.m-sp-card {
+  background: var(--m-bg2); border: 1px solid var(--m-border2);
+  border-radius: var(--m-radius); padding: 14px 16px; cursor: pointer;
+  transition: border-color .15s;
+}
+.m-sp-card:hover { border-color: var(--m-border); }
+.m-sp-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.m-sp-card-title { font-size: 14px; font-weight: 700; color: var(--m-text); }
+.m-sp-card-purpose { font-size: 11px; color: var(--m-text3); margin-top: 3px; }
+.m-sp-card-content {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--m-border);
+  font-size: 12px; color: var(--m-text2); white-space: pre-wrap; line-height: 1.6;
+  font-family: 'Space Mono', monospace; max-height: 400px; overflow-y: auto;
+}

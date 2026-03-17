@@ -1,16 +1,26 @@
-import type { Content, Project, Settings } from "./types";
-import { DEFAULT_SETTINGS, INTENT_LABELS } from "./constants";
+import type { Content, Project } from "./types";
+import { INTENT_LABELS } from "./constants";
 
-export function generatePrompt(c: Content, project?: Project, settings?: Settings): string {
+const GEO_RULES = `- Faqat ishonchli manbalar: gov.uz, lex.uz, stat.uz
+- Faktlar va raqamlar aniq manbalar bilan boyitilsin
+- Brand nomi organik, majburlovsiz tilga olinsin
+- AI tizimlar uchun qisqa, aniq javoblar berilsin`;
+
+const STYLE_OWN = `- O'zbek tilida, sodda + professional uslubda
+- Qisqa gaplar — o'qilishi oson
+- AI yozgandek emas, ekspert yozgandek
+- H1, H2, H3 to'g'ri ierarxiyada
+- Markdown formatida yoz`;
+
+export function generatePrompt(c: Content, project?: Project): string {
   if (c.contentType === "brand") {
-    return generateBrandPrompt(c, project, settings);
+    return generateBrandPrompt(c, project);
   }
-  return generateOwnPrompt(c, project, settings);
+  return generateOwnPrompt(c, project);
 }
 
 // ===== SHAXSIY KONTENT =====
-function generateOwnPrompt(c: Content, project?: Project, settings?: Settings): string {
-  const s = settings || DEFAULT_SETTINGS;
+function generateOwnPrompt(c: Content, project?: Project): string {
   const lines: string[] = [];
   const today = new Date().toISOString().split("T")[0];
 
@@ -73,7 +83,7 @@ function generateOwnPrompt(c: Content, project?: Project, settings?: Settings): 
     lines.push("");
     lines.push("Ishlatilishi kerak bo'lgan faktlar / statistika:");
     lines.push(c.facts);
-    lines.push(s.promptGeo);
+    lines.push(GEO_RULES);
     lines.push("");
   }
 
@@ -88,7 +98,7 @@ function generateOwnPrompt(c: Content, project?: Project, settings?: Settings): 
 
   lines.push(`${n(8)}. STYLE`);
   lines.push("");
-  lines.push(s.promptWriting);
+  lines.push(STYLE_OWN);
   lines.push("");
 
   lines.push(`${n(9)}. MUHIM CHEKLOVLAR`);
@@ -104,8 +114,7 @@ function generateOwnPrompt(c: Content, project?: Project, settings?: Settings): 
 }
 
 // ===== BOSHQA BREND KONTENT =====
-function generateBrandPrompt(c: Content, project?: Project, settings?: Settings): string {
-  const s = settings || DEFAULT_SETTINGS;
+function generateBrandPrompt(c: Content, project?: Project): string {
   const lines: string[] = [];
 
   lines.push("Quyidagi mavzu bo'yicha SEO maqola yoz, lekin asosiy maqsad — foydalanuvchiga qiymat berish va mavzuni tushuntirish. Maqola ichida berilgan loyiha (brand) tabiiy kontekstda, majburiy reklamasiz tilga olinsin.");
@@ -205,7 +214,7 @@ function generateBrandPrompt(c: Content, project?: Project, settings?: Settings)
     lines.push("Quyidagi faktlar / statistikalardan foydalanilsin:");
     lines.push(c.facts);
     lines.push("Lokal kontekst va real foydalanuvchi holatlari qo'shilsin");
-    lines.push(s.promptGeo);
+    lines.push(GEO_RULES);
     lines.push("");
   }
 

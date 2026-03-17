@@ -67,6 +67,21 @@ export async function deleteContentApi(id: string) {
   await request(`/api/contents/${id}`, { method: "DELETE" });
 }
 
+// Saved Prompts
+export async function fetchSavedPrompts() {
+  const res = await request("/api/saved-prompts");
+  return res.json();
+}
+
+export async function createSavedPrompt(data: { title: string; purpose: string; content: string }) {
+  const res = await request("/api/saved-prompts", { method: "POST", body: JSON.stringify(data) });
+  return res.json();
+}
+
+export async function deleteSavedPrompt(id: string) {
+  await request(`/api/saved-prompts/${id}`, { method: "DELETE" });
+}
+
 // Settings
 export async function fetchSettings() {
   const res = await request("/api/settings");

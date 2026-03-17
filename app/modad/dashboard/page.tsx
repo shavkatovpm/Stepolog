@@ -4,11 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../modad.css";
 
-import type { Content, Project, Settings, State } from "./types";
+import type { Content, Project, Settings, State, SavedPrompt } from "./types";
 import {
   DEFAULT_SETTINGS, STATUS_CONFIG, INTENT_LABELS,
   COLORS, COLOR_HEX,
-  DEFAULT_PROMPT_ROLE, DEFAULT_PROMPT_SEO, DEFAULT_PROMPT_GEO, DEFAULT_PROMPT_WRITING,
 } from "./constants";
 import { generatePrompt } from "./prompt";
 import * as api from "./api";
@@ -50,7 +49,7 @@ export default function ModadDashboard() {
     settings: { ...DEFAULT_SETTINGS },
   });
   const [currentView, setCurrentView] = useState<"kanban" | "table">("table");
-  const [currentPage, setCurrentPage] = useState<"projects" | "stats" | "settings">("projects");
+  const [currentPage, setCurrentPage] = useState<"projects" | "prompts" | "stats" | "settings">("projects");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -95,11 +94,13 @@ export default function ModadDashboard() {
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
     try {
-      const [projectsRaw, contents, settingsRaw] = await Promise.all([
+      const [projectsRaw, contents, settingsRaw, promptsRaw] = await Promise.all([
         api.fetchProjects(),
         api.fetchContents(),
         api.fetchSettings(),
+        api.fetchSavedPrompts(),
       ]);
+      setSavedPrompts(promptsRaw);
       const projects: Project[] = projectsRaw.map((p) => ({
         id: p.id, name: p.name, domain: p.domain,
         desc: p.desc, color: p.color, customIntents: p.customIntents, createdAt: p.createdAt,
@@ -110,10 +111,7 @@ export default function ModadDashboard() {
         return {
           ...s, projects, contents, customIntents: intents,
           settings: {
-            promptRole: settingsRaw.promptRole || DEFAULT_SETTINGS.promptRole,
-            promptSeo: settingsRaw.promptSeo || DEFAULT_SETTINGS.promptSeo,
-            promptGeo: settingsRaw.promptGeo || DEFAULT_SETTINGS.promptGeo,
-            promptWriting: settingsRaw.promptWriting || DEFAULT_SETTINGS.promptWriting,
+            promptRole: "", promptSeo: "", promptGeo: "", promptWriting: "",
             adminLogin: "", adminPassword: "",
           },
         };
@@ -330,12 +328,6 @@ export default function ModadDashboard() {
     return found?.color || "var(--m-text3)";
   }
 
-  async function resetPrompts() {
-    await api.updateSettings({ promptRole: DEFAULT_PROMPT_ROLE, promptSeo: DEFAULT_PROMPT_SEO, promptGeo: DEFAULT_PROMPT_GEO, promptWriting: DEFAULT_PROMPT_WRITING });
-    setState((s) => ({ ...s, settings: { ...s.settings, promptRole: DEFAULT_PROMPT_ROLE, promptSeo: DEFAULT_PROMPT_SEO, promptGeo: DEFAULT_PROMPT_GEO, promptWriting: DEFAULT_PROMPT_WRITING } }));
-    showToast("Barcha shablonlar qayta tiklandi");
-  }
-
   async function updateCredentials(login: string, password: string) {
     await api.updateSettings({ adminLogin: login, adminPassword: password });
     showToast("✓ Kirish ma'lumotlari yangilandi");
@@ -353,6 +345,12 @@ export default function ModadDashboard() {
   const deleteProject_ = deleteProjectConfirmId ? state.projects.find((p) => p.id === deleteProjectConfirmId) : null;
 
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [spTitle, setSpTitle] = useState("");
+  const [spPurpose, setSpPurpose] = useState("");
+  const [spContent, setSpContent] = useState("");
+  const [spSaving, setSpSaving] = useState(false);
+  const [spViewId, setSpViewId] = useState<string | null>(null);
 
   async function handleLogout() {
     await api.logout();
@@ -464,6 +462,9 @@ export default function ModadDashboard() {
             </div>
           </div>
           <div className="m-sidebar-footer">
+            <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "prompts" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("prompts"); }}>
+              <span>✦</span> Promptlar
+            </div>
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "stats" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("stats"); }}>
               <span>📊</span> Statistika
             </div>
@@ -649,6 +650,83 @@ export default function ModadDashboard() {
             </div>
           )}
 
+          {/* PROMPTS VIEW */}
+          {currentPage === "prompts" && !state.currentProjectId && (
+            <div className="m-view">
+              <div className="m-page-header">
+                <div className="m-page-title">PROMPTLAR</div>
+                <div className="m-page-sub">Saqlangan promptlar kutubxonasi</div>
+              </div>
+              <div className="m-sp-layout">
+                {/* Create form */}
+                <div className="m-form-section m-sp-form">
+                  <div className="m-form-section-title">+ Yangi prompt saqlash</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+                    <div className="m-form-group">
+                      <label className="m-form-label">Mavzu *</label>
+                      <input className="m-form-input" value={spTitle} onChange={(e) => setSpTitle(e.target.value)} placeholder="Masalan: Startap ochish O'zbekistonda" />
+                    </div>
+                    <div className="m-form-group">
+                      <label className="m-form-label">Prompt maqsadi</label>
+                      <input className="m-form-input" value={spPurpose} onChange={(e) => setSpPurpose(e.target.value)} placeholder="Masalan: Shaxsiy kontent, Informational" />
+                    </div>
+                    <div className="m-form-group">
+                      <label className="m-form-label">Prompt matni *</label>
+                      <textarea className="m-form-textarea" style={{ minHeight: 200 }} value={spContent} onChange={(e) => setSpContent(e.target.value)} placeholder="Generate qilingan promptni shu yerga paste qiling..." />
+                    </div>
+                    <button
+                      className="m-btn-save"
+                      style={{ alignSelf: "flex-end" }}
+                      disabled={spSaving}
+                      onClick={async () => {
+                        if (!spTitle.trim()) { showToast("Mavzuni kiriting!"); return; }
+                        if (!spContent.trim()) { showToast("Prompt matnini kiriting!"); return; }
+                        setSpSaving(true);
+                        try {
+                          await api.createSavedPrompt({ title: spTitle.trim(), purpose: spPurpose.trim(), content: spContent.trim() });
+                          setSpTitle(""); setSpPurpose(""); setSpContent("");
+                          await loadData();
+                          showToast("✓ Prompt saqlandi");
+                        } finally { setSpSaving(false); }
+                      }}
+                    >{spSaving ? "Saqlanmoqda..." : "Saqlash"}</button>
+                  </div>
+                </div>
+
+                {/* Saved list */}
+                <div className="m-sp-list">
+                  {savedPrompts.length === 0 ? (
+                    <div style={{ color: "var(--m-text3)", fontSize: 13, padding: "20px 0" }}>Hali prompt saqlanmagan</div>
+                  ) : (
+                    savedPrompts.map((sp) => (
+                      <div key={sp.id} className="m-sp-card" onClick={() => setSpViewId(spViewId === sp.id ? null : sp.id)}>
+                        <div className="m-sp-card-header">
+                          <div>
+                            <div className="m-sp-card-title">{sp.title}</div>
+                            {sp.purpose && <div className="m-sp-card-purpose">{sp.purpose}</div>}
+                          </div>
+                          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                            <button className="m-btn-action m-btn-ghost" style={{ fontSize: 11, padding: "4px 10px" }}
+                              onClick={(e) => { e.stopPropagation(); copyToClipboard(sp.content); }}>
+                              📋 Nusxa
+                            </button>
+                            <button className="m-btn-action m-btn-dim" style={{ fontSize: 11, padding: "4px 10px" }}
+                              onClick={async (e) => { e.stopPropagation(); await api.deleteSavedPrompt(sp.id); await loadData(); showToast("O'chirildi"); }}>
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                        {spViewId === sp.id && (
+                          <div className="m-sp-card-content">{sp.content}</div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* STATS VIEW */}
           {currentPage === "stats" && !state.currentProjectId && (
             <StatsView projects={state.projects} contents={state.contents} onOpenProject={openProject} />
@@ -659,30 +737,6 @@ export default function ModadDashboard() {
             <div className="m-view">
               <div className="m-page-header"><div className="m-page-title">SOZLAMALAR</div></div>
               <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 24 }}>
-                {/* Prompt shablonlari */}
-                {([
-                  { key: "promptRole", icon: "🎭", title: "PROMPT: ROL", desc: "AI ga beriladigan asosiy rol ta'rifi.", minH: 80 },
-                  { key: "promptSeo", icon: "🔍", title: "PROMPT: SEO TALABLARI", desc: "SEO bo'yicha qo'shimcha ko'rsatmalar.", minH: 100 },
-                  { key: "promptGeo", icon: "🤖", title: "PROMPT: GEO (AI INDEKSATSIYA)", desc: "AI indeksatsiya uchun ko'rsatmalar.", minH: 100 },
-                  { key: "promptWriting", icon: "✍️", title: "PROMPT: YOZISH QO'LLANMASI", desc: "Kontent yozish uslubi va formati.", minH: 120 },
-                ] as const).map(({ key, icon, title, desc, minH }) => (
-                  <div className="m-form-section" key={key}>
-                    <div className="m-form-section-title"><span className="m-form-section-icon">{icon}</span> {title}</div>
-                    <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 10 }}>{desc}</p>
-                    <textarea
-                      className="m-form-textarea"
-                      style={{ minHeight: minH, fontFamily: "'Space Mono', monospace", fontSize: 12 }}
-                      value={state.settings[key]}
-                      onBlur={(e) => updateSettingsField(key, e.target.value)}
-                      onChange={(e) => setState((s) => ({ ...s, settings: { ...s.settings, [key]: e.target.value } }))}
-                    />
-                  </div>
-                ))}
-
-                <button className="m-btn-action m-btn-ghost" style={{ fontSize: 12 }} onClick={resetPrompts}>
-                  Barcha shablonlarni standart holatga qaytarish
-                </button>
-
                 {/* Login/Parol */}
                 <div className="m-form-section">
                   <div className="m-form-section-title"><span className="m-form-section-icon">🔐</span> KIRISH MA&apos;LUMOTLARI</div>
@@ -946,11 +1000,11 @@ export default function ModadDashboard() {
               <div className="m-modal-header"><div className="m-modal-title">TAYYOR PROMPT</div><button className="m-modal-close" onClick={() => setPromptModalId(null)}>✕</button></div>
               <div className="m-modal-body">
                 <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>Quyidagi promptni nusxa olib ChatGPT yoki Claude ga yapishtirishingiz mumkin:</p>
-                <div className="m-prompt-box">{generatePrompt(promptContent as Content, state.projects.find((p) => p.id === promptContent.projectId), state.settings)}</div>
+                <div className="m-prompt-box">{generatePrompt(promptContent as Content, state.projects.find((p) => p.id === promptContent.projectId))}</div>
               </div>
               <div className="m-modal-footer">
                 <button className="m-btn-cancel" onClick={() => setPromptModalId(null)}>Yopish</button>
-                <button className="m-copy-btn" onClick={() => { const project = state.projects.find((p) => p.id === promptContent.projectId); copyToClipboard(generatePrompt(promptContent as Content, project, state.settings)); }}>📋 Nusxa olish</button>
+                <button className="m-copy-btn" onClick={() => { const project = state.projects.find((p) => p.id === promptContent.projectId); copyToClipboard(generatePrompt(promptContent as Content, project)); }}>📋 Nusxa olish</button>
               </div>
             </>
           )}
