@@ -192,7 +192,7 @@ export default function ModadDashboard() {
     setEditContentId(null); setContentStep(0);
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
     setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
-    setCInternalLink(""); setCIntent("informational"); setCSource("");
+    setCInternalLink(""); setCIntent(""); setCSource("");
     setCFacts(""); setCBrandCount(""); setCMainQuestion(""); setCBlogTopics([""]);
     setContentModalOpen(true);
   }
