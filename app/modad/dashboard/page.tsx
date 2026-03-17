@@ -350,7 +350,9 @@ export default function ModadDashboard() {
   const [spPurpose, setSpPurpose] = useState("");
   const [spContent, setSpContent] = useState("");
   const [spSaving, setSpSaving] = useState(false);
+  const [spModalOpen, setSpModalOpen] = useState(false);
   const [spViewId, setSpViewId] = useState<string | null>(null);
+  const [spMenuId, setSpMenuId] = useState<string | null>(null);
 
   async function handleLogout() {
     await api.logout();
@@ -652,76 +654,41 @@ export default function ModadDashboard() {
 
           {/* PROMPTS VIEW */}
           {currentPage === "prompts" && !state.currentProjectId && (
-            <div className="m-view">
+            <div className="m-view" onClick={() => setSpMenuId(null)}>
               <div className="m-page-header">
                 <div className="m-page-title">PROMPTLAR</div>
                 <div className="m-page-sub">Saqlangan promptlar kutubxonasi</div>
               </div>
-              <div className="m-sp-layout">
-                {/* Create form */}
-                <div className="m-form-section m-sp-form">
-                  <div className="m-form-section-title">+ Yangi prompt saqlash</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
-                    <div className="m-form-group">
-                      <label className="m-form-label">Mavzu *</label>
-                      <input className="m-form-input" value={spTitle} onChange={(e) => setSpTitle(e.target.value)} placeholder="Masalan: Startap ochish O'zbekistonda" />
-                    </div>
-                    <div className="m-form-group">
-                      <label className="m-form-label">Prompt maqsadi</label>
-                      <input className="m-form-input" value={spPurpose} onChange={(e) => setSpPurpose(e.target.value)} placeholder="Masalan: Shaxsiy kontent, Informational" />
-                    </div>
-                    <div className="m-form-group">
-                      <label className="m-form-label">Prompt matni *</label>
-                      <textarea className="m-form-textarea" style={{ minHeight: 200 }} value={spContent} onChange={(e) => setSpContent(e.target.value)} placeholder="Generate qilingan promptni shu yerga paste qiling..." />
-                    </div>
-                    <button
-                      className="m-btn-save"
-                      style={{ alignSelf: "flex-end" }}
-                      disabled={spSaving}
-                      onClick={async () => {
-                        if (!spTitle.trim()) { showToast("Mavzuni kiriting!"); return; }
-                        if (!spContent.trim()) { showToast("Prompt matnini kiriting!"); return; }
-                        setSpSaving(true);
-                        try {
-                          await api.createSavedPrompt({ title: spTitle.trim(), purpose: spPurpose.trim(), content: spContent.trim() });
-                          setSpTitle(""); setSpPurpose(""); setSpContent("");
-                          await loadData();
-                          showToast("✓ Prompt saqlandi");
-                        } finally { setSpSaving(false); }
-                      }}
-                    >{spSaving ? "Saqlanmoqda..." : "Saqlash"}</button>
-                  </div>
-                </div>
-
-                {/* Saved list */}
-                <div className="m-sp-list">
-                  {savedPrompts.length === 0 ? (
-                    <div style={{ color: "var(--m-text3)", fontSize: 13, padding: "20px 0" }}>Hali prompt saqlanmagan</div>
-                  ) : (
-                    savedPrompts.map((sp) => (
-                      <div key={sp.id} className="m-sp-card" onClick={() => setSpViewId(spViewId === sp.id ? null : sp.id)}>
-                        <div className="m-sp-card-header">
-                          <div>
-                            <div className="m-sp-card-title">{sp.title}</div>
-                            {sp.purpose && <div className="m-sp-card-purpose">{sp.purpose}</div>}
+              <div className="m-sp-grid">
+                {savedPrompts.map((sp, i) => (
+                  <div
+                    key={sp.id}
+                    className="m-sp-card"
+                    style={{ animationDelay: `${i * 0.06}s` }}
+                    onClick={() => setSpViewId(sp.id)}
+                  >
+                    <div className="m-sp-card-header">
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="m-sp-card-title">{sp.title}</div>
+                        {sp.purpose && <div className="m-sp-card-purpose">{sp.purpose}</div>}
+                      </div>
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <button className="m-pc-menu" onClick={(e) => { e.stopPropagation(); setSpMenuId(spMenuId === sp.id ? null : sp.id); }}>⋯</button>
+                        {spMenuId === sp.id && (
+                          <div className="m-dropdown" onClick={(e) => e.stopPropagation()}>
+                            <button className="m-dropdown-item" onClick={() => { copyToClipboard(sp.content); setSpMenuId(null); showToast("✓ Nusxa olindi!"); }}>📋 Nusxa olish</button>
+                            <button className="m-dropdown-item m-dropdown-danger" onClick={async () => { setSpMenuId(null); await api.deleteSavedPrompt(sp.id); await loadData(); showToast("O'chirildi"); }}>O&apos;chirish</button>
                           </div>
-                          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                            <button className="m-btn-action m-btn-ghost" style={{ fontSize: 11, padding: "4px 10px" }}
-                              onClick={(e) => { e.stopPropagation(); copyToClipboard(sp.content); }}>
-                              📋 Nusxa
-                            </button>
-                            <button className="m-btn-action m-btn-dim" style={{ fontSize: 11, padding: "4px 10px" }}
-                              onClick={async (e) => { e.stopPropagation(); await api.deleteSavedPrompt(sp.id); await loadData(); showToast("O'chirildi"); }}>
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                        {spViewId === sp.id && (
-                          <div className="m-sp-card-content">{sp.content}</div>
                         )}
                       </div>
-                    ))
-                  )}
+                    </div>
+                    <div className="m-sp-card-preview">{sp.content}</div>
+                    <div className="m-sp-card-date">{sp.createdAt.split("T")[0]}</div>
+                  </div>
+                ))}
+                <div className="m-add-project-card" onClick={() => { setSpTitle(""); setSpPurpose(""); setSpContent(""); setSpModalOpen(true); }}>
+                  <div className="m-add-icon">+</div>
+                  <div className="m-add-label">Yangi prompt qo&apos;sh</div>
                 </div>
               </div>
             </div>
@@ -1074,6 +1041,71 @@ export default function ModadDashboard() {
           </div>
         </div>
       </div>
+
+      {/* PROMPT QO'SHISH MODALI */}
+      <div className={`m-modal-overlay ${spModalOpen ? "open" : ""}`} onClick={() => setSpModalOpen(false)}>
+        <div className="m-modal" style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
+          <div className="m-modal-header">
+            <div className="m-modal-title">YANGI PROMPT</div>
+            <button className="m-modal-close" onClick={() => setSpModalOpen(false)}>✕</button>
+          </div>
+          <div className="m-modal-body">
+            <div className="m-form-group" style={{ marginBottom: 12 }}>
+              <label className="m-form-label">Mavzu *</label>
+              <input className="m-form-input" value={spTitle} onChange={(e) => setSpTitle(e.target.value)} placeholder="Masalan: Startap ochish O'zbekistonda" />
+            </div>
+            <div className="m-form-group" style={{ marginBottom: 12 }}>
+              <label className="m-form-label">Prompt maqsadi</label>
+              <input className="m-form-input" value={spPurpose} onChange={(e) => setSpPurpose(e.target.value)} placeholder="Masalan: Shaxsiy kontent, Informational" />
+            </div>
+            <div className="m-form-group">
+              <label className="m-form-label">Prompt matni *</label>
+              <textarea className="m-form-textarea" style={{ minHeight: 220 }} value={spContent} onChange={(e) => setSpContent(e.target.value)} placeholder="Generate qilingan promptni shu yerga paste qiling..." />
+            </div>
+          </div>
+          <div className="m-modal-footer">
+            <button className="m-btn-cancel" onClick={() => setSpModalOpen(false)} disabled={spSaving}>Bekor</button>
+            <button className="m-btn-save" disabled={spSaving} onClick={async () => {
+              if (!spTitle.trim()) { showToast("Mavzuni kiriting!"); return; }
+              if (!spContent.trim()) { showToast("Prompt matnini kiriting!"); return; }
+              setSpSaving(true);
+              try {
+                await api.createSavedPrompt({ title: spTitle.trim(), purpose: spPurpose.trim(), content: spContent.trim() });
+                setSpModalOpen(false);
+                await loadData();
+                showToast("✓ Prompt saqlandi");
+              } finally { setSpSaving(false); }
+            }}>{spSaving ? "Saqlanmoqda..." : "Saqlash"}</button>
+          </div>
+        </div>
+      </div>
+
+      {/* PROMPT KO'RISH MODALI */}
+      {(() => {
+        const viewPrompt = savedPrompts.find((sp) => sp.id === spViewId);
+        return (
+          <div className={`m-modal-overlay ${viewPrompt ? "open" : ""}`} onClick={() => setSpViewId(null)}>
+            <div className="m-modal" style={{ maxWidth: 680 }} onClick={(e) => e.stopPropagation()}>
+              {viewPrompt && (<>
+                <div className="m-modal-header">
+                  <div style={{ flex: 1 }}>
+                    <div className="m-modal-title">{viewPrompt.title}</div>
+                    {viewPrompt.purpose && <div style={{ fontSize: 11, color: "var(--m-text3)", marginTop: 3 }}>{viewPrompt.purpose}</div>}
+                  </div>
+                  <button className="m-modal-close" onClick={() => setSpViewId(null)}>✕</button>
+                </div>
+                <div className="m-modal-body">
+                  <div className="m-prompt-box">{viewPrompt.content}</div>
+                </div>
+                <div className="m-modal-footer">
+                  <button className="m-btn-cancel" onClick={() => setSpViewId(null)}>Yopish</button>
+                  <button className="m-copy-btn" onClick={() => { copyToClipboard(viewPrompt.content); }}>📋 Nusxa olish</button>
+                </div>
+              </>)}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* TOAST */}
       <div className={`m-toast ${toast ? "show" : ""}`}>{toast}</div>
