@@ -115,13 +115,14 @@ function generateBrandPrompt(c: Content, project?: Project, settings?: Settings)
   lines.push("");
   lines.push(`Mavzu: ${c.title}`);
   lines.push(`Asosiy keyword: ${c.keyword || "—"}`);
-  if (c.mainQuestion) lines.push(`Target auditoriya: ${c.mainQuestion}`);
   if (c.facts) lines.push(`GEO: ${c.facts}`);
   lines.push("");
   lines.push("Mention qilinadigan loyiha:");
   lines.push(`  Nomi: ${c.note || "—"}`);
+  if (c.source) lines.push(`  Domeni: ${c.source}`);
   if (c.internalLink) lines.push(`  URL: ${c.internalLink}`);
   if (project?.domain) lines.push(`  Joylashtiriluvchi sayt: ${project.domain}`);
+  if (c.mainQuestion) lines.push(`AI uchun asosiy savol: ${c.mainQuestion}`);
   lines.push("");
 
   lines.push("2. MAQSAD");

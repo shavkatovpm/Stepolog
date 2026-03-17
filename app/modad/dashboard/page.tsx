@@ -76,7 +76,7 @@ export default function ModadDashboard() {
   const [cInternalLink, setCInternalLink] = useState("");
   const [cIntent, setCIntent] = useState("informational");
   const [contentStep, setContentStep] = useState(0);
-  const [cSource] = useState("");
+  const [cSource, setCSource] = useState("");
   const [cFacts, setCFacts] = useState("");
   const [cBrandCount] = useState("");
   const [cMainQuestion, setCMainQuestion] = useState("");
@@ -213,7 +213,7 @@ export default function ModadDashboard() {
     setEditContentId(null); setContentStep(0);
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
     setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
-    setCInternalLink(""); setCIntent("");
+    setCInternalLink(""); setCIntent(""); setCSource("");
     setCFacts(""); setCMainQuestion("");
     setCContentType("own");
     setContentModalOpen(true);
@@ -226,7 +226,7 @@ export default function ModadDashboard() {
     setEditContentId(id);
     setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status as Content["status"]);
     setCNote(c.note); setCKeyword(c.keyword); setCKeywords2(c.keywords2);
-    setCInternalLink(c.internalLink); setCIntent(c.intent);
+    setCInternalLink(c.internalLink); setCIntent(c.intent); setCSource(c.source);
     setCFacts(c.facts); setCMainQuestion(c.mainQuestion);
     setCContentType((c.contentType as "own" | "brand") || "own");
     setContentModalOpen(true);
@@ -835,8 +835,14 @@ export default function ModadDashboard() {
                     <label className="m-form-label">LSI keywordlar</label>
                     <input className="m-form-input" value={cKeywords2} onChange={(e) => setCKeywords2(e.target.value)} placeholder="vergul bilan ajrating: biznes ochish, kichik biznes, ..." />
                   </div>
+                  {cContentType === "brand" && (
+                    <div className="m-form-group">
+                      <label className="m-form-label">Brend domeni</label>
+                      <input className="m-form-input" value={cSource} onChange={(e) => setCSource(e.target.value)} placeholder="Masalan: uzummarket.uz" />
+                    </div>
+                  )}
                   <div className="m-form-group m-form-full">
-                    <label className="m-form-label">Asosiy savol</label>
+                    <label className="m-form-label">AI uchun asosiy savol</label>
                     <input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" />
                   </div>
                   {cContentType === "own" && (
@@ -900,6 +906,9 @@ export default function ModadDashboard() {
                     <DetailRow label="Kontent turi" value={INTENT_LABELS[cardContent.intent] || cardContent.intent} />
                     {cardContent.contentType === "brand" && cardContent.note && (
                       <DetailRow label="Brend nomi" value={cardContent.note} />
+                    )}
+                    {cardContent.contentType === "brand" && cardContent.source && (
+                      <DetailRow label="Brend domeni" value={cardContent.source} />
                     )}
                   </div>
                   <div>
