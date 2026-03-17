@@ -939,7 +939,7 @@
 }
 .m-sp-card:hover { border-color: var(--m-border); background: var(--m-bg3); }
 .m-sp-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.m-sp-card-title { font-size: 28px; font-weight: 700; color: var(--m-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
+.m-sp-card-title { font-size: 28px; font-weight: 700; color: var(--m-text); line-height: 1.1; word-break: break-word; }
 .m-sp-card-purpose {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
   color: var(--m-text3); margin-top: 2px;
