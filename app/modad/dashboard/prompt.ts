@@ -74,7 +74,6 @@ export function generatePrompt(c: Content, project?: Project, settings?: Setting
   lines.push("Keyword stuffing YO'Q");
   lines.push("Asosiy keyword H1, H2 va birinchi paragrafda ishlatilsin");
   if (c.internalLink) lines.push(`Internal link: ${c.internalLink}`);
-  lines.push(s.promptSeo);
   lines.push("");
 
   // 6. GEO
