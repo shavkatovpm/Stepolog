@@ -87,6 +87,10 @@ export async function deleteCategory(id: string) {
   await request(`/api/categories/${id}`, { method: "DELETE" });
 }
 
+export async function reorderCategories(ids: string[]) {
+  await request("/api/categories/reorder", { method: "PUT", body: JSON.stringify({ ids }) });
+}
+
 // Saved Prompts
 export async function fetchSavedPrompts() {
   const res = await request("/api/saved-prompts");

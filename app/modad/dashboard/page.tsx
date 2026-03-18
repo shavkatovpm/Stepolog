@@ -100,6 +100,8 @@ export default function ModadDashboard() {
   const [catSaving, setCatSaving] = useState(false);
   const [catMenuId, setCatMenuId] = useState<string | null>(null);
   const [moveCatProjectId, setMoveCatProjectId] = useState<string | null>(null);
+  const [dragCatId, setDragCatId] = useState<string | null>(null);
+  const [dragOverCatId, setDragOverCatId] = useState<string | null>(null);
 
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
@@ -233,6 +235,20 @@ export default function ModadDashboard() {
       showToast("Kategoriya o'chirildi");
       await loadData();
     } finally { setCatSaving(false); }
+  }
+
+  function handleCategoryDrop(targetId: string) {
+    if (!dragCatId || dragCatId === targetId) return;
+    const cats = [...categories];
+    const fromIdx = cats.findIndex((c) => c.id === dragCatId);
+    const toIdx = cats.findIndex((c) => c.id === targetId);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const [moved] = cats.splice(fromIdx, 1);
+    cats.splice(toIdx, 0, moved);
+    setCategories(cats);
+    setDragCatId(null);
+    setDragOverCatId(null);
+    api.reorderCategories(cats.map((c) => c.id));
   }
 
   async function moveProjectToCategory(projectId: string, categoryId: string | null) {
@@ -520,9 +536,16 @@ export default function ModadDashboard() {
               return (
                 <div
                   key={cat.id}
-                  className={`m-project-item ${currentCategoryId === cat.id && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
+                  className={`m-project-item ${currentCategoryId === cat.id && !state.currentProjectId && currentPage === "projects" ? "active" : ""}${dragOverCatId === cat.id ? " drag-over" : ""}`}
+                  draggable
+                  onDragStart={(e) => { setDragCatId(cat.id); e.dataTransfer.effectAllowed = "move"; }}
+                  onDragOver={(e) => { e.preventDefault(); setDragOverCatId(cat.id); }}
+                  onDragLeave={() => setDragOverCatId(null)}
+                  onDrop={(e) => { e.preventDefault(); handleCategoryDrop(cat.id); }}
+                  onDragEnd={() => { setDragCatId(null); setDragOverCatId(null); }}
                   onClick={() => { setCurrentCategoryId(cat.id); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
                 >
+                  <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
                   <div className="m-project-dot m-color-cat" />
                   <span className="m-project-name">{cat.name}</span>
                   <span className="m-project-count">{catCount}</span>
