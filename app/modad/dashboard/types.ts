@@ -1,3 +1,10 @@
+export interface Category {
+  id: string;
+  name: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -5,6 +12,7 @@ export interface Project {
   desc: string;
   color: string;
   customIntents?: string;
+  categoryId?: string | null;
   createdAt: string;
 }
 

@@ -1,4 +1,4 @@
-import type { Project, Content } from "./types";
+import type { Project, Content, Category } from "./types";
 
 async function request(url: string, options?: RequestInit) {
   const res = await fetch(url, {
@@ -28,7 +28,7 @@ export async function fetchProjects(): Promise<(Project & { _count: { contents: 
   return res.json();
 }
 
-export async function createProject(data: { name: string; domain: string; desc: string; color: string }): Promise<Project> {
+export async function createProject(data: { name: string; domain: string; desc: string; color: string; categoryId?: string | null }): Promise<Project> {
   const res = await request("/api/projects", { method: "POST", body: JSON.stringify(data) });
   return res.json();
 }
@@ -65,6 +65,26 @@ export async function updateContent(id: string, data: Partial<Content>): Promise
 
 export async function deleteContentApi(id: string) {
   await request(`/api/contents/${id}`, { method: "DELETE" });
+}
+
+// Categories
+export async function fetchCategories(): Promise<Category[]> {
+  const res = await request("/api/categories");
+  return res.json();
+}
+
+export async function createCategory(data: { name: string }): Promise<Category> {
+  const res = await request("/api/categories", { method: "POST", body: JSON.stringify(data) });
+  return res.json();
+}
+
+export async function updateCategory(id: string, data: { name: string }): Promise<Category> {
+  const res = await request(`/api/categories/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  return res.json();
+}
+
+export async function deleteCategory(id: string) {
+  await request(`/api/categories/${id}`, { method: "DELETE" });
 }
 
 // Saved Prompts

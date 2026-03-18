@@ -13,7 +13,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
   }
-  const { name, domain, desc, color, customIntents, sortOrder } = body;
+  const { name, domain, desc, color, customIntents, sortOrder, categoryId } = body;
   if ((name && name.length > 200) || (domain && domain.length > 200) || (desc && desc.length > 1000)) {
     return NextResponse.json({ error: "Matn juda uzun" }, { status: 400 });
   }
@@ -25,6 +25,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (color !== undefined) updateData.color = color;
   if (customIntents !== undefined) updateData.customIntents = customIntents;
   if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+  if ("categoryId" in body) updateData.categoryId = categoryId ?? null;
 
   const project = await prisma.project.update({
     where: { id },

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../modad.css";
 
-import type { Content, Project, Settings, State, SavedPrompt } from "./types";
+import type { Content, Project, Settings, State, SavedPrompt, Category } from "./types";
 import {
   DEFAULT_SETTINGS, STATUS_CONFIG, INTENT_LABELS,
   COLORS, COLOR_HEX,
@@ -91,19 +91,32 @@ export default function ModadDashboard() {
   const [dragProjectId, setDragProjectId] = useState<string | null>(null);
   const [dragOverProjectId, setDragOverProjectId] = useState<string | null>(null);
 
+  // Categories
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [currentCategoryId, setCurrentCategoryId] = useState<string | null>(null);
+  const [catModalOpen, setCatModalOpen] = useState(false);
+  const [editCatId, setEditCatId] = useState<string | null>(null);
+  const [catName, setCatName] = useState("");
+  const [catSaving, setCatSaving] = useState(false);
+  const [catMenuId, setCatMenuId] = useState<string | null>(null);
+  const [moveCatProjectId, setMoveCatProjectId] = useState<string | null>(null);
+
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
     try {
-      const [projectsRaw, contents, settingsRaw, promptsRaw] = await Promise.all([
+      const [projectsRaw, contents, settingsRaw, promptsRaw, categoriesRaw] = await Promise.all([
         api.fetchProjects(),
         api.fetchContents(),
         api.fetchSettings(),
         api.fetchSavedPrompts(),
+        api.fetchCategories(),
       ]);
       setSavedPrompts(promptsRaw);
+      setCategories(categoriesRaw);
       const projects: Project[] = projectsRaw.map((p) => ({
         id: p.id, name: p.name, domain: p.domain,
         desc: p.desc, color: p.color, customIntents: p.customIntents, createdAt: p.createdAt,
+        categoryId: (p as unknown as { categoryId?: string | null }).categoryId ?? null,
       }));
       setState((s) => {
         const currentProj = s.currentProjectId ? projects.find((p) => p.id === s.currentProjectId) : null;
@@ -160,7 +173,7 @@ export default function ModadDashboard() {
         await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
         showToast("✓ Loyiha tahrirlandi");
       } else {
-        await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
+        await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor, categoryId: currentCategoryId });
         showToast("✓ Loyiha qo'shildi");
       }
       setEditProjectId(null);
@@ -178,6 +191,56 @@ export default function ModadDashboard() {
       showToast("Loyiha o'chirildi");
       await loadData();
     } finally { setSaving(false); }
+  }
+
+  // ===== CATEGORIES =====
+  function openCatModal(id?: string) {
+    if (id) {
+      const cat = categories.find((c) => c.id === id);
+      if (!cat) return;
+      setEditCatId(id);
+      setCatName(cat.name);
+    } else {
+      setEditCatId(null);
+      setCatName("");
+    }
+    setCatMenuId(null);
+    setCatModalOpen(true);
+  }
+
+  async function saveCat() {
+    if (!catName.trim()) { showToast("Kategoriya nomini kiriting!"); return; }
+    setCatSaving(true);
+    try {
+      if (editCatId) {
+        await api.updateCategory(editCatId, { name: catName.trim() });
+        showToast("✓ Kategoriya yangilandi");
+      } else {
+        await api.createCategory({ name: catName.trim() });
+        showToast("✓ Kategoriya qo'shildi");
+      }
+      setCatModalOpen(false);
+      await loadData();
+    } finally { setCatSaving(false); }
+  }
+
+  async function deleteCat(id: string) {
+    setCatSaving(true);
+    try {
+      await api.deleteCategory(id);
+      if (currentCategoryId === id) setCurrentCategoryId(null);
+      setCatMenuId(null);
+      showToast("Kategoriya o'chirildi");
+      await loadData();
+    } finally { setCatSaving(false); }
+  }
+
+  async function moveProjectToCategory(projectId: string, categoryId: string | null) {
+    await api.updateProject(projectId, { categoryId });
+    setMoveCatProjectId(null);
+    setProjectMenuId(null);
+    await loadData();
+    showToast("✓ Loyiha ko'chirildi");
   }
 
   function openProject(id: string) {
@@ -343,6 +406,10 @@ export default function ModadDashboard() {
   const pasteContent = pasteModalId ? state.contents.find((c) => c.id === pasteModalId) : null;
   const deleteContent_ = deleteConfirmId ? state.contents.find((c) => c.id === deleteConfirmId) : null;
   const deleteProject_ = deleteProjectConfirmId ? state.projects.find((p) => p.id === deleteProjectConfirmId) : null;
+  const filteredProjects = currentCategoryId === null
+    ? state.projects
+    : state.projects.filter((p) => p.categoryId === currentCategoryId);
+  const currentCategoryName = currentCategoryId ? categories.find((c) => c.id === currentCategoryId)?.name : null;
 
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
@@ -430,38 +497,53 @@ export default function ModadDashboard() {
 
       <div className="m-layout">
         {/* SIDEBAR */}
-        <aside className="m-sidebar">
+        <aside className="m-sidebar" onClick={() => setCatMenuId(null)}>
           <div className="m-sidebar-section">
-            <div className="m-sidebar-label">Loyihalar</div>
-            <div>
-              {state.projects.length === 0 ? (
-                <div style={{ padding: "8px 12px", fontSize: 12, color: "var(--m-text3)" }}>Hali loyiha yo&apos;q</div>
-              ) : (
-                state.projects.map((p) => {
-                  const pContents = state.contents.filter((c) => c.projectId === p.id);
-                  const count = pContents.length;
-                  const publishedCount = pContents.filter((c) => c.status === "published").length;
-                  return (
-                    <div
-                      key={p.id}
-                      className={`m-project-item ${state.currentProjectId === p.id ? "active" : ""}${dragOverProjectId === p.id ? " drag-over" : ""}`}
-                      draggable
-                      onDragStart={(e) => { setDragProjectId(p.id); e.dataTransfer.effectAllowed = "move"; }}
-                      onDragOver={(e) => { e.preventDefault(); setDragOverProjectId(p.id); }}
-                      onDragLeave={() => setDragOverProjectId(null)}
-                      onDrop={(e) => { e.preventDefault(); handleProjectDrop(p.id); }}
-                      onDragEnd={() => { setDragProjectId(null); setDragOverProjectId(null); }}
-                      onClick={() => openProject(p.id)}
-                    >
-                      <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
-                      <div className={`m-project-dot m-${p.color}`} />
-                      <span className="m-project-name">{p.name}</span>
-                      <span className="m-project-count">{publishedCount}/{count}</span>
-                    </div>
-                  );
-                })
-              )}
+            <div className="m-sidebar-label-row">
+              <div className="m-sidebar-label">Kategoriyalar</div>
+              <button className="m-sidebar-add-btn" onClick={(e) => { e.stopPropagation(); openCatModal(); }}>+</button>
             </div>
+
+            {/* Barchasi */}
+            <div
+              className={`m-project-item ${currentCategoryId === null && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
+              onClick={() => { setCurrentCategoryId(null); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
+            >
+              <div className="m-project-dot" style={{ background: "var(--m-text3)" }} />
+              <span className="m-project-name">Barchasi</span>
+              <span className="m-project-count">{state.projects.length}</span>
+            </div>
+
+            {/* Categories */}
+            {categories.map((cat) => {
+              const catCount = state.projects.filter((p) => p.categoryId === cat.id).length;
+              return (
+                <div
+                  key={cat.id}
+                  className={`m-project-item ${currentCategoryId === cat.id && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
+                  onClick={() => { setCurrentCategoryId(cat.id); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
+                >
+                  <div className="m-project-dot m-color-cat" />
+                  <span className="m-project-name">{cat.name}</span>
+                  <span className="m-project-count">{catCount}</span>
+                  <div style={{ position: "relative", flexShrink: 0, marginLeft: "auto" }}>
+                    <button className="m-sidebar-cat-menu" onClick={(e) => { e.stopPropagation(); setCatMenuId(catMenuId === cat.id ? null : cat.id); }}>⋯</button>
+                    {catMenuId === cat.id && (
+                      <div className="m-dropdown" onClick={(e) => e.stopPropagation()}>
+                        <button className="m-dropdown-item" onClick={() => openCatModal(cat.id)}>Tahrirlash</button>
+                        <button className="m-dropdown-item m-dropdown-danger" onClick={() => deleteCat(cat.id)}>O&apos;chirish</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {categories.length === 0 && (
+              <div style={{ padding: "6px 12px", fontSize: 11, color: "var(--m-text3)" }}>
+                + tugmasini bosib kategoriya qo&apos;shing
+              </div>
+            )}
           </div>
           <div className="m-sidebar-footer">
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "prompts" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("prompts"); }}>
@@ -482,11 +564,11 @@ export default function ModadDashboard() {
           {!state.currentProjectId && currentPage === "projects" && (
             <div className="m-view">
               <div className="m-page-header">
-                <div className="m-page-title">BARCHA LOYIHALAR</div>
+                <div className="m-page-title">{currentCategoryName ? currentCategoryName.toUpperCase() : "BARCHA LOYIHALAR"}</div>
                 <div className="m-page-sub">Loyihani tanlang yoki yangi loyiha qo&apos;shing</div>
               </div>
               <div className="m-projects-grid">
-                {state.projects.map((p, i) => {
+                {filteredProjects.map((p, i) => {
                   const contents = state.contents.filter((c) => c.projectId === p.id);
                   const ready = contents.filter((c) => c.status === "ready" || c.status === "published").length;
                   const today = new Date().toISOString().split("T")[0];
@@ -506,6 +588,7 @@ export default function ModadDashboard() {
                           {projectMenuId === p.id && (
                             <div className="m-dropdown" onClick={(e) => e.stopPropagation()}>
                               <button className="m-dropdown-item" onClick={() => openEditProject(p.id)}>Tahrirlash</button>
+                              <button className="m-dropdown-item" onClick={() => { setMoveCatProjectId(p.id); setProjectMenuId(null); }}>Kategoriyaga ko&apos;chirish</button>
                               <button className="m-dropdown-item m-dropdown-danger" onClick={() => { setProjectMenuId(null); setDeleteProjectConfirmId(p.id); }}>O&apos;chirish</button>
                             </div>
                           )}
@@ -1109,6 +1192,56 @@ export default function ModadDashboard() {
           </div>
         );
       })()}
+
+      {/* ===== KATEGORIYA MODALI ===== */}
+      <div className={`m-modal-overlay ${catModalOpen ? "open" : ""}`} onClick={() => setCatModalOpen(false)}>
+        <div className="m-modal" style={{ maxWidth: 420 }} onClick={(e) => e.stopPropagation()}>
+          <div className="m-modal-header">
+            <div className="m-modal-title">{editCatId ? "KATEGORIYANI TAHRIRLASH" : "YANGI KATEGORIYA"}</div>
+            <button className="m-modal-close" onClick={() => setCatModalOpen(false)}>✕</button>
+          </div>
+          <div className="m-modal-body">
+            <div className="m-form-group">
+              <label className="m-form-label">Kategoriya nomi *</label>
+              <input className="m-form-input" value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="Masalan: Texnologiya, Marketing..." onKeyDown={(e) => { if (e.key === "Enter") saveCat(); }} autoFocus />
+            </div>
+          </div>
+          <div className="m-modal-footer">
+            <button className="m-btn-cancel" onClick={() => setCatModalOpen(false)} disabled={catSaving}>Bekor</button>
+            <button className="m-btn-save" onClick={saveCat} disabled={catSaving}>{catSaving ? "Saqlanmoqda..." : "Saqlash"}</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== KATEGORIYAGA KO'CHIRISH MODALI ===== */}
+      <div className={`m-modal-overlay ${moveCatProjectId ? "open" : ""}`} onClick={() => setMoveCatProjectId(null)}>
+        <div className="m-modal m-delete-modal" style={{ maxWidth: 380 }} onClick={(e) => e.stopPropagation()}>
+          <div className="m-delete-icon">📁</div>
+          <div className="m-delete-title">Kategoriyani tanlang</div>
+          <div className="m-move-cat-list">
+            <button
+              className={`m-move-cat-item ${!state.projects.find((p) => p.id === moveCatProjectId)?.categoryId ? "active" : ""}`}
+              onClick={() => moveCatProjectId && moveProjectToCategory(moveCatProjectId, null)}
+            >
+              <div className="m-project-dot" style={{ background: "var(--m-text3)", flexShrink: 0 }} />
+              Barchasi
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`m-move-cat-item ${state.projects.find((p) => p.id === moveCatProjectId)?.categoryId === cat.id ? "active" : ""}`}
+                onClick={() => moveCatProjectId && moveProjectToCategory(moveCatProjectId, cat.id)}
+              >
+                <div className="m-project-dot m-color-cat" style={{ flexShrink: 0 }} />
+                {cat.name}
+              </button>
+            ))}
+          </div>
+          <div className="m-delete-actions">
+            <button className="m-btn-action m-btn-ghost" onClick={() => setMoveCatProjectId(null)}>Bekor</button>
+          </div>
+        </div>
+      </div>
 
       {/* TOAST */}
       <div className={`m-toast ${toast ? "show" : ""}`}>{toast}</div>
