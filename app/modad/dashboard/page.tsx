@@ -600,11 +600,13 @@ export default function ModadDashboard() {
                   const today = new Date().toISOString().split("T")[0];
                   const todayCount = contents.filter((c) => c.publishDate === today && c.status !== "published").length;
                   const overdueCount = contents.filter((c) => c.publishDate && c.publishDate < today && c.status !== "published").length;
+                  const pCat = p.categoryId ? categories.find((c) => c.id === p.categoryId) : null;
+                  const cardColor = pCat ? COLOR_HEX[pCat.color] || "var(--m-border)" : "var(--m-border)";
                   return (
-                    <div key={p.id} className="m-project-card" style={{ animationDelay: `${i * 0.07}s`, "--card-color": COLOR_HEX[p.color] || "var(--m-border)" } as React.CSSProperties} onClick={() => openProject(p.id)}>
+                    <div key={p.id} className="m-project-card" style={{ animationDelay: `${i * 0.07}s`, "--card-color": cardColor } as React.CSSProperties} onClick={() => openProject(p.id)}>
                       <div className="m-pc-header">
                         <div className="m-pc-dot-wrap">
-                          <div className={`m-pc-dot m-${p.color}`} />
+                          <div className={`m-pc-dot${pCat ? ` m-${pCat.color}` : ""}`} />
                           <span className="m-pc-domain">{p.domain || "domen yo'q"}</span>
                           {overdueCount > 0 && <span className="m-pc-badge m-pc-badge-red">{overdueCount}</span>}
                           {todayCount > 0 && <span className="m-pc-badge m-pc-badge-yellow">{todayCount}</span>}
@@ -626,17 +628,14 @@ export default function ModadDashboard() {
                         <div className="m-pc-stat"><span className="m-pc-stat-n">{contents.length}</span><span className="m-pc-stat-l">Kontent</span></div>
                         <div className="m-pc-stat"><span className="m-pc-stat-n">{ready}</span><span className="m-pc-stat-l">Tayyor</span></div>
                       </div>
-                      {currentCategoryId === null && (() => {
-                        const cat = p.categoryId ? categories.find((c) => c.id === p.categoryId) : null;
-                        return (
-                          <div className="m-pc-category">
-                            <div className={`m-pc-category-dot m-${cat?.color || "color-7"}`} />
-                            <span style={{ color: cat ? COLOR_HEX[cat.color] || "var(--m-text3)" : "var(--m-text3)" }}>
-                              {cat ? cat.name : "Kategoriyasiz"}
-                            </span>
-                          </div>
-                        );
-                      })()}
+                      {currentCategoryId === null && (
+                        <div className="m-pc-category">
+                          <div className={`m-pc-category-dot${pCat ? ` m-${pCat.color}` : ""}`} />
+                          <span style={{ color: pCat ? COLOR_HEX[pCat.color] || "var(--m-text3)" : "var(--m-text3)" }}>
+                            {pCat ? pCat.name : "Kategoriyasiz"}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -856,12 +855,6 @@ export default function ModadDashboard() {
               <div className="m-form-group"><label className="m-form-label">Loyiha nomi *</label><input className="m-form-input" value={pName} onChange={(e) => setPName(e.target.value)} placeholder="Masalan: Stepolog.uz" /></div>
               <div className="m-form-group"><label className="m-form-label">Domen</label><input className="m-form-input" value={pDomain} onChange={(e) => setPDomain(e.target.value)} placeholder="stepolog.uz" /></div>
               <div className="m-form-group m-form-full"><label className="m-form-label">Tavsif</label><input className="m-form-input" value={pDesc} onChange={(e) => setPDesc(e.target.value)} placeholder="Loyiha haqida qisqacha..." /></div>
-              <div className="m-form-group m-form-full">
-                <label className="m-form-label">Rang</label>
-                <div className="m-color-picker">
-                  {COLORS.map((c) => (<div key={c} className={`m-color-option m-${c} ${state.selectedColor === c ? "selected" : ""}`} onClick={() => setState((s) => ({ ...s, selectedColor: c }))} />))}
-                </div>
-              </div>
             </div>
           </div>
           <div className="m-modal-footer">
