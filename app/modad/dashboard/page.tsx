@@ -626,6 +626,17 @@ export default function ModadDashboard() {
                         <div className="m-pc-stat"><span className="m-pc-stat-n">{contents.length}</span><span className="m-pc-stat-l">Kontent</span></div>
                         <div className="m-pc-stat"><span className="m-pc-stat-n">{ready}</span><span className="m-pc-stat-l">Tayyor</span></div>
                       </div>
+                      {currentCategoryId === null && (() => {
+                        const cat = p.categoryId ? categories.find((c) => c.id === p.categoryId) : null;
+                        return (
+                          <div className="m-pc-category">
+                            <div className={`m-pc-category-dot m-${cat?.color || "color-7"}`} />
+                            <span style={{ color: cat ? COLOR_HEX[cat.color] || "var(--m-text3)" : "var(--m-text3)" }}>
+                              {cat ? cat.name : "Kategoriyasiz"}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   );
                 })}

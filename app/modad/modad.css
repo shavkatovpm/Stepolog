@@ -993,3 +993,14 @@
 }
 .m-move-cat-item:hover { border-color: var(--m-border); background: var(--m-bg3); color: var(--m-text); }
 .m-move-cat-item.active { border-color: rgba(255,222,89,.3); background: var(--m-yellow-dim); color: var(--m-yellow); }
+
+/* ===== PROJECT CARD CATEGORY BADGE ===== */
+.m-pc-category {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--m-border);
+  font-size: 11px; font-weight: 600; letter-spacing: .02em;
+}
+.m-pc-category-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
