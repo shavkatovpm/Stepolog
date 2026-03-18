@@ -97,6 +97,7 @@ export default function ModadDashboard() {
   const [catModalOpen, setCatModalOpen] = useState(false);
   const [editCatId, setEditCatId] = useState<string | null>(null);
   const [catName, setCatName] = useState("");
+  const [catColor, setCatColor] = useState("color-7");
   const [catSaving, setCatSaving] = useState(false);
   const [catMenuId, setCatMenuId] = useState<string | null>(null);
   const [moveCatProjectId, setMoveCatProjectId] = useState<string | null>(null);
@@ -202,9 +203,11 @@ export default function ModadDashboard() {
       if (!cat) return;
       setEditCatId(id);
       setCatName(cat.name);
+      setCatColor(cat.color || "color-7");
     } else {
       setEditCatId(null);
       setCatName("");
+      setCatColor("color-7");
     }
     setCatMenuId(null);
     setCatModalOpen(true);
@@ -215,10 +218,10 @@ export default function ModadDashboard() {
     setCatSaving(true);
     try {
       if (editCatId) {
-        await api.updateCategory(editCatId, { name: catName.trim() });
+        await api.updateCategory(editCatId, { name: catName.trim(), color: catColor });
         showToast("✓ Kategoriya yangilandi");
       } else {
-        await api.createCategory({ name: catName.trim() });
+        await api.createCategory({ name: catName.trim(), color: catColor });
         showToast("✓ Kategoriya qo'shildi");
       }
       setCatModalOpen(false);
@@ -546,7 +549,7 @@ export default function ModadDashboard() {
                   onClick={() => { setCurrentCategoryId(cat.id); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
                 >
                   <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
-                  <div className="m-project-dot m-color-cat" />
+                  <div className={`m-project-dot m-${cat.color || "color-7"}`} />
                   <span className="m-project-name">{cat.name}</span>
                   <span className="m-project-count">{catCount}</span>
                   <div style={{ position: "relative", flexShrink: 0, marginLeft: "auto" }}>
@@ -1224,9 +1227,17 @@ export default function ModadDashboard() {
             <button className="m-modal-close" onClick={() => setCatModalOpen(false)}>✕</button>
           </div>
           <div className="m-modal-body">
-            <div className="m-form-group">
+            <div className="m-form-group" style={{ marginBottom: 16 }}>
               <label className="m-form-label">Kategoriya nomi *</label>
               <input className="m-form-input" value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="Masalan: Texnologiya, Marketing..." onKeyDown={(e) => { if (e.key === "Enter") saveCat(); }} autoFocus />
+            </div>
+            <div className="m-form-group">
+              <label className="m-form-label">Rang</label>
+              <div className="m-color-picker">
+                {COLORS.map((c) => (
+                  <div key={c} className={`m-color-option m-${c} ${catColor === c ? "selected" : ""}`} onClick={() => setCatColor(c)} />
+                ))}
+              </div>
             </div>
           </div>
           <div className="m-modal-footer">
@@ -1255,7 +1266,7 @@ export default function ModadDashboard() {
                 className={`m-move-cat-item ${state.projects.find((p) => p.id === moveCatProjectId)?.categoryId === cat.id ? "active" : ""}`}
                 onClick={() => moveCatProjectId && moveProjectToCategory(moveCatProjectId, cat.id)}
               >
-                <div className="m-project-dot m-color-cat" style={{ flexShrink: 0 }} />
+                <div className={`m-project-dot m-${cat.color || "color-7"}`} style={{ flexShrink: 0 }} />
                 {cat.name}
               </button>
             ))}

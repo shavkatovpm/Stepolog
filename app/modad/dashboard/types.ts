@@ -1,6 +1,7 @@
 export interface Category {
   id: string;
   name: string;
+  color: string;
   sortOrder: number;
   createdAt: string;
 }

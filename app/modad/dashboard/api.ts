@@ -73,12 +73,12 @@ export async function fetchCategories(): Promise<Category[]> {
   return res.json();
 }
 
-export async function createCategory(data: { name: string }): Promise<Category> {
+export async function createCategory(data: { name: string; color: string }): Promise<Category> {
   const res = await request("/api/categories", { method: "POST", body: JSON.stringify(data) });
   return res.json();
 }
 
-export async function updateCategory(id: string, data: { name: string }): Promise<Category> {
+export async function updateCategory(id: string, data: { name: string; color: string }): Promise<Category> {
   const res = await request(`/api/categories/${id}`, { method: "PUT", body: JSON.stringify(data) });
   return res.json();
 }

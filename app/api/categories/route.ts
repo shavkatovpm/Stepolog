@@ -23,9 +23,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
   }
 
-  const { name } = body;
+  const { name, color } = body;
   if (!name?.trim()) return NextResponse.json({ error: "Kategoriya nomini kiriting" }, { status: 400 });
 
-  const category = await prisma.category.create({ data: { name: name.trim() } });
+  const category = await prisma.category.create({ data: { name: name.trim(), color: color || "color-7" } });
   return NextResponse.json(category, { status: 201 });
 }

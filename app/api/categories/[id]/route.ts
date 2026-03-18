@@ -14,10 +14,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
   }
 
-  const { name } = body;
+  const { name, color } = body;
   const category = await prisma.category.update({
     where: { id },
-    data: { ...(name !== undefined && { name: name.trim() }) },
+    data: {
+      ...(name !== undefined && { name: name.trim() }),
+      ...(color !== undefined && { color }),
+    },
   });
   return NextResponse.json(category);
 }
