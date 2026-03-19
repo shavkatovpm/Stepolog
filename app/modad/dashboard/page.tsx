@@ -80,7 +80,7 @@ export default function ModadDashboard() {
   const [cBrandCount] = useState("");
   const [cMainQuestion, setCMainQuestion] = useState("");
   const [cBlogTopics] = useState<string[]>([]);
-  const [cContentType, setCContentType] = useState<"own" | "brand">("own");
+  const [cContentType, setCContentType] = useState<"own" | "brand" | "">("");
 
   const [pasteText, setPasteText] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -295,7 +295,7 @@ export default function ModadDashboard() {
     setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
     setCInternalLink(""); setCIntent(""); setCSource("");
     setCFacts(""); setCMainQuestion("");
-    setCContentType("own");
+    setCContentType("");
     setContentModalOpen(true);
   }
 
@@ -318,7 +318,7 @@ export default function ModadDashboard() {
     try {
       const data = {
         title: cTitle.trim(), publishDate: cDate, status: cStatus,
-        note: cNote.trim(), contentType: cContentType,
+        note: cNote.trim(), contentType: (cContentType || "own") as "own" | "brand",
         keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
         intent: cIntent, source: cSource, facts: cFacts.trim(),
         brandCount: cBrandCount, mainQuestion: cMainQuestion.trim(),
@@ -530,7 +530,7 @@ export default function ModadDashboard() {
               const allToday = state.contents.filter((c) => c.publishDate === today && c.status !== "published").length;
               return (
                 <div
-                  className={`m-project-item ${currentCategoryId === null && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
+                  className={`m-project-item m-cat-all ${currentCategoryId === null && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
                   onClick={() => { setCurrentCategoryId(null); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
                 >
                   <div className="m-project-dot" style={{ background: "var(--m-text3)" }} />
@@ -1014,6 +1014,7 @@ export default function ModadDashboard() {
             }
             {contentStep < 2
               ? <button className="m-btn-save" onClick={() => {
+                  if (contentStep === 0 && !cContentType) { showToast("Kontent turini tanlang!"); return; }
                   if (contentStep === 1 && !cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
                   if (contentStep === 1 && cContentType === "brand" && !cNote.trim()) { showToast("Brend nomini kiriting!"); return; }
                   setContentStep(contentStep + 1);
