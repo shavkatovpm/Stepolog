@@ -314,6 +314,7 @@ export default function ModadDashboard() {
 
   async function saveContent() {
     if (!cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
+    if (!cIntent) { showToast("Kontent turini tanlang!"); setContentStep(2); return; }
     setSaving(true);
     try {
       const data = {
@@ -981,7 +982,7 @@ export default function ModadDashboard() {
                     <input className="m-form-input" value={cKeyword} onChange={(e) => setCKeyword(e.target.value)} placeholder="startap ochish o'zbekiston" />
                   </div>
                   <div className="m-form-group">
-                    <label className="m-form-label">Kontent turi</label>
+                    <label className="m-form-label">Kontent turi *</label>
                     <IntentSelect value={cIntent} onChange={setCIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
                   </div>
                   <div className="m-form-group m-form-full">
