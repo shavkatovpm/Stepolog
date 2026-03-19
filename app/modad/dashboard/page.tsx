@@ -533,10 +533,10 @@ export default function ModadDashboard() {
                   className={`m-project-item ${currentCategoryId === null && !state.currentProjectId && currentPage === "projects" ? "active" : ""}`}
                   onClick={() => { setCurrentCategoryId(null); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
                 >
-                  <div className="m-project-dot" style={{ background: "var(--m-text3)" }} />
-                  <span className="m-project-name">Barchasi</span>
                   {allOverdue > 0 && <span className="m-cat-badge m-cat-badge-red" title={`${allOverdue} ta kechikkan`}>🔔 {allOverdue}</span>}
                   {allToday > 0 && <span className="m-cat-badge m-cat-badge-yellow" title={`${allToday} ta bugun`}>🔔 {allToday}</span>}
+                  <div className="m-project-dot" style={{ background: "var(--m-text3)" }} />
+                  <span className="m-project-name">Barchasi</span>
                   <span className="m-project-count">{state.projects.length}</span>
                 </div>
               );
@@ -562,11 +562,11 @@ export default function ModadDashboard() {
                   onDragEnd={() => { setDragCatId(null); setDragOverCatId(null); }}
                   onClick={() => { setCurrentCategoryId(cat.id); setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("projects"); }}
                 >
+                  {catOverdue > 0 && <span className="m-cat-badge m-cat-badge-red" title={`${catOverdue} ta kechikkan`}>🔔 {catOverdue}</span>}
+                  {catToday > 0 && <span className="m-cat-badge m-cat-badge-yellow" title={`${catToday} ta bugun`}>🔔 {catToday}</span>}
                   <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
                   <div className={`m-project-dot m-${cat.color || "color-7"}`} />
                   <span className="m-project-name">{cat.name}</span>
-                  {catOverdue > 0 && <span className="m-cat-badge m-cat-badge-red" title={`${catOverdue} ta kechikkan`}>🔔 {catOverdue}</span>}
-                  {catToday > 0 && <span className="m-cat-badge m-cat-badge-yellow" title={`${catToday} ta bugun`}>🔔 {catToday}</span>}
                   <span className="m-project-count">{catCount}</span>
                   <div style={{ position: "relative", flexShrink: 0, marginLeft: "auto" }}>
                     <button className="m-sidebar-cat-menu" onClick={(e) => { e.stopPropagation(); setCatMenuId(catMenuId === cat.id ? null : cat.id); }}>⋯</button>
