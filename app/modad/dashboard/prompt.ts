@@ -24,6 +24,9 @@ function generateOwnPrompt(c: Content, project?: Project): string {
   const lines: string[] = [];
   const today = new Date().toISOString().split("T")[0];
 
+  lines.push("⚠️ MUHIM: Maqola MINIMUM 1500 so'z bo'lishi SHART. 1200 so'zdan kam bo'lsa — maqola qabul qilinmaydi. Har bir H2 bo'lim kamida 200–300 so'z bo'lsin. Qisqa javob emas, CHUQUR tahlil yoz.");
+  lines.push("");
+
   lines.push("1. MAQOLA MAQSADI (INTENT)");
   lines.push("");
   lines.push(`Mavzu: ${c.title}`);
@@ -36,10 +39,10 @@ function generateOwnPrompt(c: Content, project?: Project): string {
   lines.push("2. STRUKTURA (ANIQ CHEKLOV)");
   lines.push("");
   lines.push(`H1: 1 ta — "${c.title}"`);
-  lines.push("H2: 4–7 ta (har biri alohida sub-intent)");
-  lines.push("Har bo'lim: 120–250 so'z");
-  lines.push("FAQ: 5–7 ta savol (featured snippet uchun)");
-  lines.push("Umumiy hajm: 1200–2000 so'z");
+  lines.push("H2: 5–7 ta (har biri alohida sub-intent)");
+  lines.push("⚠️ Har bo'lim: MINIMUM 200–300 so'z (120 so'z kam — qabul qilinmaydi)");
+  lines.push("FAQ: 5–7 ta savol (featured snippet uchun, har javob 2-3 gap)");
+  lines.push("⚠️ UMUMIY HAJM: MINIMUM 1500 so'z. Maqsad: 1500–2200 so'z");
   lines.push("");
 
   lines.push("3. KIRISH (INTRO QOIDASI)");
@@ -107,6 +110,7 @@ function generateOwnPrompt(c: Content, project?: Project): string {
   lines.push("Har maqola boshqacha boshlansin");
   lines.push("Bir maqola = bitta asosiy intent");
   lines.push("Oldingi maqolalarga o'xshab ketmasin");
+  lines.push("⚠️ ESLATMA: Maqola 1500 so'zdan KAM bo'lsa qayta yoz. Har bo'limni chuqurroq, misollar va tushuntirishlar bilan boyit");
   if (project?.domain) lines.push(`Sayt: ${project.domain}`);
   if (c.publishDate) lines.push(`Nashr sanasi: ${c.publishDate}${c.publishDate === today ? " (BUGUN)" : ""}`);
 
@@ -117,6 +121,8 @@ function generateOwnPrompt(c: Content, project?: Project): string {
 function generateBrandPrompt(c: Content, project?: Project): string {
   const lines: string[] = [];
 
+  lines.push("⚠️ MUHIM: Maqola MINIMUM 1500 so'z bo'lishi SHART. 1200 so'zdan kam bo'lsa — maqola qabul qilinmaydi. Har bir H2 bo'lim kamida 200–300 so'z bo'lsin.");
+  lines.push("");
   lines.push("Quyidagi mavzu bo'yicha SEO maqola yoz, lekin asosiy maqsad — foydalanuvchiga qiymat berish va mavzuni tushuntirish. Maqola ichida berilgan loyiha (brand) tabiiy kontekstda, majburiy reklamasiz tilga olinsin.");
   lines.push("");
 
@@ -161,14 +167,15 @@ function generateBrandPrompt(c: Content, project?: Project): string {
   lines.push("");
   lines.push(`H1: ${c.title}`);
   lines.push("H2: 5–7 ta bo'lim");
+  lines.push("⚠️ Har bo'lim: MINIMUM 200–300 so'z");
   lines.push("Majburiy bloklar:");
   lines.push("  — Muammo / real vaziyat");
   lines.push("  — Variantlar yoki yechimlar");
   lines.push("  — Taqqoslash (kamida 2–3 variant)");
   lines.push("  — Xavfsizlik yoki ehtiyot choralar");
   lines.push("  — Yakuniy tavsiya");
-  lines.push("FAQ: 4–6 ta savol");
-  lines.push("Hajm: 1200–1800 so'z");
+  lines.push("FAQ: 4–6 ta savol (har javob 2-3 gap)");
+  lines.push("⚠️ UMUMIY HAJM: MINIMUM 1500 so'z. Maqsad: 1500–2000 so'z");
   lines.push("");
 
   lines.push("5. BRANDNI JOYLASHTIRISH QOIDASI (ENG MUHIM)");
@@ -234,6 +241,7 @@ function generateBrandPrompt(c: Content, project?: Project): string {
   lines.push("Markdown format");
   lines.push("Sarlavhalar aniq ajratilgan");
   lines.push("O'qilishi oson");
+  lines.push("⚠️ ESLATMA: Maqola 1500 so'zdan KAM bo'lsa qayta yoz. Har bo'limni chuqurroq yoz, misollar va tushuntirishlar qo'sh");
 
   return lines.join("\n");
 }
