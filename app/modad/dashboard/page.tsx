@@ -535,11 +535,11 @@ export default function ModadDashboard() {
                 >
                   <div className="m-project-dot" style={{ background: "var(--m-text3)" }} />
                   <span className="m-project-name">Barchasi</span>
-                  <span className="m-cat-badges">
+                  <div className="m-cat-right">
                     {allOverdue > 0 && <span className="m-cat-badge m-cat-badge-red" title={`${allOverdue} ta kechikkan`}>🔔 {allOverdue}</span>}
                     {allToday > 0 && <span className="m-cat-badge m-cat-badge-yellow" title={`${allToday} ta bugun`}>🔔 {allToday}</span>}
-                  </span>
-                  <span className="m-project-count">{state.projects.length}</span>
+                    <span className="m-project-count">{state.projects.length}</span>
+                  </div>
                 </div>
               );
             })()}
@@ -567,11 +567,11 @@ export default function ModadDashboard() {
                   <div style={{ cursor: "grab", display: "flex", alignItems: "center", color: "var(--m-text3)", fontSize: 10, flexShrink: 0 }}>⠿</div>
                   <div className={`m-project-dot m-${cat.color || "color-7"}`} />
                   <span className="m-project-name">{cat.name}</span>
-                  <span className="m-cat-badges">
+                  <div className="m-cat-right">
                     {catOverdue > 0 && <span className="m-cat-badge m-cat-badge-red" title={`${catOverdue} ta kechikkan`}>🔔 {catOverdue}</span>}
                     {catToday > 0 && <span className="m-cat-badge m-cat-badge-yellow" title={`${catToday} ta bugun`}>🔔 {catToday}</span>}
-                  </span>
-                  <span className="m-project-count">{catCount}</span>
+                    <span className="m-project-count">{catCount}</span>
+                  </div>
                   <div style={{ position: "relative", flexShrink: 0 }}>
                     <button className="m-sidebar-cat-menu" onClick={(e) => { e.stopPropagation(); setCatMenuId(catMenuId === cat.id ? null : cat.id); }}>⋯</button>
                     {catMenuId === cat.id && (
