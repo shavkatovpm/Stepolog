@@ -1048,8 +1048,8 @@ export default function ModadDashboard() {
                   </div>
                 </div>
                 {cardContent.facts && <div style={{ marginBottom: 14 }}><DetailRow label="Faktlar / statistika" value="" /><div className="m-facts-box">{cardContent.facts}</div></div>}
-                {cardContent.status === "ready" && <div><div className="m-detail-section-title">Tayyor kontent matni</div><textarea className="m-card-textarea" placeholder="AI yozgan tayyor blog matnini shu yerga paste qiling..." defaultValue={cardContent.contentText || ""} onBlur={(e) => saveContentText(cardContent.id, e.target.value)} /></div>}
-                {cardContent.status === "published" && cardContent.contentText && <div><div className="m-detail-section-title">Joylashtirilgan kontent</div><div className="m-facts-box" style={{ maxHeight: 300 }}>{cardContent.contentText}</div></div>}
+                {cardContent.status === "ready" && <div><div className="m-detail-section-title">Tayyor kontent matni</div><textarea className="m-card-textarea" placeholder="AI yozgan tayyor blog matnini shu yerga paste qiling..." defaultValue={cardContent.contentText || ""} onBlur={(e) => saveContentText(cardContent.id, e.target.value)} onInput={(e) => { const el = (e.target as HTMLTextAreaElement); const counter = el.nextElementSibling; if (counter) { const words = el.value.trim() ? el.value.trim().split(/\s+/).filter(Boolean).length : 0; counter.textContent = words ? `So'zlar: ${words.toLocaleString()} ta` : ""; }}} /><div className="m-word-count">{(() => { const t = cardContent.contentText || ""; const w = t.trim() ? t.trim().split(/\s+/).filter(Boolean).length : 0; return w ? `So'zlar: ${w.toLocaleString()} ta` : ""; })()}</div></div>}
+                {cardContent.status === "published" && cardContent.contentText && <div><div className="m-detail-section-title">Joylashtirilgan kontent</div><div className="m-facts-box" style={{ maxHeight: 300 }}>{cardContent.contentText}</div><div className="m-word-count">So&apos;zlar: {cardContent.contentText.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} ta</div></div>}
               </div>
               <div className="m-modal-footer">
                 <button className="m-btn-action m-btn-dim" style={{ marginRight: "auto" }} disabled={saving} onClick={() => { setCardModalId(null); setTimeout(() => setDeleteConfirmId(cardContent.id), 100); }}>O&apos;chirish</button>
@@ -1104,6 +1104,7 @@ export default function ModadDashboard() {
                 <p style={{ fontSize: 13, color: "var(--m-text2)", marginBottom: 6 }}>{pasteContent.title}</p>
                 <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>AI yozgan tayyor blog matnini quyiga paste qiling:</p>
                 <textarea className="m-card-textarea" style={{ minHeight: 260 }} placeholder="Tayyor blog matnini bu yerga paste qiling..." value={pasteText} onChange={(e) => setPasteText(e.target.value)} />
+                {pasteText.trim() && <div className="m-word-count">So&apos;zlar: {pasteText.trim().split(/\s+/).filter(Boolean).length.toLocaleString()} ta</div>}
               </div>
               <div className="m-modal-footer"><button className="m-btn-cancel" onClick={() => setPasteModalId(null)} disabled={saving}>Bekor</button><button className="m-btn-save" onClick={confirmPaste} disabled={saving}>{saving ? "Saqlanmoqda..." : "✓ Joyladim"}</button></div>
             </>
