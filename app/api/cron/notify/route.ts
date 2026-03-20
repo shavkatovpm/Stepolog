@@ -13,24 +13,27 @@ export async function GET(req: Request) {
   const today = new Date().toISOString().split("T")[0];
 
   const contents = await prisma.content.findMany({
-    where: { publishDate: today, status: "planned" },
+    where: { publishDate: today, status: { not: "published" } },
     include: { project: { select: { name: true, domain: true } } },
   });
 
   if (contents.length === 0) {
-    return NextResponse.json({ message: "Bugun uchun kontent yo'q" });
+    return NextResponse.json({ message: "Bugun uchun kontent yo'q yoki hammasi joylashtirilgan" });
   }
+
+  const statusLabel: Record<string, string> = { planned: "Rejalashtirilgan", ready: "Tayyor" };
 
   const lines = contents.map((c, i) => {
     const project = c.project.name || "—";
     const type = c.contentType === "brand" ? "Brend" : "Shaxsiy";
-    return `${i + 1}. <b>${c.title}</b>\n   Loyiha: ${project} | Turi: ${type}`;
+    const status = statusLabel[c.status] || c.status;
+    return `${i + 1}. <b>${c.title}</b>\n   Loyiha: ${project} | Turi: ${type} | Holat: ${status}`;
   });
 
   const message =
-    `📋 <b>Bugun chiqishi kerak (${today}):</b>\n\n` +
+    `⚠️ <b>Hali joylanmagan kontentlar (${today}):</b>\n\n` +
     lines.join("\n\n") +
-    `\n\n📊 Jami: ${contents.length} ta kontent`;
+    `\n\n📊 Jami: ${contents.length} ta kontent hali chiqarilmagan`;
 
   const sent = await sendTelegram(message);
 
