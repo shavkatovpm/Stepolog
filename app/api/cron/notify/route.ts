@@ -28,16 +28,13 @@ export async function GET(req: Request) {
     const project = c.project.name || "—";
     const type = c.contentType === "brand" ? "Brend" : "Shaxsiy";
     const status = statusLabel[c.status] || c.status;
-    return `  ${i + 1}. ${c.title}\n      ${project}  |  ${type}  |  ${status}`;
+    return `${i + 1}. ${c.title}\n\nLoyiha: ${project}\nTuri: ${type}\nHolat: ${status}`;
   });
 
   const message =
-    `📋  <b>Bugun chiqarilishi kerak</b>\n` +
-    `📅  ${today}\n` +
-    `━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `📋 Bugun chiqarilishi kerak (${today}):\n\n` +
     lines.join("\n\n") +
-    `\n\n━━━━━━━━━━━━━━━━━━━━\n` +
-    `📊  Jami: <b>${contents.length}</b> ta kontent`;
+    `\n\n📊 Jami: ${contents.length} ta kontent`;
 
   const sent = await sendTelegram(message);
 
