@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendTelegram } from "@/lib/telegram";
 
-// Ertalab 10:00 — bugun chiqishi kerak bo'lgan kontentlar
+// Kechki 20:00 — hali joylanmagan kontentlar eslatmasi
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -14,15 +14,15 @@ export async function GET(req: Request) {
   const today = new Date().toISOString().split("T")[0];
 
   const contents = await prisma.content.findMany({
-    where: { publishDate: today },
+    where: { publishDate: today, status: { not: "published" } },
     include: { project: { select: { name: true, domain: true } } },
   });
 
   if (contents.length === 0) {
-    return NextResponse.json({ message: "Bugun uchun kontent yo'q" });
+    return NextResponse.json({ message: "Hammasi joylashtirilgan yoki bugun uchun kontent yo'q" });
   }
 
-  const statusLabel: Record<string, string> = { planned: "Rejalashtirilgan", ready: "Tayyor", published: "Joylashtirilgan" };
+  const statusLabel: Record<string, string> = { planned: "Rejalashtirilgan", ready: "Tayyor" };
 
   const lines = contents.map((c, i) => {
     const project = c.project.name || "—";
@@ -32,9 +32,9 @@ export async function GET(req: Request) {
   });
 
   const message =
-    `📋 <b>Bugun chiqarilishi kerak (${today}):</b>\n\n` +
+    `🔴 <b>Hali joylanmagan kontentlar (${today}):</b>\n\n` +
     lines.join("\n\n") +
-    `\n\n📊 Jami: ${contents.length} ta kontent`;
+    `\n\n⚠️ Ushbu ${contents.length} ta kontent bugun chiqishi kerak edi, lekin hali joylanmagan!`;
 
   const sent = await sendTelegram(message);
 
