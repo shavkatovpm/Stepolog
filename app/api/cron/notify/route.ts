@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tashkent" })).toISOString().split("T")[0];
 
   const contents = await prisma.content.findMany({
     where: { publishDate: today },
@@ -28,13 +28,16 @@ export async function GET(req: Request) {
     const project = c.project.name || "—";
     const type = c.contentType === "brand" ? "Brend" : "Shaxsiy";
     const status = statusLabel[c.status] || c.status;
-    return `${i + 1}. <b>${c.title}</b>\n   Loyiha: ${project} | Turi: ${type} | Holat: ${status}`;
+    return `  ${i + 1}. ${c.title}\n      ${project}  |  ${type}  |  ${status}`;
   });
 
   const message =
-    `📋 <b>Bugun chiqarilishi kerak (${today}):</b>\n\n` +
+    `📋  <b>Bugun chiqarilishi kerak</b>\n` +
+    `📅  ${today}\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n\n` +
     lines.join("\n\n") +
-    `\n\n📊 Jami: ${contents.length} ta kontent`;
+    `\n\n━━━━━━━━━━━━━━━━━━━━\n` +
+    `📊  Jami: <b>${contents.length}</b> ta kontent`;
 
   const sent = await sendTelegram(message);
 
