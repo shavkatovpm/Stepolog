@@ -77,6 +77,7 @@ export default function ModadDashboard() {
   const [contentStep, setContentStep] = useState(0);
   const [cSource, setCSource] = useState("");
   const [cFacts, setCFacts] = useState("");
+  const [cCtaTarget, setCCtaTarget] = useState("");
   const [cBrandCount] = useState("");
   const [cMainQuestion, setCMainQuestion] = useState("");
   const [cBlogTopics] = useState<string[]>([]);
@@ -294,7 +295,7 @@ export default function ModadDashboard() {
     setCTitle(""); setCDate(new Date().toISOString().split("T")[0]);
     setCStatus("planned"); setCNote(""); setCKeyword(""); setCKeywords2("");
     setCInternalLink(""); setCIntent(""); setCSource("");
-    setCFacts(""); setCMainQuestion("");
+    setCFacts(""); setCCtaTarget(""); setCMainQuestion("");
     setCContentType("");
     setContentModalOpen(true);
   }
@@ -307,7 +308,7 @@ export default function ModadDashboard() {
     setCTitle(c.title); setCDate(c.publishDate); setCStatus(c.status as Content["status"]);
     setCNote(c.note); setCKeyword(c.keyword); setCKeywords2(c.keywords2);
     setCInternalLink(c.internalLink); setCIntent(c.intent); setCSource(c.source);
-    setCFacts(c.facts); setCMainQuestion(c.mainQuestion);
+    setCFacts(c.facts); setCCtaTarget(c.ctaTarget || ""); setCMainQuestion(c.mainQuestion);
     setCContentType((c.contentType as "own" | "brand") || "own");
     setContentModalOpen(true);
   }
@@ -321,7 +322,7 @@ export default function ModadDashboard() {
         title: cTitle.trim(), publishDate: cDate, status: cStatus,
         note: cNote.trim(), contentType: (cContentType || "own") as "own" | "brand",
         keyword: cKeyword.trim(), keywords2: cKeywords2.trim(), internalLink: cInternalLink.trim(),
-        intent: cIntent, source: cSource, facts: cFacts.trim(),
+        intent: cIntent, source: cSource, facts: cFacts.trim(), ctaTarget: cCtaTarget.trim(),
         brandCount: cBrandCount, mainQuestion: cMainQuestion.trim(),
         blogTopics: cBlogTopics.filter(Boolean).join("\n"),
       };
@@ -1000,8 +1001,8 @@ export default function ModadDashboard() {
                     <input className="m-form-input" value={cMainQuestion} onChange={(e) => setCMainQuestion(e.target.value)} placeholder="O'zbekistonda startap qanday ochiladi?" />
                   </div>
                   <div className="m-form-group m-form-full">
-                    <label className="m-form-label">Faktlar / statistika</label>
-                    <textarea className="m-form-textarea" value={cFacts} onChange={(e) => setCFacts(e.target.value)} placeholder="Masalan: 2023 yilda 12,000 dan ortiq startap ro'yxatdan o'tgan..." />
+                    <label className="m-form-label">CTA maqsadi</label>
+                    <input className="m-form-input" value={cCtaTarget} onChange={(e) => setCCtaTarget(e.target.value)} placeholder="Masalan: Konsultatsiya olish uchun bog'laning, Saytga o'ting: example.uz" />
                   </div>
                 </div>
               </div>

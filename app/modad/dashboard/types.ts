@@ -30,6 +30,7 @@ export interface Content {
   intent: string;
   source: string;
   facts: string;
+  ctaTarget: string;
   brandCount: string;
   mainQuestion: string;
   blogTopics: string;

@@ -54,6 +54,7 @@ model Content {
   intent       String   @default("")
   source       String   @default("")
   facts        String   @default("")
+  ctaTarget    String   @default("")
   brandCount   String   @default("3")
   mainQuestion String   @default("")
   blogTopics   String   @default("")

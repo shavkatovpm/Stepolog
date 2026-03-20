@@ -47,6 +47,7 @@ export async function POST(req: Request) {
       intent: data.intent || "",
       source: data.source?.trim() || "",
       facts: data.facts?.trim() || "",
+      ctaTarget: data.ctaTarget?.trim() || "",
       brandCount: data.brandCount || "3",
       mainQuestion: data.mainQuestion?.trim() || "",
       blogTopics: data.blogTopics || "",

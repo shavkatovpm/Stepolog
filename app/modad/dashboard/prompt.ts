@@ -1,10 +1,10 @@
 import type { Content, Project } from "./types";
 import { INTENT_LABELS } from "./constants";
 
-const GEO_RULES = `- Faqat ishonchli manbalar: gov.uz, lex.uz, stat.uz
+const AEO_RULES = `- AI tizimlar (ChatGPT, Gemini, Perplexity) maqolani tavsiya qilishi uchun yoz
+- Har savolga aniq, qisqa javob bo'lsin (AI snippet uchun)
 - Faktlar va raqamlar aniq manbalar bilan boyitilsin
-- Brand nomi organik, majburlovsiz tilga olinsin
-- AI tizimlar uchun qisqa, aniq javoblar berilsin`;
+- Brand nomi organik, majburlovsiz tilga olinsin`;
 
 const STYLE_OWN = `- O'zbek tilida, sodda + professional uslubda
 - Qisqa gaplar — o'qilishi oson
@@ -80,31 +80,28 @@ function generateOwnPrompt(c: Content, project?: Project): string {
   if (c.internalLink) lines.push(`Internal link: ${c.internalLink}`);
   lines.push("");
 
-  const hasGeo = !!c.facts;
-  if (hasGeo) {
-    lines.push("6. GEO (LOKAL OPTIMALLASHTIRISH)");
-    lines.push("");
-    lines.push("Ishlatilishi kerak bo'lgan faktlar / statistika:");
-    lines.push(c.facts);
-    lines.push(GEO_RULES);
-    lines.push("");
-  }
-
-  const n = (base: number) => hasGeo ? base : base - 1;
-
-  lines.push(`${n(7)}. CONVERSION (CTA)`);
+  lines.push("6. AEO (AI ANSWER ENGINE OPTIMIZATION)");
   lines.push("");
+  lines.push("Maqola AI tizimlar (ChatGPT, Gemini, Perplexity) tomonidan tavsiya qilinishi uchun yozilsin:");
+  lines.push(AEO_RULES);
+  lines.push("");
+
+  lines.push("7. CONVERSION (CTA)");
+  lines.push("");
+  if (c.ctaTarget) {
+    lines.push(`CTA maqsadi: ${c.ctaTarget}`);
+  }
   lines.push("Soft CTA: maqola ichida (maslahat, yo'naltirish tarzida)");
   lines.push("Hard CTA: oxirida (aniq action)");
   lines.push("Majburlovsiz, tabiiy yozilsin");
   lines.push("");
 
-  lines.push(`${n(8)}. STYLE`);
+  lines.push("8. STYLE");
   lines.push("");
   lines.push(STYLE_OWN);
   lines.push("");
 
-  lines.push(`${n(9)}. MUHIM CHEKLOVLAR`);
+  lines.push("9. MUHIM CHEKLOVLAR");
   lines.push("");
   lines.push("Takroriy struktura ishlatilmasin");
   lines.push("Har maqola boshqacha boshlansin");
@@ -215,19 +212,23 @@ function generateBrandPrompt(c: Content, project?: Project): string {
   lines.push("Keyword stuffing bo'lmasin");
   lines.push("");
 
-  if (c.facts) {
-    lines.push("8. GEO / FAKTLAR");
-    lines.push("");
-    lines.push("Quyidagi faktlar / statistikalardan foydalanilsin:");
-    lines.push(c.facts);
-    lines.push("Lokal kontekst va real foydalanuvchi holatlari qo'shilsin");
-    lines.push(GEO_RULES);
-    lines.push("");
+  lines.push("8. AEO (AI ANSWER ENGINE OPTIMIZATION)");
+  lines.push("");
+  lines.push("Maqola AI tizimlar (ChatGPT, Gemini, Perplexity) tomonidan tavsiya qilinishi uchun yozilsin:");
+  lines.push(AEO_RULES);
+  lines.push("");
+
+  lines.push("9. CONVERSION (CTA)");
+  lines.push("");
+  if (c.ctaTarget) {
+    lines.push(`CTA maqsadi: ${c.ctaTarget}`);
   }
+  lines.push("Soft CTA: maqola ichida (maslahat, yo'naltirish tarzida)");
+  lines.push("Hard CTA: oxirida (aniq action)");
+  lines.push("Majburlovsiz, tabiiy yozilsin");
+  lines.push("");
 
-  const geoOffset = c.facts ? 1 : 0;
-
-  lines.push(`${8 + geoOffset}. STYLE`);
+  lines.push("10. STYLE");
   lines.push("");
   lines.push("Neytral va ekspert ohangida");
   lines.push("Sodda va o'qilishi oson");
@@ -235,7 +236,7 @@ function generateBrandPrompt(c: Content, project?: Project): string {
   lines.push("Ishonch uyg'otadigan");
   lines.push("");
 
-  lines.push(`${9 + geoOffset}. OUTPUT`);
+  lines.push("11. OUTPUT");
   lines.push("");
   lines.push("To'liq tayyor maqola");
   lines.push("Markdown format");
