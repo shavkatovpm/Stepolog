@@ -56,7 +56,7 @@ export default function IntentSelect({
                   <span style={{ width: 8, height: 8, borderRadius: "50%", background: selectedIntent.color, flexShrink: 0 }} />
                 )}
                 <select className="m-form-select m-intent-select-el" value={value} onChange={(e) => onChange(e.target.value)}>
-                  {!value && <option value="" disabled>Tanlash</option>}
+                  <option value="">Tanlash</option>
                   {allIntents.map((i) => (
                     <option key={i.value} value={i.value}>{i.label}</option>
                   ))}

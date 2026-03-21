@@ -320,7 +320,6 @@ export default function ModadDashboard() {
 
   async function saveContent() {
     if (!cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
-    if (!cIntent) { showToast("Kontent turini tanlang!"); setContentStep(2); return; }
     setSaving(true);
     try {
       const data = {
@@ -370,7 +369,6 @@ export default function ModadDashboard() {
   async function savePlannerItems() {
     const lines = plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean);
     if (lines.length === 0) { showToast("Mavzularni kiriting!"); return; }
-    if (!plannerIntent) { showToast("SEO turini tanlang!"); return; }
     setSaving(true);
     try {
       for (const title of lines) {
@@ -1206,7 +1204,7 @@ export default function ModadDashboard() {
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label className="m-form-label">SEO turi *</label>
+                <label className="m-form-label">SEO turi</label>
                 <IntentSelect value={plannerIntent} onChange={setPlannerIntent} customIntents={state.customIntents} onAdd={addCustomIntent} onRemove={removeCustomIntent} />
               </div>
             </div>
