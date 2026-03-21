@@ -49,6 +49,7 @@ export default function ModadDashboard() {
     settings: { ...DEFAULT_SETTINGS },
   });
   const [currentView, setCurrentView] = useState<"kanban" | "table">("table");
+  const [contentMode, setContentMode] = useState<"content" | "planner">("content");
   const [currentPage, setCurrentPage] = useState<"projects" | "prompts" | "stats" | "settings">("projects");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -84,6 +85,10 @@ export default function ModadDashboard() {
   const [cContentType, setCContentType] = useState<"own" | "brand" | "">("");
 
   const [pasteText, setPasteText] = useState("");
+  const [plannerModalOpen, setPlannerModalOpen] = useState(false);
+  const [plannerText, setPlannerText] = useState("");
+  const [plannerContentType, setPlannerContentType] = useState<"own" | "brand">("own");
+  const [plannerIntent, setPlannerIntent] = useState("informational");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteProjectConfirmId, setDeleteProjectConfirmId] = useState<string | null>(null);
   const [projectMenuId, setProjectMenuId] = useState<string | null>(null);
@@ -362,6 +367,38 @@ export default function ModadDashboard() {
     await api.updateContent(id, { contentText: text });
   }
 
+  async function savePlannerItems() {
+    const lines = plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean);
+    if (lines.length === 0) { showToast("Mavzularni kiriting!"); return; }
+    setSaving(true);
+    try {
+      for (const title of lines) {
+        await api.createContent({
+          projectId: state.currentProjectId!,
+          title,
+          publishDate: "",
+          status: "planned",
+          note: "",
+          contentType: plannerContentType,
+          keyword: "",
+          keywords2: "",
+          internalLink: "",
+          intent: plannerIntent,
+          source: "",
+          facts: "",
+          ctaTarget: "",
+          brandCount: "",
+          mainQuestion: "",
+          blogTopics: "",
+        });
+      }
+      showToast(`✓ ${lines.length} ta mavzu qo'shildi`);
+      setPlannerModalOpen(false);
+      setPlannerText("");
+      await loadData();
+    } finally { setSaving(false); }
+  }
+
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
     showToast("✓ Nusxa olindi!");
@@ -419,8 +456,9 @@ export default function ModadDashboard() {
 
   // ===== COMPUTED =====
   const currentProject = state.projects.find((p) => p.id === state.currentProjectId);
-  const projectContents = state.contents
-    .filter((c) => c.projectId === state.currentProjectId)
+  const allProjectContents = state.contents.filter((c) => c.projectId === state.currentProjectId);
+  const projectContents = allProjectContents
+    .filter((c) => contentMode === "planner" ? !c.publishDate : !!c.publishDate)
     .sort((a, b) => (a.publishDate || "").localeCompare(b.publishDate || ""));
   const cardContent = cardModalId ? state.contents.find((c) => c.id === cardModalId) : null;
   const promptContent = promptModalId ? state.contents.find((c) => c.id === promptModalId) : null;
@@ -683,8 +721,16 @@ export default function ModadDashboard() {
                     <button className={`m-vt-btn ${currentView === "kanban" ? "active" : ""}`} onClick={() => setCurrentView("kanban")}>⊞ Kanban</button>
                     <button className={`m-vt-btn ${currentView === "table" ? "active" : ""}`} onClick={() => setCurrentView("table")}>☰ Jadval</button>
                   </div>
+                  <div className="m-view-toggle">
+                    <button className={`m-vt-btn ${contentMode === "content" ? "active" : ""}`} onClick={() => setContentMode("content")}>Kontent</button>
+                    <button className={`m-vt-btn ${contentMode === "planner" ? "active" : ""}`} onClick={() => setContentMode("planner")}>Planner</button>
+                  </div>
                   <button className="m-btn-action m-btn-ghost" onClick={exportPDF}>↓ PDF</button>
-                  <button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;sh</button>
+                  {contentMode === "content" ? (
+                    <button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;sh</button>
+                  ) : (
+                    <button className="m-btn-add-content" onClick={() => { setPlannerText(""); setPlannerContentType("own"); setPlannerIntent("informational"); setPlannerModalOpen(true); }}>+ Planner qo&apos;sh</button>
+                  )}
                 </div>
               </div>
 
@@ -1132,6 +1178,35 @@ export default function ModadDashboard() {
               <div className="m-modal-footer"><button className="m-btn-cancel" onClick={() => setPasteModalId(null)} disabled={saving}>Bekor</button><button className="m-btn-save" onClick={confirmPaste} disabled={saving}>{saving ? "Saqlanmoqda..." : "✓ Joyladim"}</button></div>
             </>
           )}
+        </div>
+      </div>
+
+      {/* ===== PLANNER MODAL ===== */}
+      <div className={`m-modal-overlay ${plannerModalOpen ? "open" : ""}`} onClick={() => setPlannerModalOpen(false)}>
+        <div className="m-modal" style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
+          <div className="m-modal-header"><div className="m-modal-title">PLANNER — MAVZULAR QO&apos;SHISH</div><button className="m-modal-close" onClick={() => setPlannerModalOpen(false)}>✕</button></div>
+          <div className="m-modal-body">
+            <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>Har bir qatorga bitta mavzu yozing. Raqamlar avtomatik olib tashlanadi.</p>
+            <textarea className="m-card-textarea" style={{ minHeight: 200 }} placeholder={"1. Stars sotib olish bo'yicha\n2. Stars qanday sotib olinadi\n3. Starsdan ko'proq foyda olish"} value={plannerText} onChange={(e) => setPlannerText(e.target.value)} />
+            {plannerText.trim() && <div className="m-word-count">{plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean).length} ta mavzu</div>}
+            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+              <div style={{ flex: 1 }}>
+                <label className="m-form-label">Tur</label>
+                <select className="m-form-select" value={plannerContentType} onChange={(e) => setPlannerContentType(e.target.value as "own" | "brand")}>
+                  <option value="own">Shaxsiy kontent</option>
+                  <option value="brand">Boshqa brend</option>
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label className="m-form-label">SEO turi</label>
+                <IntentSelect value={plannerIntent} onChange={setPlannerIntent} customIntents={state.customIntents} onAdd={() => {}} onRemove={() => {}} />
+              </div>
+            </div>
+          </div>
+          <div className="m-modal-footer">
+            <button className="m-btn-cancel" onClick={() => setPlannerModalOpen(false)} disabled={saving}>Bekor</button>
+            <button className="m-btn-save" onClick={savePlannerItems} disabled={saving}>{saving ? "Saqlanmoqda..." : "✓ Qo'shish"}</button>
+          </div>
         </div>
       </div>
 
