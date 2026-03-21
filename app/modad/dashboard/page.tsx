@@ -109,6 +109,7 @@ export default function ModadDashboard() {
   const [moveCatProjectId, setMoveCatProjectId] = useState<string | null>(null);
   const [dragCatId, setDragCatId] = useState<string | null>(null);
   const [dragOverCatId, setDragOverCatId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // ===== LOAD DATA =====
   const loadData = useCallback(async () => {
@@ -550,7 +551,10 @@ export default function ModadDashboard() {
       {/* TOPBAR */}
       <div className="m-topbar">
         <div className="m-topbar-left">
-          <div className="m-logo" onClick={showProjects} style={{ cursor: "pointer" }}>STEPOLOG</div>
+          <button className="m-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            <span /><span /><span />
+          </button>
+          <div className="m-logo" onClick={() => { showProjects(); setSidebarOpen(false); }} style={{ cursor: "pointer" }}>STEPOLOG</div>
         </div>
         <div className="m-topbar-right">
           {!state.currentProjectId && (
@@ -564,7 +568,8 @@ export default function ModadDashboard() {
 
       <div className="m-layout">
         {/* SIDEBAR */}
-        <aside className="m-sidebar" onClick={() => setCatMenuId(null)}>
+        {sidebarOpen && <div className="m-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+        <aside className={`m-sidebar ${sidebarOpen ? "m-sidebar-open" : ""}`} onClick={() => setCatMenuId(null)}>
           <div className="m-sidebar-section">
             <div className="m-sidebar-label-row">
               <div className="m-sidebar-label">Kategoriyalar</div>
