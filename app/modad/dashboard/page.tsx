@@ -88,7 +88,7 @@ export default function ModadDashboard() {
   const [plannerModalOpen, setPlannerModalOpen] = useState(false);
   const [plannerText, setPlannerText] = useState("");
   const [plannerContentType, setPlannerContentType] = useState<"own" | "brand">("own");
-  const [plannerIntent, setPlannerIntent] = useState("informational");
+  const [plannerIntent, setPlannerIntent] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteProjectConfirmId, setDeleteProjectConfirmId] = useState<string | null>(null);
   const [projectMenuId, setProjectMenuId] = useState<string | null>(null);
