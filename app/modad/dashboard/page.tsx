@@ -737,7 +737,7 @@ export default function ModadDashboard() {
                   {contentMode === "content" ? (
                     <button className="m-btn-add-content" onClick={openContentModal}>+ Kontent qo&apos;sh</button>
                   ) : (
-                    <button className="m-btn-add-content" onClick={() => { setPlannerText(""); setPlannerContentType("own"); setPlannerIntent("informational"); setPlannerModalOpen(true); }}>+ Planner qo&apos;sh</button>
+                    <button className="m-btn-add-content" onClick={() => { setPlannerText(""); setPlannerContentType("own"); setPlannerIntent(""); setPlannerModalOpen(true); }}>+ Planner qo&apos;sh</button>
                   )}
                 </div>
               </div>
