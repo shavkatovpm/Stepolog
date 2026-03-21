@@ -383,7 +383,7 @@ export default function ModadDashboard() {
           keyword: "",
           keywords2: "",
           internalLink: "",
-          intent: plannerIntent,
+          intent: "",
           source: "",
           facts: "",
           ctaTarget: "",
@@ -1190,8 +1190,11 @@ export default function ModadDashboard() {
             <textarea className="m-card-textarea" style={{ minHeight: 200 }} placeholder={"1. Stars sotib olish bo'yicha\n2. Stars qanday sotib olinadi\n3. Starsdan ko'proq foyda olish"} value={plannerText} onChange={(e) => setPlannerText(e.target.value)} />
             {plannerText.trim() && <div className="m-word-count">{plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean).length} ta mavzu</div>}
             <div style={{ marginTop: 16 }}>
-              <label className="m-form-label">SEO turi</label>
-              <IntentSelect value={plannerIntent} onChange={setPlannerIntent} customIntents={state.customIntents} onAdd={() => {}} onRemove={() => {}} />
+              <label className="m-form-label">Tur</label>
+              <select className="m-form-select" value={plannerContentType} onChange={(e) => setPlannerContentType(e.target.value as "own" | "brand")}>
+                <option value="own">Shaxsiy kontent</option>
+                <option value="brand">Boshqa brend</option>
+              </select>
             </div>
           </div>
           <div className="m-modal-footer">
