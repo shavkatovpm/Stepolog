@@ -369,6 +369,7 @@ export default function ModadDashboard() {
   async function savePlannerItems() {
     const lines = plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean);
     if (lines.length === 0) { showToast("Mavzularni kiriting!"); return; }
+    if (!plannerIntent) { showToast("SEO turini tanlang!"); return; }
     setSaving(true);
     try {
       for (const title of lines) {
