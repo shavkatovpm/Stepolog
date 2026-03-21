@@ -718,12 +718,12 @@ export default function ModadDashboard() {
                 </div>
                 <div className="m-detail-actions">
                   <div className="m-view-toggle">
-                    <button className={`m-vt-btn ${currentView === "kanban" ? "active" : ""}`} onClick={() => setCurrentView("kanban")}>⊞ Kanban</button>
+                    <button className={`m-vt-btn ${currentView === "kanban" ? "active" : ""}`} disabled={contentMode === "planner"} style={contentMode === "planner" ? { opacity: 0.4, cursor: "not-allowed" } : {}} onClick={() => contentMode !== "planner" && setCurrentView("kanban")}>⊞ Kanban</button>
                     <button className={`m-vt-btn ${currentView === "table" ? "active" : ""}`} onClick={() => setCurrentView("table")}>☰ Jadval</button>
                   </div>
                   <div className="m-view-toggle">
                     <button className={`m-vt-btn ${contentMode === "content" ? "active" : ""}`} onClick={() => setContentMode("content")}>Kontent</button>
-                    <button className={`m-vt-btn ${contentMode === "planner" ? "active" : ""}`} onClick={() => setContentMode("planner")}>Planner</button>
+                    <button className={`m-vt-btn ${contentMode === "planner" ? "active" : ""}`} onClick={() => { setContentMode("planner"); setCurrentView("table"); }}>Planner</button>
                   </div>
                   <button className="m-btn-action m-btn-ghost" onClick={exportPDF}>↓ PDF</button>
                   {contentMode === "content" ? (
@@ -764,7 +764,7 @@ export default function ModadDashboard() {
                         </div>
                         <div className="m-col-cards">
                           {cards.length === 0 ? (
-                            <div className="m-empty-col"><button className="m-btn-action m-btn-ghost" onClick={openContentModal}>+ Kontent qo&apos;shish</button></div>
+                            <div className="m-empty-col"><button className="m-btn-action m-btn-ghost" onClick={contentMode === "planner" ? () => setPlannerModalOpen(true) : openContentModal}>+ {contentMode === "planner" ? "Mavzu" : "Kontent"} qo&apos;shish</button></div>
                           ) : (
                             cards.map((c) => (
                               <div key={c.id} className="m-content-card" onClick={() => setCardModalId(c.id)}>
@@ -794,7 +794,7 @@ export default function ModadDashboard() {
                     <thead><tr><th>Mavzu</th><th>Chiqish sanasi</th><th>Holat</th><th>Kontent</th><th>Turi</th></tr></thead>
                     <tbody>
                       {projectContents.length === 0 ? (
-                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>Hali kontent yo&apos;q</td></tr>
+                        <tr><td colSpan={5} style={{ textAlign: "center", padding: 40, color: "var(--m-text3)" }}>{contentMode === "planner" ? "Planner bo'sh" : "Hali kontent yo'q"}</td></tr>
                       ) : (
                         projectContents.map((c) => (
                           <tr key={c.id} onClick={() => setCardModalId(c.id)}>
@@ -823,11 +823,11 @@ export default function ModadDashboard() {
                 <div className="m-table-wrap" style={{ marginTop: -1 }}>
                   <table>
                     <tbody>
-                      <tr onClick={openContentModal} style={{ cursor: "pointer" }}>
+                      <tr onClick={contentMode === "planner" ? () => setPlannerModalOpen(true) : openContentModal} style={{ cursor: "pointer" }}>
                         <td colSpan={5} style={{ color: "var(--m-text3)", fontSize: 13, fontWeight: 600, padding: "12px 16px" }}>
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                             <span style={{ width: 18, height: 18, border: "1.5px dashed var(--m-border2)", borderRadius: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "var(--m-text3)" }}>+</span>
-                            Yangi kontent qo&apos;shish
+                            {contentMode === "planner" ? "Yangi mavzu qo'shish" : "Yangi kontent qo'shish"}
                           </span>
                         </td>
                       </tr>
@@ -1189,18 +1189,9 @@ export default function ModadDashboard() {
             <p style={{ fontSize: 12, color: "var(--m-text3)", marginBottom: 14 }}>Har bir qatorga bitta mavzu yozing. Raqamlar avtomatik olib tashlanadi.</p>
             <textarea className="m-card-textarea" style={{ minHeight: 200 }} placeholder={"1. Stars sotib olish bo'yicha\n2. Stars qanday sotib olinadi\n3. Starsdan ko'proq foyda olish"} value={plannerText} onChange={(e) => setPlannerText(e.target.value)} />
             {plannerText.trim() && <div className="m-word-count">{plannerText.split("\n").map((l) => l.replace(/^\d+[\.\)\-]\s*/, "").trim()).filter(Boolean).length} ta mavzu</div>}
-            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-              <div style={{ flex: 1 }}>
-                <label className="m-form-label">Tur</label>
-                <select className="m-form-select" value={plannerContentType} onChange={(e) => setPlannerContentType(e.target.value as "own" | "brand")}>
-                  <option value="own">Shaxsiy kontent</option>
-                  <option value="brand">Boshqa brend</option>
-                </select>
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="m-form-label">SEO turi</label>
-                <IntentSelect value={plannerIntent} onChange={setPlannerIntent} customIntents={state.customIntents} onAdd={() => {}} onRemove={() => {}} />
-              </div>
+            <div style={{ marginTop: 16 }}>
+              <label className="m-form-label">SEO turi</label>
+              <IntentSelect value={plannerIntent} onChange={setPlannerIntent} customIntents={state.customIntents} onAdd={() => {}} onRemove={() => {}} />
             </div>
           </div>
           <div className="m-modal-footer">
