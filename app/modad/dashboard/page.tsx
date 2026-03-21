@@ -459,7 +459,14 @@ export default function ModadDashboard() {
   const allProjectContents = state.contents.filter((c) => c.projectId === state.currentProjectId);
   const projectContents = allProjectContents
     .filter((c) => contentMode === "planner" ? !c.publishDate : !!c.publishDate)
-    .sort((a, b) => (a.publishDate || "").localeCompare(b.publishDate || ""));
+    .sort((a, b) => {
+      if (contentMode === "planner") return 0;
+      // Joylashtirilganlar eng tagda
+      if (a.status === "published" && b.status !== "published") return 1;
+      if (a.status !== "published" && b.status === "published") return -1;
+      // Qolganlari sanasi bo'yicha (yaqini tepada)
+      return (a.publishDate || "").localeCompare(b.publishDate || "");
+    });
   const cardContent = cardModalId ? state.contents.find((c) => c.id === cardModalId) : null;
   const promptContent = promptModalId ? state.contents.find((c) => c.id === promptModalId) : null;
   const pasteContent = pasteModalId ? state.contents.find((c) => c.id === pasteModalId) : null;
