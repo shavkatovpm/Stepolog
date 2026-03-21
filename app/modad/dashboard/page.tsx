@@ -320,6 +320,7 @@ export default function ModadDashboard() {
 
   async function saveContent() {
     if (!cTitle.trim()) { showToast("Sarlavhani kiriting!"); return; }
+    if (!cIntent) { showToast("SEO turini tanlang!"); setContentStep(2); return; }
     setSaving(true);
     try {
       const data = {
