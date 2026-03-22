@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import StepologLogo from "@/components/StepologLogo";
 
 const navLinks = [
+  { href: "/", label: "Asosiy sahifa" },
   { href: "/learn", label: "Startap asoslari" },
   { href: "/kasblar", label: "Kasblar xaritasi" },
   { href: "/blog", label: "Maqolalar" },
