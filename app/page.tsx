@@ -2,39 +2,9 @@ import Link from "next/link";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import StepologLogo from "@/components/StepologLogo";
 import { learnCategories } from "@/lib/learn-categories";
+import { careers, levelColor } from "@/lib/careers";
 
-const careers = [
-  {
-    title: "Frontend Developer",
-    description: "Veb-saytlar va ilovalarning foydalanuvchi interfeysini yaratish",
-    skills: ["HTML/CSS", "JavaScript", "React", "Next.js"],
-    level: "Boshlang'ich",
-  },
-  {
-    title: "Backend Developer",
-    description: "Server tomoni, API va ma'lumotlar bazasi bilan ishlash",
-    skills: ["Node.js", "Python", "PostgreSQL", "REST API"],
-    level: "O'rta",
-  },
-  {
-    title: "UI/UX Designer",
-    description: "Foydalanuvchi tajribasini loyihalash va interfeys dizayni",
-    skills: ["Figma", "Prototyping", "User Research", "Design Systems"],
-    level: "Boshlang'ich",
-  },
-  {
-    title: "Mobile Developer",
-    description: "iOS va Android ilovalarni yaratish",
-    skills: ["React Native", "Flutter", "Swift", "Kotlin"],
-    level: "O'rta",
-  },
-];
-
-const levelColor: Record<string, string> = {
-  "Boshlang'ich": "bg-green-500/10 text-green-500",
-  "O'rta": "bg-yellow-500/10 text-yellow-500",
-  Yuqori: "bg-red-500/10 text-red-500",
-};
+const homeCareers = careers.slice(0, 4);
 
 const services = [
   {
@@ -206,9 +176,10 @@ export default function Home() {
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            {careers.map((career) => (
-              <div
-                key={career.title}
+            {homeCareers.map((career) => (
+              <Link
+                key={career.slug}
+                href={`/kasblar/${career.slug}`}
                 className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40"
               >
                 <div className="mb-3 flex items-center justify-between">
@@ -234,7 +205,7 @@ export default function Home() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -1,6 +1,6 @@
-import Link from "next/link";
-
 import type { Metadata } from "next";
+import Link from "next/link";
+import { careers, levelColor } from "@/lib/careers";
 
 export const metadata: Metadata = {
   title: "Kasblar xaritasi",
@@ -20,72 +20,28 @@ export const metadata: Metadata = {
   },
 };
 
-const careers = [
-  {
-    title: "Frontend Developer",
-    description:
-      "Veb-saytlar va ilovalarning foydalanuvchi interfeysini yaratish",
-    skills: ["HTML/CSS", "JavaScript", "React", "Next.js"],
-    level: "Boshlang'ich",
-  },
-  {
-    title: "Backend Developer",
-    description: "Server tomoni, API va ma'lumotlar bazasi bilan ishlash",
-    skills: ["Node.js", "Python", "PostgreSQL", "REST API"],
-    level: "O'rta",
-  },
-  {
-    title: "UI/UX Designer",
-    description:
-      "Foydalanuvchi tajribasini loyihalash va interfeys dizayni",
-    skills: ["Figma", "Prototyping", "User Research", "Design Systems"],
-    level: "Boshlang'ich",
-  },
-  {
-    title: "Mobile Developer",
-    description: "iOS va Android ilovalarni yaratish",
-    skills: ["React Native", "Flutter", "Swift", "Kotlin"],
-    level: "O'rta",
-  },
-  {
-    title: "DevOps Engineer",
-    description:
-      "Infratuzilma, CI/CD va deploy jarayonlarini boshqarish",
-    skills: ["Docker", "Linux", "CI/CD", "AWS/GCP"],
-    level: "Yuqori",
-  },
-  {
-    title: "Product Manager",
-    description: "Mahsulot strategiyasi va jamoani boshqarish",
-    skills: ["Agile", "Analytics", "Roadmapping", "Leadership"],
-    level: "O'rta",
-  },
-];
-
-const levelColor: Record<string, string> = {
-  "Boshlang'ich": "bg-green-500/10 text-green-500",
-  "O'rta": "bg-yellow-500/10 text-yellow-500",
-  Yuqori: "bg-red-500/10 text-red-500",
-};
-
 export default function KasblarPage() {
   return (
     <div className="mx-auto max-w-5xl px-5 py-20">
       <div className="mb-12">
+        <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">
+          Kasblar
+        </span>
         <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">
           Kasblar xaritasi
         </h1>
         <p className="mt-4 max-w-lg text-muted">
-          IT sohasidagi asosiy yo&apos;nalishlar — har bir kasb haqida qisqacha
-          ma&apos;lumot, kerakli ko&apos;nikmalar va daraja.
+          IT sohasidagi asosiy yo&apos;nalishlar — kasbni tanlang va nima qilishi, qanday
+          o&apos;sishi haqida batafsil bilib oling.
         </p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {careers.map((career) => (
-          <div
-            key={career.title}
-            className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40 hover:shadow-[0_0_24px_rgba(255,222,89,.06)]"
+          <Link
+            key={career.slug}
+            href={`/kasblar/${career.slug}`}
+            className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40"
           >
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-display text-xl uppercase tracking-wide">
@@ -102,7 +58,7 @@ export default function KasblarPage() {
               {career.description}
             </p>
 
-            <div className="flex flex-wrap gap-1.5">
+            <div className="mb-4 flex flex-wrap gap-1.5">
               {career.skills.map((skill) => (
                 <span
                   key={skill}
@@ -112,7 +68,11 @@ export default function KasblarPage() {
                 </span>
               ))}
             </div>
-          </div>
+
+            <span className="text-sm font-bold text-foreground transition-colors group-hover:text-brand">
+              Batafsil &rarr;
+            </span>
+          </Link>
         ))}
       </div>
 
@@ -125,7 +85,7 @@ export default function KasblarPage() {
         </p>
         <Link
           href="/contact"
-          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-brand-dark transition-all hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
+          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-brand-dark transition-all hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
         >
           Maslahat olish &rarr;
         </Link>
