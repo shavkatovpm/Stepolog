@@ -1,9 +1,23 @@
 import Link from "next/link";
 
-export const metadata = {
-  title: "Kasblar xaritasi — Stepolog",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kasblar xaritasi",
   description:
     "IT sohasidagi kasblar xaritasi — qaysi yo'nalishni tanlash, nimalarni o'rganish va qanday boshlash kerak.",
+  alternates: { canonical: "/kasblar" },
+  openGraph: {
+    title: "Kasblar xaritasi",
+    description: "IT sohasidagi asosiy yo'nalishlar — qaysi kasbni tanlash va nimalarni o'rganish kerak.",
+    url: "/kasblar",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kasblar xaritasi | Stepolog.uz",
+    description: "IT sohasidagi asosiy yo'nalishlar — qaysi kasbni tanlash va nimalarni o'rganish kerak.",
+  },
 };
 
 const careers = [

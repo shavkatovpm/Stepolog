@@ -6,6 +6,18 @@ export const metadata: Metadata = {
   title: "Bloglar",
   description:
     "Startaplar haqida so'nggi yangliklar, PR maqolalar va O'zbekiston biznes ekotizimi haqida.",
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "Bloglar",
+    description: "Startaplar haqida yangliklar, tahlillar va PR maqolalar.",
+    url: "/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bloglar | Stepolog.uz",
+    description: "Startaplar haqida yangliklar, tahlillar va PR maqolalar.",
+  },
 };
 
 export default function BlogPage() {

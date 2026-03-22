@@ -20,6 +20,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.meta.title,
     description: article.meta.description,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      title: article.meta.title,
+      description: article.meta.description,
+      url: `/blog/${slug}`,
+      type: "article",
+      publishedTime: article.meta.date,
+      authors: [article.meta.author],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.meta.title,
+      description: article.meta.description,
+    },
   };
 }
 
@@ -29,8 +43,30 @@ export default async function BlogArticlePage({ params }: Props) {
 
   if (!article) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.meta.title,
+    description: article.meta.description,
+    datePublished: article.meta.date,
+    author: {
+      "@type": "Person",
+      name: article.meta.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Stepolog",
+      url: "https://stepolog.uz",
+    },
+    mainEntityOfPage: `https://stepolog.uz/blog/${slug}`,
+  };
+
   return (
     <article className="mx-auto max-w-3xl px-5 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/blog"
         className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-muted transition-colors hover:text-brand"

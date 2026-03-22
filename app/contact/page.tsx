@@ -3,6 +3,18 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Aloqa",
   description: "Stepolog jamoasi bilan bog'laning. Telegram, email yoki forma orqali.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Aloqa",
+    description: "Stepolog jamoasi bilan bog'laning.",
+    url: "/contact",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Aloqa | Stepolog.uz",
+    description: "Stepolog jamoasi bilan bog'laning.",
+  },
 };
 
 export default function ContactPage() {

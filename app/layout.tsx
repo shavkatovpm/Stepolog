@@ -24,11 +24,36 @@ export const metadata: Metadata = {
   description:
     "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi. Blog, o'quv materiallar va agentliklar katalogi.",
   metadataBase: new URL("https://stepolog.uz"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     siteName: "Stepolog.uz",
     locale: "uz_UZ",
     type: "website",
+    url: "https://stepolog.uz",
+    title: "Stepolog.uz — Startaplar uchun bilim platformasi",
+    description:
+      "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stepolog.uz — Startaplar uchun bilim platformasi",
+    description:
+      "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
+  },
+  keywords: [
+    "stepolog",
+    "startap",
+    "startup",
+    "o'zbekiston",
+    "uzbekistan",
+    "IT",
+    "bilim platformasi",
+    "biznes",
+    "tadbirkorlik",
+    "investitsiya",
+  ],
 };
 
 export default function RootLayout({
@@ -38,6 +63,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="uz" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Stepolog",
+              url: "https://stepolog.uz",
+              logo: "https://stepolog.uz/icon.png",
+              description:
+                "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
+              sameAs: [
+                "https://t.me/stepolog",
+                "https://instagram.com/stepolog.uz",
+              ],
+            }),
+          }}
+        />
+      </head>
       <body className={`${manrope.variable} ${bebasNeue.variable} antialiased`}>
         <LayoutContent header={<Header />} footer={<Footer />}>
           {children}

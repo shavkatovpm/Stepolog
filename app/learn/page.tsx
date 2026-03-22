@@ -6,6 +6,18 @@ export const metadata: Metadata = {
   title: "O'rganish",
   description:
     "Startap boshlash, biznes yuritish va o'sish strategiyalari haqida foydali o'quv materiallar.",
+  alternates: { canonical: "/learn" },
+  openGraph: {
+    title: "O'rganish",
+    description: "Startap boshlash va o'sish strategiyalari haqida o'quv materiallar.",
+    url: "/learn",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "O'rganish | Stepolog.uz",
+    description: "Startap boshlash va o'sish strategiyalari haqida o'quv materiallar.",
+  },
 };
 
 export default function LearnPage() {

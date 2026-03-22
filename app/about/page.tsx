@@ -1,10 +1,24 @@
 import Link from "next/link";
 import StepologLogo from "@/components/StepologLogo";
 
-export const metadata = {
-  title: "Biz haqimizda — Stepolog",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Biz haqimizda",
   description:
     "Stepolog — startaplar uchun IT loyihalarni boshqarish, investitsiya jalb qilish va startup bo'yicha bilim olish platformasi.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "Biz haqimizda",
+    description: "Stepolog — O'zbekiston startap ekotizimini rivojlantiruvchi platforma.",
+    url: "/about",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Biz haqimizda | Stepolog.uz",
+    description: "Stepolog — O'zbekiston startap ekotizimini rivojlantiruvchi platforma.",
+  },
 };
 
 export default function AboutPage() {
