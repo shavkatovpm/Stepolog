@@ -45,10 +45,12 @@ export default function Footer() {
               <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">Sahifalar</h4>
               <ul className="flex flex-col gap-3 text-sm">
                 <li><Link href="/" className="text-muted-strong transition-colors hover:text-foreground">Asosiy</Link></li>
-                <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">Biz haqimizda</Link></li>
-                <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">Maqolalar</Link></li>
                 <li><Link href="/learn" className="text-muted-strong transition-colors hover:text-foreground">Startap asoslari</Link></li>
                 <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">Kasblar xaritasi</Link></li>
+                <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">Maqolalar</Link></li>
+                <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">Haqimizda</Link></li>
+                <li><Link href="/xizmatlar" className="text-muted-strong transition-colors hover:text-foreground">Xizmatlar</Link></li>
+                <li><Link href="/contact" className="text-muted-strong transition-colors hover:text-foreground">Aloqa</Link></li>
               </ul>
             </div>
 
@@ -64,11 +66,6 @@ export default function Footer() {
                   <a href="https://instagram.com/stepolog.uz" target="_blank" rel="noopener noreferrer" className="text-muted-strong transition-colors hover:text-foreground">
                     Instagram
                   </a>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-muted-strong transition-colors hover:text-foreground">
-                    Aloqa
-                  </Link>
                 </li>
               </ul>
             </div>
