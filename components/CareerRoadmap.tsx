@@ -16,7 +16,7 @@ export default function CareerRoadmap({ steps }: { steps: RoadmapStep[] }) {
               onClick={() => setActive(i)}
               className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold transition-all ${
                 i === active
-                  ? "border-brand bg-brand text-brand-dark scale-110"
+                  ? "border-brand bg-brand text-black scale-110"
                   : i < active
                     ? "border-brand bg-brand/20 text-brand"
                     : "border-border bg-surface text-muted"

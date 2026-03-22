@@ -91,7 +91,7 @@ export default function AboutPage() {
       <div className="mt-16 text-center">
         <Link
           href="/contact"
-          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-brand-dark transition-all hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
+          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-black transition-all hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
         >
           Bog&apos;lanish &rarr;
         </Link>
