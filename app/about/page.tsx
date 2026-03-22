@@ -1,4 +1,3 @@
-import Link from "next/link";
 import StepologLogo from "@/components/StepologLogo";
 
 import type { Metadata } from "next";
@@ -30,15 +29,15 @@ export default function AboutPage() {
           Biz haqimizda
         </h1>
         <p className="mt-4 text-muted">
-          Stepolog — O&apos;zbekiston startap ekotizimini rivojlantiruvchi platforma
+          Stepolog — O&apos;zbekiston digital ekotizimi uchun bepul bilim platformasi
         </p>
       </div>
 
       <div className="space-y-8 text-base leading-[1.8] text-muted">
         <p>
-          <strong className="text-foreground">Stepolog</strong> — startaplar uchun
-          IT loyihalarni boshqarish, ularga investitsiya jalb qilish va startup
-          bo&apos;yicha bilim oladigan platforma sifatida yaratilgan.
+          <strong className="text-foreground">Stepolog</strong> — O&apos;zbekiston digital
+          ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi
+          va foydali maqolalar orqali bilim ulashish maqsadida yaratilgan.
         </p>
 
         <p>
@@ -88,14 +87,6 @@ export default function AboutPage() {
         </div>
       </div>
 
-      <div className="mt-16 text-center">
-        <Link
-          href="/contact"
-          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-black transition-all hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
-        >
-          Bog&apos;lanish &rarr;
-        </Link>
-      </div>
     </div>
   );
 }

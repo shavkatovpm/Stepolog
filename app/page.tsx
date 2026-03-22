@@ -6,45 +6,6 @@ import { careers, levelColor } from "@/lib/careers";
 
 const homeCareers = careers.slice(0, 4);
 
-const services = [
-  {
-    title: "Bilim platformasi",
-    description:
-      "Startap boshlash, rivojlantirish va kengaytirish bo\u2018yicha bepul o\u2018quv materiallar va qo\u2018llanmalar",
-    icon: "book",
-  },
-  {
-    title: "PR va maqolalar",
-    description:
-      "Startapingiz haqida professional maqola yozamiz va minglab o\u2018quvchilarga yetkazamiz",
-    icon: "chat",
-  },
-  {
-    title: "Konsalting",
-    description:
-      "Biznes model, mahsulot strategiyasi va investitsiya jalb qilish bo\u2018yicha maslahat",
-    icon: "chart",
-  },
-];
-
-const serviceIcons: Record<string, React.ReactNode> = {
-  book: (
-    <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-    </svg>
-  ),
-  chat: (
-    <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-    </svg>
-  ),
-  chart: (
-    <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-    </svg>
-  ),
-};
-
 const homeCategories = learnCategories.slice(0, 4);
 
 export default function Home() {
@@ -59,7 +20,7 @@ export default function Home() {
         </h1>
 
         <p className="animate-fade-up mt-7 font-display text-2xl uppercase tracking-wide text-foreground md:text-4xl" style={{ maxWidth: "clamp(288px, 40vw, 560px)" }}>
-          Startap va digital<br className="md:hidden" /> ekotizim platformasi
+          Bepul bilim<br className="md:hidden" /> platformasi
         </p>
 
         <div className="animate-fade-up mt-12 flex gap-3">
@@ -88,9 +49,9 @@ export default function Home() {
                 STEPOLOG<br />kim?
               </h2>
               <p className="mt-6 leading-relaxed text-muted">
-                Stepolog — O&apos;zbekiston startap ekotizimini rivojlantirishga xizmat qiluvchi platforma.
-                Biz yosh tadbirkorlar va IT mutaxassislariga bilim, tajriba va foydali resurslar
-                orqali g&apos;oyalarini rivojlantirish va keng auditoriyaga olib chiqishda yordam beramiz.
+                Stepolog — O&apos;zbekiston digital ekotizimi uchun bepul bilim platformasi.
+                Startaplar, kasblar xaritasi va foydali maqolalar orqali
+                yosh tadbirkorlar va IT mutaxassislariga bilim beramiz.
               </p>
               <Link
                 href="/about"
@@ -124,40 +85,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Xizmatlar */}
+      {/* 3. Kasblar xaritasi */}
       <section className="border-t border-border bg-surface">
-        <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
-          <div className="mb-14">
-            <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Xizmatlar</span>
-            <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">Nima qilamiz?</h2>
-            <p className="mt-4 max-w-lg text-muted">
-              Startapingizni boshlash va rivojlantirishda har tomonlama yordam beramiz
-            </p>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {services.map((service) => (
-              <div
-                key={service.title}
-                className="group rounded-xl border border-border bg-background p-6 transition-all hover:border-brand/40"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10">
-                  {serviceIcons[service.icon]}
-                </div>
-                <h3 className="mb-2 font-display text-xl uppercase tracking-wide">
-                  {service.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted">
-                  {service.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Kasblar xaritasi */}
-      <section className="border-t border-border">
         <div className="mx-auto max-w-5xl px-5 py-24 md:py-32">
           <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
             <div>

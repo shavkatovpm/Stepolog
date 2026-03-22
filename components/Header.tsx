@@ -10,8 +10,6 @@ const navLinks = [
   { href: "/kasblar", label: "Kasblar xaritasi" },
   { href: "/blog", label: "Maqolalar" },
   { href: "/about", label: "Haqimizda" },
-  { href: "/xizmatlar", label: "Xizmatlar" },
-  { href: "/contact", label: "Aloqa" },
 ];
 
 export default function Header() {

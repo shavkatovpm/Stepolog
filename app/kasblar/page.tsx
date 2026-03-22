@@ -76,20 +76,6 @@ export default function KasblarPage() {
         ))}
       </div>
 
-      <div className="mt-16 rounded-xl border border-border bg-surface p-8 text-center md:p-12">
-        <h2 className="mb-3 font-display text-2xl uppercase tracking-wide md:text-3xl">
-          Qaysi kasbni tanlashni bilmayapsizmi?
-        </h2>
-        <p className="mx-auto mb-6 max-w-md text-sm text-muted">
-          Biz bilan bog&apos;laning — sizga mos yo&apos;nalishni topishga yordam beramiz
-        </p>
-        <Link
-          href="/contact"
-          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-black transition-all hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
-        >
-          Maslahat olish &rarr;
-        </Link>
-      </div>
     </div>
   );
 }

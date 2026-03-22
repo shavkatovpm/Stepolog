@@ -18,11 +18,11 @@ const bebasNeue = Bebas_Neue({
 
 export const metadata: Metadata = {
   title: {
-    default: "Stepolog.uz — Startaplar uchun bilim platformasi",
+    default: "Stepolog.uz — O'zbekiston digital ekotizimi uchun bepul bilim platformasi",
     template: "%s | Stepolog.uz",
   },
   description:
-    "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi. Blog, o'quv materiallar va agentliklar katalogi.",
+    "O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va foydali maqolalar.",
   metadataBase: new URL("https://stepolog.uz"),
   alternates: {
     canonical: "/",
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
     locale: "uz_UZ",
     type: "website",
     url: "https://stepolog.uz",
-    title: "Stepolog.uz — Startaplar uchun bilim platformasi",
+    title: "Stepolog.uz — Bepul bilim platformasi",
     description:
-      "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
+      "O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va maqolalar.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stepolog.uz — Startaplar uchun bilim platformasi",
+    title: "Stepolog.uz — Bepul bilim platformasi",
     description:
-      "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
+      "O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va maqolalar.",
   },
   keywords: [
     "stepolog",
@@ -74,7 +74,7 @@ export default function RootLayout({
               url: "https://stepolog.uz",
               logo: "https://stepolog.uz/icon.png",
               description:
-                "O'zbekistondagi startaplar va yangi bizneslar uchun bilim, xizmat va PR platformasi.",
+                "O'zbekiston digital ekotizimi uchun bepul bilim platformasi.",
               sameAs: [
                 "https://t.me/stepolog",
                 "https://instagram.com/stepolog.uz",

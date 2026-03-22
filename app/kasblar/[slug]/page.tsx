@@ -131,21 +131,6 @@ export default async function CareerDetailPage({ params }: Props) {
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="rounded-xl border border-border bg-surface p-8 text-center">
-        <h2 className="mb-3 font-display text-2xl uppercase tracking-wide">
-          Qiziqyapsizmi?
-        </h2>
-        <p className="mx-auto mb-6 max-w-md text-sm text-muted">
-          Bu kasb haqida ko&apos;proq bilmoqchi bo&apos;lsangiz yoki mentorlik olmoqchi bo&apos;lsangiz — bog&apos;laning
-        </p>
-        <Link
-          href="/contact"
-          className="inline-block rounded-md bg-brand px-8 py-3.5 text-sm font-bold text-black transition-all hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(255,222,89,.3)]"
-        >
-          Maslahat olish &rarr;
-        </Link>
-      </div>
     </div>
   );
 }

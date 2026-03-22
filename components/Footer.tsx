@@ -12,7 +12,7 @@ export default function Footer() {
               <span className="font-display text-[22px] tracking-[.08em] text-brand">STEPOLOG</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              O&apos;zbekiston startap ekotizimini rivojlantiruvchi bilim, xizmat va PR platformasi.
+              O&apos;zbekiston digital ekotizimi uchun bepul bilim platformasi.
             </p>
             <div className="mt-5 flex gap-3">
               <a
@@ -49,8 +49,6 @@ export default function Footer() {
                 <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">Kasblar xaritasi</Link></li>
                 <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">Maqolalar</Link></li>
                 <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">Haqimizda</Link></li>
-                <li><Link href="/xizmatlar" className="text-muted-strong transition-colors hover:text-foreground">Xizmatlar</Link></li>
-                <li><Link href="/contact" className="text-muted-strong transition-colors hover:text-foreground">Aloqa</Link></li>
               </ul>
             </div>
 
