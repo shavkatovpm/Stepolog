@@ -1,52 +1,91 @@
 import type { Metadata } from "next";
-import ArticleCard from "@/components/ArticleCard";
+import Link from "next/link";
 import { getAllArticles } from "@/lib/content";
+import { learnCategories } from "@/lib/learn-categories";
 
 export const metadata: Metadata = {
-  title: "O'rganish",
+  title: "Startap asoslari",
   description:
-    "Startap boshlash, biznes yuritish va o'sish strategiyalari haqida foydali o'quv materiallar.",
+    "Startap boshlash, biznes yuritish va o'sish strategiyalari haqida bosqichma-bosqich o'quv materiallar.",
   alternates: { canonical: "/learn" },
   openGraph: {
-    title: "O'rganish",
-    description: "Startap boshlash va o'sish strategiyalari haqida o'quv materiallar.",
+    title: "Startap asoslari",
+    description: "G'oyadan exitgacha — 9 bosqichli startap qo'llanma.",
     url: "/learn",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "O'rganish | Stepolog.uz",
-    description: "Startap boshlash va o'sish strategiyalari haqida o'quv materiallar.",
+    title: "Startap asoslari | Stepolog.uz",
+    description: "G'oyadan exitgacha — 9 bosqichli startap qo'llanma.",
   },
 };
 
 export default function LearnPage() {
   const articles = getAllArticles("learn");
 
+  const articlesByCategory = learnCategories.map((cat) => ({
+    ...cat,
+    articles: articles.filter((a) => a.category === cat.slug),
+  }));
+
   return (
     <div className="mx-auto max-w-5xl px-5 py-20">
-      <div className="mb-12">
-        <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">O&apos;rganish</span>
-        <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">O&apos;rganish</h1>
+      <div className="mb-14">
+        <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">
+          O&apos;rganish
+        </span>
+        <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">
+          Startap asoslari
+        </h1>
         <p className="mt-4 max-w-lg text-muted">
-          Startap boshlash, xatolardan qochish va o&apos;sish strategiyalari haqida foydali materiallar
+          G&apos;oyadan exitgacha — bosqichma-bosqich qo&apos;llanmalar.
+          Har bir bo&apos;limda mavzulashtirilgan maqolalar.
         </p>
       </div>
 
-      {articles.length === 0 ? (
-        <div className="rounded-xl border border-border bg-surface p-16 text-center">
-          <svg className="mx-auto mb-4 h-12 w-12 text-muted/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-          <p className="text-lg font-medium text-muted">Hozircha materiallar yo&apos;q. Tez kunda!</p>
-        </div>
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article) => (
-            <ArticleCard key={article.slug} {...article} type="learn" />
-          ))}
-        </div>
-      )}
+      <div className="space-y-6">
+        {articlesByCategory.map((cat) => (
+          <div
+            key={cat.slug}
+            className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40"
+          >
+            <div className="flex items-start gap-5">
+              <span className="font-display text-3xl text-brand/20 transition-colors group-hover:text-brand">
+                {cat.number}
+              </span>
+              <div className="flex-1">
+                <h2 className="mb-1 font-display text-xl uppercase tracking-wide">
+                  {cat.title}
+                </h2>
+                <p className="text-sm text-muted">{cat.description}</p>
+
+                {cat.articles.length > 0 ? (
+                  <div className="mt-4 space-y-2">
+                    {cat.articles.map((article) => (
+                      <Link
+                        key={article.slug}
+                        href={`/learn/${article.slug}`}
+                        className="flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-brand"
+                      >
+                        <svg className="h-3.5 w-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                        {article.title}
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-4 flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-muted/50" />
+                    <span className="text-xs text-muted">Tez kunda</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

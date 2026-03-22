@@ -8,6 +8,7 @@ export interface ArticleMeta {
   date: string;
   author: string;
   slug: string;
+  category?: string;
 }
 
 const contentDir = path.join(process.cwd(), "content");
@@ -30,6 +31,7 @@ export function getAllArticles(type: "blog" | "learn"): ArticleMeta[] {
       date: data.date || "",
       author: data.author || "Stepolog",
       slug: filename.replace(".mdx", ""),
+      category: data.category || undefined,
     } satisfies ArticleMeta;
   });
 
@@ -53,6 +55,7 @@ export function getArticleBySlug(type: "blog" | "learn", slug: string) {
       date: data.date || "",
       author: data.author || "Stepolog",
       slug,
+      category: data.category || undefined,
     } satisfies ArticleMeta,
     content,
   };

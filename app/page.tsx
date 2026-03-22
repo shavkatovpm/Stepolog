@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import StepologLogo from "@/components/StepologLogo";
+import { learnCategories } from "@/lib/learn-categories";
 
 const careers = [
   {
@@ -74,28 +75,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-const learnTopics = [
-  {
-    number: "01",
-    title: "G'oyadan MVPgacha",
-    description: "Startap g'oyangizni tekshirish va minimal mahsulot yaratish bosqichlari",
-  },
-  {
-    number: "02",
-    title: "Biznes model",
-    description: "To'g'ri biznes modelni tanlash va daromad strategiyasini ishlab chiqish",
-  },
-  {
-    number: "03",
-    title: "Jamoa qurish",
-    description: "Ko'funderni topish, jamoani shakllantirish va boshqarish",
-  },
-  {
-    number: "04",
-    title: "Investitsiya jalb qilish",
-    description: "Pitch deck tayyorlash, investorlar bilan ishlash va moliyalashtirish",
-  },
-];
+const homeCategories = learnCategories.slice(0, 4);
 
 export default function Home() {
   return (
@@ -280,22 +260,22 @@ export default function Home() {
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            {learnTopics.map((topic) => (
+            {homeCategories.map((cat) => (
               <Link
-                key={topic.number}
+                key={cat.number}
                 href="/learn"
                 className="group rounded-xl border border-border bg-background p-6 transition-all hover:border-brand/40"
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="font-display text-xl uppercase tracking-wide">
-                    {topic.title}
+                    {cat.title}
                   </h3>
                   <span className="font-display text-3xl text-brand/20 transition-colors group-hover:text-brand">
-                    {topic.number}
+                    {cat.number}
                   </span>
                 </div>
                 <p className="text-sm leading-relaxed text-muted">
-                  {topic.description}
+                  {cat.description}
                 </p>
               </Link>
             ))}
