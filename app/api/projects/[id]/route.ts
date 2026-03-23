@@ -13,7 +13,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: "Noto'g'ri so'rov" }, { status: 400 });
   }
-  const { name, domain, desc, color, customIntents, sortOrder, categoryId } = body;
+  const { name, domain, desc, positioning, color, customIntents, sortOrder, categoryId } = body;
   if ((name && name.length > 200) || (domain && domain.length > 200) || (desc && desc.length > 1000)) {
     return NextResponse.json({ error: "Matn juda uzun" }, { status: 400 });
   }
@@ -22,6 +22,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (name !== undefined) updateData.name = name?.trim();
   if (domain !== undefined) updateData.domain = domain?.trim();
   if (desc !== undefined) updateData.desc = desc?.trim();
+  if (positioning !== undefined) updateData.positioning = positioning?.trim();
   if (color !== undefined) updateData.color = color;
   if (customIntents !== undefined) updateData.customIntents = customIntents;
   if (sortOrder !== undefined) updateData.sortOrder = sortOrder;

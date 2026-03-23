@@ -11,6 +11,7 @@ export interface Project {
   name: string;
   domain: string;
   desc: string;
+  positioning: string;
   color: string;
   customIntents?: string;
   categoryId?: string | null;

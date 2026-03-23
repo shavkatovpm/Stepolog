@@ -28,7 +28,7 @@ export async function fetchProjects(): Promise<(Project & { _count: { contents: 
   return res.json();
 }
 
-export async function createProject(data: { name: string; domain: string; desc: string; color: string; categoryId?: string | null }): Promise<Project> {
+export async function createProject(data: { name: string; domain: string; desc: string; positioning?: string; color: string; categoryId?: string | null }): Promise<Project> {
   const res = await request("/api/projects", { method: "POST", body: JSON.stringify(data) });
   return res.json();
 }

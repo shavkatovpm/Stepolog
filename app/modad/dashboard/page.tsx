@@ -66,6 +66,7 @@ export default function ModadDashboard() {
   const [pName, setPName] = useState("");
   const [pDomain, setPDomain] = useState("");
   const [pDesc, setPDesc] = useState("");
+  const [pPositioning, setPPositioning] = useState("");
 
   const [cTitle, setCTitle] = useState("");
   const [cDate, setCDate] = useState("");
@@ -125,7 +126,7 @@ export default function ModadDashboard() {
       setCategories(categoriesRaw);
       const projects: Project[] = projectsRaw.map((p) => ({
         id: p.id, name: p.name, domain: p.domain,
-        desc: p.desc, color: p.color, customIntents: p.customIntents, createdAt: p.createdAt,
+        desc: p.desc, positioning: p.positioning || "", color: p.color, customIntents: p.customIntents, createdAt: p.createdAt,
         categoryId: (p as unknown as { categoryId?: string | null }).categoryId ?? null,
       }));
       setState((s) => {
@@ -160,7 +161,7 @@ export default function ModadDashboard() {
   // ===== PROJECTS =====
   function openProjectModal() {
     setEditProjectId(null);
-    setPName(""); setPDomain(""); setPDesc("");
+    setPName(""); setPDomain(""); setPDesc(""); setPPositioning("");
     setState((s) => ({ ...s, selectedColor: "color-1" }));
     setProjectModalOpen(true);
   }
@@ -169,7 +170,7 @@ export default function ModadDashboard() {
     const p = state.projects.find((pr) => pr.id === id);
     if (!p) return;
     setEditProjectId(id);
-    setPName(p.name); setPDomain(p.domain); setPDesc(p.desc);
+    setPName(p.name); setPDomain(p.domain); setPDesc(p.desc); setPPositioning(p.positioning || "");
     setState((s) => ({ ...s, selectedColor: p.color }));
     setProjectMenuId(null);
     setProjectModalOpen(true);
@@ -180,10 +181,10 @@ export default function ModadDashboard() {
     setSaving(true);
     try {
       if (editProjectId) {
-        await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor });
+        await api.updateProject(editProjectId, { name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), positioning: pPositioning.trim(), color: state.selectedColor });
         showToast("✓ Loyiha tahrirlandi");
       } else {
-        await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), color: state.selectedColor, categoryId: currentCategoryId });
+        await api.createProject({ name: pName.trim(), domain: pDomain.trim(), desc: pDesc.trim(), positioning: pPositioning.trim(), color: state.selectedColor, categoryId: currentCategoryId });
         showToast("✓ Loyiha qo'shildi");
       }
       setEditProjectId(null);
@@ -728,6 +729,7 @@ export default function ModadDashboard() {
                 <div className="m-detail-title-row">
                   <div className="m-detail-project-name">{currentProject.name}</div>
                   <div className="m-detail-domain">{currentProject.domain}</div>
+                  {currentProject.positioning && <div className="m-detail-positioning">{currentProject.positioning}</div>}
                 </div>
                 <div className="m-detail-actions">
                   <div className="m-view-toggle">
@@ -936,6 +938,7 @@ export default function ModadDashboard() {
               <div className="m-form-group"><label className="m-form-label">Loyiha nomi *</label><input className="m-form-input" value={pName} onChange={(e) => setPName(e.target.value)} placeholder="Masalan: Stepolog.uz" /></div>
               <div className="m-form-group"><label className="m-form-label">Domen</label><input className="m-form-input" value={pDomain} onChange={(e) => setPDomain(e.target.value)} placeholder="stepolog.uz" /></div>
               <div className="m-form-group m-form-full"><label className="m-form-label">Tavsif</label><input className="m-form-input" value={pDesc} onChange={(e) => setPDesc(e.target.value)} placeholder="Loyiha haqida qisqacha..." /></div>
+              <div className="m-form-group m-form-full"><label className="m-form-label">Loyiha pozitsiyasi</label><textarea className="m-form-input" value={pPositioning} onChange={(e) => setPPositioning(e.target.value)} placeholder="Loyiha pozitsiyasi haqida tarif..." rows={3} style={{ resize: "vertical", minHeight: 60 }} /></div>
             </div>
           </div>
           <div className="m-modal-footer">

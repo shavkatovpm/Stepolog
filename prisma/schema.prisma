@@ -30,6 +30,7 @@ model Project {
   name          String
   domain        String    @default("")
   desc          String    @default("")
+  positioning   String    @default("")
   color         String    @default("color-1")
   customIntents String    @default("[]")
   sortOrder     Int       @default(0)
