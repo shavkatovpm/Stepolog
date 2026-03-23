@@ -86,6 +86,9 @@ export default function ModadDashboard() {
   const [cContentType, setCContentType] = useState<"own" | "brand" | "">("");
 
   const [pasteText, setPasteText] = useState("");
+  const [posModalOpen, setPosModalOpen] = useState(false);
+  const [posEditing, setPosEditing] = useState(false);
+  const [posText, setPosText] = useState("");
   const [plannerModalOpen, setPlannerModalOpen] = useState(false);
   const [plannerText, setPlannerText] = useState("");
   const [plannerContentType, setPlannerContentType] = useState<"own" | "brand">("own");
@@ -189,6 +192,24 @@ export default function ModadDashboard() {
       }
       setEditProjectId(null);
       setProjectModalOpen(false);
+      await loadData();
+    } finally { setSaving(false); }
+  }
+
+  function openPosModal() {
+    const p = state.projects.find((pr) => pr.id === state.currentProjectId);
+    setPosText(p?.positioning || "");
+    setPosEditing(false);
+    setPosModalOpen(true);
+  }
+
+  async function savePositioning() {
+    if (!state.currentProjectId) return;
+    setSaving(true);
+    try {
+      await api.updateProject(state.currentProjectId, { positioning: posText.trim() });
+      showToast("✓ Pozitsiya saqlandi");
+      setPosEditing(false);
       await loadData();
     } finally { setSaving(false); }
   }
@@ -727,9 +748,11 @@ export default function ModadDashboard() {
               <div className="m-detail-header">
                 <button className="m-back-btn" onClick={showProjects}>← Orqaga</button>
                 <div className="m-detail-title-row">
-                  <div className="m-detail-project-name">{currentProject.name}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div className="m-detail-project-name">{currentProject.name}</div>
+                    <button className="m-btn-pos" onClick={openPosModal}>Pozitsiya</button>
+                  </div>
                   <div className="m-detail-domain">{currentProject.domain}</div>
-                  {currentProject.positioning && <div className="m-detail-positioning">{currentProject.positioning}</div>}
                 </div>
                 <div className="m-detail-actions">
                   <div className="m-view-toggle">
@@ -1392,6 +1415,43 @@ export default function ModadDashboard() {
           </div>
           <div className="m-delete-actions">
             <button className="m-btn-action m-btn-ghost" onClick={() => setMoveCatProjectId(null)}>Bekor</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== POSITIONING MODAL ===== */}
+      <div className={`m-modal-overlay ${posModalOpen ? "open" : ""}`} onClick={() => setPosModalOpen(false)}>
+        <div className="m-modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
+          <div className="m-modal-header">
+            <div className="m-modal-title">LOYIHA POZITSIYASI</div>
+            <button className="m-modal-close" onClick={() => setPosModalOpen(false)}>✕</button>
+          </div>
+          <div className="m-modal-body">
+            {posEditing ? (
+              <textarea
+                className="m-form-input"
+                value={posText}
+                onChange={(e) => setPosText(e.target.value)}
+                placeholder="Loyiha pozitsiyasi haqida tarif yozing..."
+                rows={6}
+                style={{ resize: "vertical", minHeight: 120 }}
+                autoFocus
+              />
+            ) : (
+              <div style={{ fontSize: 13, color: "var(--m-text)", lineHeight: 1.7, whiteSpace: "pre-wrap", minHeight: 60 }}>
+                {posText || <span style={{ color: "var(--m-text3)" }}>Pozitsiya hali kiritilmagan</span>}
+              </div>
+            )}
+          </div>
+          <div className="m-modal-footer">
+            {posEditing ? (
+              <>
+                <button className="m-btn-cancel" onClick={() => setPosEditing(false)}>Bekor</button>
+                <button className="m-btn-save" onClick={savePositioning} disabled={saving}>{saving ? "Saqlanmoqda..." : "Saqlash"}</button>
+              </>
+            ) : (
+              <button className="m-btn-save" onClick={() => setPosEditing(true)}>Tahrirlash</button>
+            )}
           </div>
         </div>
       </div>
