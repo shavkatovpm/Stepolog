@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getAllArticles } from "@/lib/content";
 import { getLearnCategories } from "@/lib/learn-categories";
 import { getTranslations } from "next-intl/server";
