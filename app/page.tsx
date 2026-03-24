@@ -4,7 +4,9 @@ import StepologLogo from "@/components/StepologLogo";
 import { learnCategories } from "@/lib/learn-categories";
 import { careers, levelColor } from "@/lib/careers";
 
-const homeCareers = careers.slice(0, 4);
+const homeCareers = careers.filter((c) =>
+  ["frontend-developer", "ui-ux-designer", "seo-specialist", "digital-marketing"].includes(c.slug)
+);
 
 const homeCategories = learnCategories.slice(0, 4);
 
@@ -46,7 +48,7 @@ export default function Home() {
             <div>
               <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Biz haqimizda</span>
               <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">
-                STEPOLOG<br />kim?
+                STEPOLOG kim?
               </h2>
               <p className="mt-6 leading-relaxed text-muted">
                 Stepolog — O&apos;zbekiston digital ekotizimi uchun bepul bilim platformasi.
@@ -65,17 +67,17 @@ export default function Home() {
               <div className="rounded-xl border border-border bg-surface p-6">
                 <div className="mb-3 font-display text-3xl text-brand">01</div>
                 <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Bilim</h3>
-                <p className="text-xs leading-relaxed text-muted">Startap asoslari va IT loyihalar bo&apos;yicha materiallar</p>
+                <p className="text-xs leading-relaxed text-muted">Startap asoslari, kasblar va foydali maqolalar</p>
               </div>
               <div className="rounded-xl border border-border bg-surface p-6">
                 <div className="mb-3 font-display text-3xl text-brand">02</div>
-                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Amaliyot</h3>
-                <p className="text-xs leading-relaxed text-muted">Real loyihalar ustida ishlash va tajriba orttirish</p>
+                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Yo&apos;l xaritasi</h3>
+                <p className="text-xs leading-relaxed text-muted">Qayerdan boshlashni bilmaydiganlar uchun bosqichma-bosqich yo&apos;nalish</p>
               </div>
               <div className="rounded-xl border border-border bg-surface p-6">
                 <div className="mb-3 font-display text-3xl text-brand">03</div>
-                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Investitsiya</h3>
-                <p className="text-xs leading-relaxed text-muted">Startaplarga investitsiya jalb qilish va rivojlantirish</p>
+                <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Jamiyat</h3>
+                <p className="text-xs leading-relaxed text-muted">O&apos;zbekiston startap ekotizimi va tadbirkorlar haqida yangiliklar</p>
               </div>
               <div className="flex items-center justify-center rounded-xl border border-brand/20 bg-brand/5 p-6">
                 <StepologLogo size={64} className="text-brand" />
@@ -93,7 +95,7 @@ export default function Home() {
               <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Kasblar</span>
               <h2 className="font-display text-4xl uppercase tracking-wide md:text-5xl">Kasblar xaritasi</h2>
               <p className="mt-4 max-w-lg text-muted">
-                IT sohasidagi asosiy yo&apos;nalishlar — qaysi kasbni tanlash va nimalarni o&apos;rganish kerak
+                Zamonaviy kasblarni egallash uchun yo&apos;l xaritasi — qayerdan boshlash va nimalarga e&apos;tibor berish kerak
               </p>
             </div>
             <Link

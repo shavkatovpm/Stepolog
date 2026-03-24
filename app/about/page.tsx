@@ -1,3 +1,4 @@
+import Link from "next/link";
 import StepologLogo from "@/components/StepologLogo";
 
 import type { Metadata } from "next";
@@ -5,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Biz haqimizda",
   description:
-    "Stepolog — startaplar uchun IT loyihalarni boshqarish, investitsiya jalb qilish va startup bo'yicha bilim olish platformasi.",
+    "Stepolog — O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul bilim beruvchi platforma.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "Biz haqimizda",
@@ -34,56 +35,43 @@ export default function AboutPage() {
       </div>
 
       <div className="space-y-8 text-base leading-[1.8] text-muted">
-        <p>
-          <strong className="text-foreground">Stepolog</strong> — O&apos;zbekiston digital
-          ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi
-          va foydali maqolalar orqali bilim ulashish maqsadida yaratilgan.
-        </p>
-
-        <p>
-          Biz O&apos;zbekistondagi yosh tadbirkorlar va IT mutaxassislarga yordam
-          beramiz — ularning g&apos;oyalarini real loyihalarga aylantirish,
-          rivojlantirish va muvaffaqiyatga erishish yo&apos;lida.
-        </p>
-
-        <div className="rounded-xl border border-border bg-surface p-8">
-          <h2 className="mb-4 font-display text-2xl uppercase tracking-wide">
-            Missiyamiz
-          </h2>
-          <p>
-            O&apos;zbekistonda startap madaniyatini shakllantirish va har bir
-            g&apos;oyaga hayot bag&apos;ishlash imkonini yaratish.
-          </p>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-3">
-          <div className="rounded-xl border border-border bg-surface p-6">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Link href="/about/missiya" className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40">
             <div className="mb-2 font-display text-3xl text-brand">01</div>
+            <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">
+              Missiya
+            </h3>
+            <p className="text-sm text-muted">
+              Stepolog nima uchun mavjud va biz qanday maqsadni ko&apos;zlaymiz
+            </p>
+          </Link>
+          <Link href="/about/bilim" className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40">
+            <div className="mb-2 font-display text-3xl text-brand">02</div>
             <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">
               Bilim
             </h3>
             <p className="text-sm text-muted">
-              Startup asoslari va IT loyihalarni boshqarish bo&apos;yicha materiallar
+              Startap, IT va kasblar bo&apos;yicha bepul bilim va materiallar
             </p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6">
-            <div className="mb-2 font-display text-3xl text-brand">02</div>
-            <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">
-              Amaliyot
-            </h3>
-            <p className="text-sm text-muted">
-              Real loyihalar ustida ishlash va tajriba orttirish
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6">
+          </Link>
+          <Link href="/about/hamjamiyat" className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40">
             <div className="mb-2 font-display text-3xl text-brand">03</div>
             <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">
-              Investitsiya
+              Hamjamiyat
             </h3>
             <p className="text-sm text-muted">
-              Startaplarga investitsiya jalb qilish va rivojlantirish
+              Yosh tadbirkorlar va IT mutaxassislari uchun hamjamiyat
             </p>
-          </div>
+          </Link>
+          <Link href="/about/yol-xarita" className="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-brand/40">
+            <div className="mb-2 font-display text-3xl text-brand">04</div>
+            <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">
+              Yo&apos;l xarita
+            </h3>
+            <p className="text-sm text-muted">
+              Qayerdan boshlashni bilmaydiganlar uchun bosqichma-bosqich yo&apos;nalish
+            </p>
+          </Link>
         </div>
       </div>
 

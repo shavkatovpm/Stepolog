@@ -2,6 +2,11 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
+export interface FAQ {
+  q: string;
+  a: string;
+}
+
 export interface ArticleMeta {
   title: string;
   description: string;
@@ -9,6 +14,7 @@ export interface ArticleMeta {
   author: string;
   slug: string;
   category?: string;
+  faqs?: FAQ[];
 }
 
 const contentDir = path.join(process.cwd(), "content");
@@ -32,6 +38,7 @@ export function getAllArticles(type: "blog" | "learn"): ArticleMeta[] {
       author: data.author || "Stepolog",
       slug: filename.replace(".mdx", ""),
       category: data.category || undefined,
+      faqs: data.faqs || undefined,
     } satisfies ArticleMeta;
   });
 
@@ -56,6 +63,7 @@ export function getArticleBySlug(type: "blog" | "learn", slug: string) {
       author: data.author || "Stepolog",
       slug,
       category: data.category || undefined,
+      faqs: data.faqs || undefined,
     } satisfies ArticleMeta,
     content,
   };

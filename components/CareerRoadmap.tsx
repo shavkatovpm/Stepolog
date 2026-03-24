@@ -60,6 +60,10 @@ export default function CareerRoadmap({ steps }: { steps: RoadmapStep[] }) {
             {steps[active].duration}
           </span>
         </div>
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-xs text-muted">Oylik maosh:</span>
+          <span className="text-sm font-bold text-green-500">{steps[active].salary}</span>
+        </div>
         <div className="mt-4 flex flex-wrap gap-1.5">
           {steps[active].skills.map((skill) => (
             <span
