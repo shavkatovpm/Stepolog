@@ -1,53 +1,92 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 
-export const metadata: Metadata = {
-  title: "Stepolog Nima? — Missiya va Maqsadlar",
-  description:
-    "Stepolog — O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
-  alternates: { canonical: "/about/missiya" },
-  openGraph: {
-    title: "Stepolog Nima? — Missiya va Maqsadlar",
-    description:
-      "O'zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim.",
-    url: "/about/missiya",
-    type: "article",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Stepolog Nima? | Stepolog.uz",
-    description:
-      "O'zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim.",
-  },
-};
+type Props = { params: Promise<{ locale: string }> };
 
-export default function MissiyaPage() {
-  const faqs = [
-    {
-      q: "Stepolog nima?",
-      a: "Stepolog — O'zbekistondagi startap asoslarini o'rgatuvchi, IT kasblari bo'yicha yo'l xaritalarini taqdim etuvchi va raqamli marketing bilimlarini bepul ulashuvchi ta'limiy platforma.",
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const ru = locale === "ru";
+  return {
+    title: ru
+      ? "Что такое Stepolog? — Миссия и цели"
+      : "Stepolog Nima? — Missiya va Maqsadlar",
+    description: ru
+      ? "Stepolog — бесплатная платформа для развития стартап-экосистемы и IT-профессий в Узбекистане."
+      : "Stepolog — O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
+    alternates: { canonical: "/about/missiya" },
+    openGraph: {
+      title: ru
+        ? "Что такое Stepolog? — Миссия и цели"
+        : "Stepolog Nima? — Missiya va Maqsadlar",
+      description: ru
+        ? "Цифровая экосистема для стартапов и IT-профессий в Узбекистане."
+        : "O'zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim.",
+      url: "/about/missiya",
+      type: "article",
     },
-    {
-      q: "Stepolog kimlar uchun?",
-      a: "Platforma o'z biznesini boshlamoqchi bo'lgan tadbirkorlar, IT sohasiga kirib kelayotgan yoshlar va raqamli marketing asoslarini o'rganmoqchi bo'lganlar uchun mo'ljallangan.",
+    twitter: {
+      card: "summary_large_image",
+      title: ru
+        ? "Что такое Stepolog? | Stepolog.uz"
+        : "Stepolog Nima? | Stepolog.uz",
+      description: ru
+        ? "Цифровая экосистема для стартапов и IT-профессий в Узбекистане."
+        : "O'zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim.",
     },
-    {
-      q: "Stepolog bepulmi?",
-      a: "Ha, Stepolog platformasidagi barcha materiallar — startap qo'llanmalari, kasblar yo'l xaritalari va maqolalar — foydalanuvchilar uchun to'liq bepul va ochiq.",
-    },
-    {
-      q: "Stepolog nima o'rgatadi?",
-      a: "Stepolog startap asoslari, g'oyani validatsiya qilish, biznes strategiyalari va zamonaviy IT kasblari yo'nalishlarini o'rgatadi.",
-    },
-  ];
+  };
+}
+
+export default async function MissiyaPage({ params }: Props) {
+  const { locale } = await params;
+  const ru = locale === "ru";
+
+  const faqs = ru
+    ? [
+        {
+          q: "Что такое Stepolog?",
+          a: "Stepolog — это образовательная платформа, которая обучает основам стартапов, предоставляет дорожные карты IT-профессий и бесплатно делится знаниями о цифровом маркетинге в Узбекистане.",
+        },
+        {
+          q: "Для кого создан Stepolog?",
+          a: "Платформа предназначена для предпринимателей, которые хотят начать свой бизнес, молодёжи, входящей в IT-сферу, и тех, кто хочет освоить основы цифрового маркетинга.",
+        },
+        {
+          q: "Stepolog бесплатный?",
+          a: "Да, все материалы на платформе Stepolog — руководства по стартапам, дорожные карты профессий и статьи — полностью бесплатны и открыты для пользователей.",
+        },
+        {
+          q: "Чему учит Stepolog?",
+          a: "Stepolog обучает основам стартапов, валидации идей, бизнес-стратегиям и современным направлениям IT-профессий.",
+        },
+      ]
+    : [
+        {
+          q: "Stepolog nima?",
+          a: "Stepolog — O'zbekistondagi startap asoslarini o'rgatuvchi, IT kasblari bo'yicha yo'l xaritalarini taqdim etuvchi va raqamli marketing bilimlarini bepul ulashuvchi ta'limiy platforma.",
+        },
+        {
+          q: "Stepolog kimlar uchun?",
+          a: "Platforma o'z biznesini boshlamoqchi bo'lgan tadbirkorlar, IT sohasiga kirib kelayotgan yoshlar va raqamli marketing asoslarini o'rganmoqchi bo'lganlar uchun mo'ljallangan.",
+        },
+        {
+          q: "Stepolog bepulmi?",
+          a: "Ha, Stepolog platformasidagi barcha materiallar — startap qo'llanmalari, kasblar yo'l xaritalari va maqolalar — foydalanuvchilar uchun to'liq bepul va ochiq.",
+        },
+        {
+          q: "Stepolog nima o'rgatadi?",
+          a: "Stepolog startap asoslari, g'oyani validatsiya qilish, biznes strategiyalari va zamonaviy IT kasblari yo'nalishlarini o'rgatadi.",
+        },
+      ];
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline:
-      "Stepolog Nima? O'zbekistondagi Startaplar va IT Kasblari Uchun Raqamli Ekotizim",
-    description:
-      "Stepolog — O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
+    headline: ru
+      ? "Что такое Stepolog? Цифровая экосистема для стартапов и IT-профессий в Узбекистане"
+      : "Stepolog Nima? O'zbekistondagi Startaplar va IT Kasblari Uchun Raqamli Ekotizim",
+    description: ru
+      ? "Stepolog — бесплатная платформа для развития стартап-экосистемы и практических знаний по IT-профессиям в Узбекистане."
+      : "Stepolog — O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
     mainEntityOfPage: "https://stepolog.uz/about/missiya",
     publisher: {
       "@type": "Organization",
@@ -61,8 +100,9 @@ export default function MissiyaPage() {
     "@type": "Organization",
     name: "Stepolog",
     url: "https://stepolog.uz",
-    description:
-      "O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
+    description: ru
+      ? "Бесплатная платформа для развития стартап-экосистемы и практических знаний по IT-профессиям в Узбекистане."
+      : "O'zbekistonda startap ekotizimini rivojlantirish va IT kasblari bo'yicha bepul amaliy bilim beruvchi platforma.",
     sameAs: [
       "https://t.me/stepolog",
       "https://instagram.com/stepolog.uz",
@@ -73,9 +113,9 @@ export default function MissiyaPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Asosiy sahifa", item: "https://stepolog.uz" },
-      { "@type": "ListItem", position: 2, name: "Biz haqimizda", item: "https://stepolog.uz/about" },
-      { "@type": "ListItem", position: 3, name: "Missiya", item: "https://stepolog.uz/about/missiya" },
+      { "@type": "ListItem", position: 1, name: ru ? "Главная" : "Asosiy sahifa", item: "https://stepolog.uz" },
+      { "@type": "ListItem", position: 2, name: ru ? "О нас" : "Biz haqimizda", item: "https://stepolog.uz/about" },
+      { "@type": "ListItem", position: 3, name: ru ? "Миссия" : "Missiya", item: "https://stepolog.uz/about/missiya" },
     ],
   };
 
@@ -115,90 +155,94 @@ export default function MissiyaPage() {
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        Biz haqimizda
+        {ru ? "О нас" : "Biz haqimizda"}
       </Link>
 
       {/* Header */}
       <div className="mb-14">
         <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">
-          Missiya
+          {ru ? "Миссия" : "Missiya"}
         </span>
         <h1 className="font-display text-4xl uppercase tracking-wide md:text-5xl">
-          Stepolog Nima?
+          {ru ? "Что такое Stepolog?" : "Stepolog Nima?"}
         </h1>
         <p className="mt-4 text-lg text-muted">
-          O&apos;zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim
+          {ru
+            ? "Цифровая экосистема для стартапов и IT-профессий в Узбекистане"
+            : "O\u2019zbekistondagi startaplar va IT kasblari uchun raqamli ekotizim"}
         </p>
       </div>
 
       <div className="space-y-12 text-base leading-[1.8] text-muted">
         {/* Intro */}
         <p>
-          <strong className="text-foreground">Stepolog</strong> — bu O&apos;zbekistonda startap
-          ekotizimini rivojlantirish, IT kasblari bo&apos;yicha amaliy bilim berish va raqamli
-          marketing asoslarini o&apos;rgatishga bag&apos;ishlangan bepul bilim platformasidir.
-          Loyiha yangi boshlovchilar, yosh tadbirkorlar va IT mutaxassislariga bosqichma-bosqich
-          bilim va yo&apos;l xaritalarini taqdim etadi.
+          <strong className="text-foreground">Stepolog</strong> —{" "}
+          {ru
+            ? "это бесплатная образовательная платформа, посвящённая развитию стартап-экосистемы в Узбекистане, практическим знаниям по IT-профессиям и основам цифрового маркетинга. Проект предоставляет начинающим предпринимателям, молодым специалистам и IT-профессионалам пошаговые знания и дорожные карты."
+            : "bu O\u2019zbekistonda startap ekotizimini rivojlantirish, IT kasblari bo\u2019yicha amaliy bilim berish va raqamli marketing asoslarini o\u2019rgatishga bag\u2019ishlangan bepul bilim platformasidir. Loyiha yangi boshlovchilar, yosh tadbirkorlar va IT mutaxassislariga bosqichma-bosqich bilim va yo\u2019l xaritalarini taqdim etadi."}
         </p>
 
         {/* Missiya */}
         <section>
           <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">
-            Missiya va strategik maqsadlar
+            {ru ? "Миссия и стратегические цели" : "Missiya va strategik maqsadlar"}
           </h2>
           <p>
-            Bugungi tez o&apos;zgaruvchan raqamli dunyoda nazariy bilimning o&apos;zi yetarli emas.
-            Stepolog missiyasi — har bir foydalanuvchiga amaliy bilim berib, ularni aniq natijaga
-            olib chiqishdir. Platforma shunchaki ma&apos;lumot beruvchi blog emas, balki
-            g&apos;oyadan tortib to tayyor mahsulotgacha bo&apos;lgan yo&apos;lni
-            bosqichma-bosqich ko&apos;rsatib beruvchi bepul ta&apos;lim tizimdir.
+            {ru
+              ? "В современном быстро меняющемся цифровом мире одних теоретических знаний недостаточно. Миссия Stepolog — дать каждому пользователю практические знания и привести к конкретным результатам. Платформа — не просто информационный блог, а бесплатная образовательная система, которая пошагово показывает путь от идеи до готового продукта."
+              : "Bugungi tez o\u2019zgaruvchan raqamli dunyoda nazariy bilimning o\u2019zi yetarli emas. Stepolog missiyasi — har bir foydalanuvchiga amaliy bilim berib, ularni aniq natijaga olib chiqishdir. Platforma shunchaki ma\u2019lumot beruvchi blog emas, balki g\u2019oyadan tortib to tayyor mahsulotgacha bo\u2019lgan yo\u2019lni bosqichma-bosqich ko\u2019rsatib beruvchi bepul ta\u2019lim tizimdir."}
           </p>
         </section>
 
         {/* Platformada nimalar bor */}
         <section>
           <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">
-            Platformada nimalar bor?
+            {ru ? "Что есть на платформе?" : "Platformada nimalar bor?"}
           </h2>
           <p className="mb-6">
-            Stepolog platformasi yangi boshlovchilar va tajribali mutaxassislar uchun bilimlar
-            xaritasi vazifasini o&apos;taydi.
+            {ru
+              ? "Платформа Stepolog служит картой знаний как для начинающих, так и для опытных специалистов."
+              : "Stepolog platformasi yangi boshlovchilar va tajribali mutaxassislar uchun bilimlar xaritasi vazifasini o\u2019taydi."}
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-2 font-display text-lg uppercase tracking-wide">
-                Startap asoslari
+                {ru ? "Основы стартапов" : "Startap asoslari"}
               </h3>
               <p className="text-sm">
-                G&apos;oyani tekshirish (validation), minimal hayotiy mahsulot (MVP) yaratish
-                va birinchi foydalanuvchilarni topish — bosqichma-bosqich qo&apos;llanmalar.
+                {ru
+                  ? "Валидация идеи, создание минимального жизнеспособного продукта (MVP) и поиск первых пользователей — пошаговые руководства."
+                  : "G\u2019oyani tekshirish (validation), minimal hayotiy mahsulot (MVP) yaratish va birinchi foydalanuvchilarni topish — bosqichma-bosqich qo\u2019llanmalar."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-2 font-display text-lg uppercase tracking-wide">
-                Kasblar xaritasi
+                {ru ? "Карта профессий" : "Kasblar xaritasi"}
               </h3>
               <p className="text-sm">
-                Dasturlash, dizayn, loyihalar boshqaruvi va raqamli marketing
-                yo&apos;nalishlarida junior darajadan senior darajagacha o&apos;sish yo&apos;llari.
+                {ru
+                  ? "Пути роста от junior до senior уровня в направлениях программирования, дизайна, управления проектами и цифрового маркетинга."
+                  : "Dasturlash, dizayn, loyihalar boshqaruvi va raqamli marketing yo\u2019nalishlarida junior darajadan senior darajagacha o\u2019sish yo\u2019llari."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-2 font-display text-lg uppercase tracking-wide">
-                Raqamli marketing asoslari
+                {ru ? "Основы цифрового маркетинга" : "Raqamli marketing asoslari"}
               </h3>
               <p className="text-sm">
-                SEO, AEO, kontent strategiyasi va ijtimoiy tarmoqlar orqali onlayn
-                biznesni o&apos;stirish bo&apos;yicha amaliy bilimlar.
+                {ru
+                  ? "Практические знания о современных методах онлайн-маркетинга и каналах продвижения для развития бизнеса."
+                  : "Onlayn biznesni o\u2019stirish uchun zamonaviy marketing usullari va kanallari haqida amaliy bilimlar."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-2 font-display text-lg uppercase tracking-wide">
-                AI davrida biznes yuritish
+                {ru ? "Бизнес в эпоху AI" : "AI davrida biznes yuritish"}
               </h3>
               <p className="text-sm">
-                Sun&apos;iy intellekt vositalari yordamida biznes jarayonlarini soddalashtirish
-                va samaradorlikni oshirish yo&apos;llari.
+                {ru
+                  ? "Способы упрощения бизнес-процессов и повышения эффективности с помощью инструментов искусственного интеллекта."
+                  : "Sun\u2019iy intellekt vositalari yordamida biznes jarayonlarini soddalashtirish va samaradorlikni oshirish yo\u2019llari."}
               </p>
             </div>
           </div>
@@ -207,51 +251,56 @@ export default function MissiyaPage() {
         {/* Kimlar uchun */}
         <section>
           <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">
-            Stepolog kimlar uchun?
+            {ru ? "Для кого Stepolog?" : "Stepolog kimlar uchun?"}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-1 text-sm font-bold uppercase tracking-wide text-foreground">
-                Bo&apos;lajak startapchilar
+                {ru ? "Будущие стартаперы" : "Bo\u2019lajak startapchilar"}
               </h3>
               <p className="text-sm">
-                O&apos;z g&apos;oyasini biznesga aylantirmoqchi bo&apos;lgan yosh tadbirkorlar.
+                {ru
+                  ? "Молодые предприниматели, которые хотят превратить свою идею в бизнес."
+                  : "O\u2019z g\u2019oyasini biznesga aylantirmoqchi bo\u2019lgan yosh tadbirkorlar."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-1 text-sm font-bold uppercase tracking-wide text-foreground">
-                IT-mutaxassislar
+                {ru ? "IT-специалисты" : "IT-mutaxassislar"}
               </h3>
               <p className="text-sm">
-                O&apos;z sohasida malaka oshirishni yoki yangi kasb egallashni xohlovchilar.
+                {ru
+                  ? "Те, кто хочет повысить квалификацию в своей области или освоить новую профессию."
+                  : "O\u2019z sohasida malaka oshirishni yoki yangi kasb egallashni xohlovchilar."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-1 text-sm font-bold uppercase tracking-wide text-foreground">
-                Kichik va o&apos;rta biznes
+                {ru ? "Малый и средний бизнес" : "Kichik va o\u2019rta biznes"}
               </h3>
               <p className="text-sm">
-                Raqamli dunyoda o&apos;z biznesini rivojlantirish va zamonaviy marketing
-                asoslarini o&apos;rganmoqchi bo&apos;lganlar.
+                {ru
+                  ? "Те, кто хочет развивать свой бизнес в цифровом мире и освоить современные методы онлайн-маркетинга."
+                  : "Raqamli dunyoda o\u2019z biznesini rivojlantirish va zamonaviy marketing asoslarini o\u2019rganmoqchi bo\u2019lganlar."}
               </p>
             </div>
             <div className="rounded-xl border border-border bg-surface p-6">
               <h3 className="mb-1 text-sm font-bold uppercase tracking-wide text-foreground">
-                Talabalar va o&apos;quvchilar
+                {ru ? "Студенты и учащиеся" : "Talabalar va o\u2019quvchilar"}
               </h3>
               <p className="text-sm">
-                IT sohasiga qiziquvchi va kelajakda texnologiya yo&apos;nalishida ishlashni
-                rejalashtiruvchilar.
+                {ru
+                  ? "Те, кто интересуется IT-сферой и планирует работать в области технологий."
+                  : "IT sohasiga qiziquvchi va kelajakda texnologiya yo\u2019nalishida ishlashni rejalashtiruvchilar."}
               </p>
             </div>
           </div>
         </section>
 
-
         {/* FAQ */}
         <section>
           <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">
-            Ko&apos;p beriladigan savollar
+            {ru ? "Часто задаваемые вопросы" : "Ko\u2019p beriladigan savollar"}
           </h2>
           <div className="space-y-4">
             {faqs.map((faq) => (
@@ -266,23 +315,25 @@ export default function MissiyaPage() {
         {/* CTA */}
         <div className="pt-4 text-center">
           <p className="font-display text-xl uppercase tracking-wide text-foreground">
-            Stepolog bilan kelajakni bugun quring.
+            {ru ? "Стройте будущее со Stepolog уже сегодня." : "Stepolog bilan kelajakni bugun quring."}
           </p>
           <p className="mt-2 text-sm text-muted">
-            Biz bilan o&apos;sish — bu shunchaki qadamlar ketma-ketligi.
+            {ru
+              ? "Расти с нами — это просто последовательность шагов."
+              : "Biz bilan o\u2019sish — bu shunchaki qadamlar ketma-ketligi."}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               href="/learn"
               className="rounded-lg bg-brand px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand/90"
             >
-              O&apos;rganishni boshlash
+              {ru ? "Начать обучение" : "O\u2019rganishni boshlash"}
             </Link>
             <Link
               href="/kasblar"
               className="rounded-lg border border-border px-6 py-2.5 text-sm font-bold text-foreground transition-colors hover:border-brand/40"
             >
-              Kasblar xaritasi
+              {ru ? "Карта профессий" : "Kasblar xaritasi"}
             </Link>
           </div>
         </div>
