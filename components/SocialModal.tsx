@@ -1,10 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useLocale } from "next-intl";
 
 const STORAGE_KEY = "stepolog_social_dismissed";
 
-function ModalContent({ onClose }: { onClose: () => void }) {
+const texts = {
+  uz: {
+    title: "Hamjamiyat",
+    description: "Ijtimoiy tarmoqlarda bizga obuna bo\u2019ling va hamjamiyatimizga qo\u2019shiling",
+    close: "Yopish",
+    cardTitle: "Hamjamiyat",
+    cardDesc: "O\u2019zbekiston startap ekotizimi va tadbirkorlar uchun hamjamiyat",
+  },
+  ru: {
+    title: "Сообщество",
+    description: "Подпишитесь на нас в социальных сетях и присоединяйтесь к нашему сообществу",
+    close: "Закрыть",
+    cardTitle: "Сообщество",
+    cardDesc: "Сообщество для молодых предпринимателей и IT-специалистов Узбекистана",
+  },
+};
+
+function ModalContent({ onClose, locale }: { onClose: () => void; locale: string }) {
+  const t = texts[locale as keyof typeof texts] || texts.uz;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5"
@@ -15,10 +35,10 @@ function ModalContent({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="mb-2 font-display text-2xl uppercase tracking-wide">
-          Hamjamiyat
+          {t.title}
         </h3>
         <p className="mb-6 text-sm text-muted">
-          Ijtimoiy tarmoqlarda bizga obuna bo&apos;ling va hamjamiyatimizga qo&apos;shiling
+          {t.description}
         </p>
 
         <div className="space-y-3">
@@ -57,7 +77,7 @@ function ModalContent({ onClose }: { onClose: () => void }) {
           onClick={onClose}
           className="mt-6 w-full rounded-lg border border-border py-2.5 text-sm font-bold text-foreground transition-colors hover:border-brand/40"
         >
-          Yopish
+          {t.close}
         </button>
       </div>
     </div>
@@ -66,6 +86,8 @@ function ModalContent({ onClose }: { onClose: () => void }) {
 
 export default function SocialModal() {
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
+  const t = texts[locale as keyof typeof texts] || texts.uz;
 
   return (
     <>
@@ -74,25 +96,24 @@ export default function SocialModal() {
         className="rounded-xl border border-border bg-surface p-6 text-left transition-all hover:border-brand/40"
       >
         <div className="mb-3 font-display text-3xl text-brand">03</div>
-        <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">Hamjamiyat</h3>
-        <p className="text-xs leading-relaxed text-muted">
-          O&apos;zbekiston startap ekotizimi va tadbirkorlar uchun hamjamiyat
-        </p>
+        <h3 className="mb-1 text-sm font-bold uppercase tracking-wide">{t.cardTitle}</h3>
+        <p className="text-xs leading-relaxed text-muted">{t.cardDesc}</p>
       </button>
 
-      {open && <ModalContent onClose={() => setOpen(false)} />}
+      {open && <ModalContent onClose={() => setOpen(false)} locale={locale} />}
     </>
   );
 }
 
 export function SocialPopup() {
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem(STORAGE_KEY);
     if (dismissed) return;
 
-    const timer = setTimeout(() => setOpen(true), 3000);
+    const timer = setTimeout(() => setOpen(true), 60000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -102,5 +123,5 @@ export function SocialPopup() {
   };
 
   if (!open) return null;
-  return <ModalContent onClose={handleClose} />;
+  return <ModalContent onClose={handleClose} locale={locale} />;
 }
