@@ -42,6 +42,11 @@ html {
   --font-display: var(--font-bebas);
 }
 
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
 @keyframes blur-in {
   from { filter: blur(12px); }
   to { filter: blur(0); }
