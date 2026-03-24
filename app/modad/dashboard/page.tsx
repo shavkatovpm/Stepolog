@@ -510,6 +510,7 @@ export default function ModadDashboard() {
   const [spModalOpen, setSpModalOpen] = useState(false);
   const [spViewId, setSpViewId] = useState<string | null>(null);
   const [spMenuId, setSpMenuId] = useState<string | null>(null);
+  const [spEditId, setSpEditId] = useState<string | null>(null);
 
   async function handleLogout() {
     await api.logout();
@@ -902,6 +903,7 @@ export default function ModadDashboard() {
                         {spMenuId === sp.id && (
                           <div className="m-dropdown" onClick={(e) => e.stopPropagation()}>
                             <button className="m-dropdown-item" onClick={() => { copyToClipboard(sp.content); setSpMenuId(null); showToast("✓ Nusxa olindi!"); }}>📋 Nusxa olish</button>
+                            <button className="m-dropdown-item" onClick={() => { setSpMenuId(null); setSpEditId(sp.id); setSpTitle(sp.title); setSpPurpose(sp.purpose || ""); setSpContent(sp.content || ""); setSpModalOpen(true); }}>✏️ Tahrirlash</button>
                             <button className="m-dropdown-item m-dropdown-danger" onClick={async () => { setSpMenuId(null); await api.deleteSavedPrompt(sp.id); await loadData(); showToast("O'chirildi"); }}>O&apos;chirish</button>
                           </div>
                         )}
@@ -914,7 +916,7 @@ export default function ModadDashboard() {
                     </div>
                   </div>
                 ))}
-                <div className="m-add-project-card" onClick={() => { setSpTitle(""); setSpPurpose(""); setSpContent(""); setSpModalOpen(true); }}>
+                <div className="m-add-project-card" onClick={() => { setSpEditId(null); setSpTitle(""); setSpPurpose(""); setSpContent(""); setSpModalOpen(true); }}>
                   <div className="m-add-icon">+</div>
                   <div className="m-add-label">Yangi prompt qo&apos;sh</div>
                 </div>
@@ -1300,7 +1302,7 @@ export default function ModadDashboard() {
       <div className={`m-modal-overlay ${spModalOpen ? "open" : ""}`} onClick={() => setSpModalOpen(false)}>
         <div className="m-modal" style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
           <div className="m-modal-header">
-            <div className="m-modal-title">YANGI PROMPT</div>
+            <div className="m-modal-title">{spEditId ? "PROMPTNI TAHRIRLASH" : "YANGI PROMPT"}</div>
             <button className="m-modal-close" onClick={() => setSpModalOpen(false)}>✕</button>
           </div>
           <div className="m-modal-body">
@@ -1324,10 +1326,17 @@ export default function ModadDashboard() {
               if (!spContent.trim()) { showToast("Prompt matnini kiriting!"); return; }
               setSpSaving(true);
               try {
-                await api.createSavedPrompt({ title: spTitle.trim(), purpose: spPurpose.trim(), content: spContent.trim() });
+                const data = { title: spTitle.trim(), purpose: spPurpose.trim(), content: spContent.trim() };
+                const isEdit = !!spEditId;
+                if (spEditId) {
+                  await api.updateSavedPrompt(spEditId, data);
+                } else {
+                  await api.createSavedPrompt(data);
+                }
                 setSpModalOpen(false);
+                setSpEditId(null);
                 await loadData();
-                showToast("✓ Prompt saqlandi");
+                showToast(isEdit ? "✓ Prompt yangilandi" : "✓ Prompt saqlandi");
               } finally { setSpSaving(false); }
             }}>{spSaving ? "Saqlanmoqda..." : "Saqlash"}</button>
           </div>

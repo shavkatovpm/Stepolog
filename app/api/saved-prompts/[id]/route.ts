@@ -4,6 +4,21 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getAuthUser } from "@/lib/auth";
 
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const userId = await getAuthUser();
+  if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });
+
+  const { id } = await params;
+  const { title, purpose, content } = await req.json();
+  if (!title?.trim()) return NextResponse.json({ error: "Mavzu kerak" }, { status: 400 });
+
+  const updated = await prisma.savedPrompt.update({
+    where: { id },
+    data: { title: title.trim(), purpose: (purpose || "").trim(), content: (content || "").trim() },
+  });
+  return NextResponse.json(updated);
+}
+
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const userId = await getAuthUser();
   if (!userId) return NextResponse.json({ error: "Avtorizatsiya kerak" }, { status: 401 });

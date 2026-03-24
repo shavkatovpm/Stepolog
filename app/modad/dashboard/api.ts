@@ -102,6 +102,11 @@ export async function createSavedPrompt(data: { title: string; purpose: string; 
   return res.json();
 }
 
+export async function updateSavedPrompt(id: string, data: { title: string; purpose: string; content: string }) {
+  const res = await request(`/api/saved-prompts/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  return res.json();
+}
+
 export async function deleteSavedPrompt(id: string) {
   await request(`/api/saved-prompts/${id}`, { method: "DELETE" });
 }
