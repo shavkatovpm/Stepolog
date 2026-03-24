@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const phrases = [
-  "Harakat qiling",
-  "Rivojlaning",
-  "Natijaga chiqing",
-];
+import { useTranslations } from "next-intl";
 
 // All 6 logo rects — viewBox clips to show only left or right half
 const logoRects = (
@@ -37,6 +32,8 @@ function LogoRight({ className }: { className?: string }) {
 }
 
 export default function AnimatedLogo({ className }: { className?: string }) {
+  const t = useTranslations("hero");
+  const phrases = [t("phrase1"), t("phrase2"), t("phrase3")];
   const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 

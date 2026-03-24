@@ -4,18 +4,22 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getArticleBySlug, getAllSlugs, type FAQ } from "@/lib/content";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return getAllSlugs("blog").map((slug) => ({ slug }));
+  const locales = ["uz", "ru"];
+  return locales.flatMap((locale) =>
+    getAllSlugs("blog", locale).map((slug) => ({ locale, slug }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const article = getArticleBySlug("blog", slug);
+  const { locale, slug } = await params;
+  const article = getArticleBySlug("blog", slug, locale);
   if (!article) return {};
 
   return {
@@ -39,10 +43,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogArticlePage({ params }: Props) {
-  const { slug } = await params;
-  const article = getArticleBySlug("blog", slug);
+  const { locale, slug } = await params;
+  const t = await getTranslations("blog");
+  const article = getArticleBySlug("blog", slug, locale);
 
   if (!article) notFound();
+
+  const prefix = locale === "uz" ? "" : "/ru";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -59,16 +66,16 @@ export default async function BlogArticlePage({ params }: Props) {
       name: "Stepolog",
       url: "https://stepolog.uz",
     },
-    mainEntityOfPage: `https://stepolog.uz/blog/${slug}`,
+    mainEntityOfPage: `https://stepolog.uz${prefix}/blog/${slug}`,
   };
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Asosiy sahifa", item: "https://stepolog.uz" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://stepolog.uz/blog" },
-      { "@type": "ListItem", position: 3, name: article.meta.title, item: `https://stepolog.uz/blog/${slug}` },
+      { "@type": "ListItem", position: 1, name: t("label"), item: `https://stepolog.uz${prefix}` },
+      { "@type": "ListItem", position: 2, name: t("title"), item: `https://stepolog.uz${prefix}/blog` },
+      { "@type": "ListItem", position: 3, name: article.meta.title, item: `https://stepolog.uz${prefix}/blog/${slug}` },
     ],
   };
 
@@ -107,12 +114,12 @@ export default async function BlogArticlePage({ params }: Props) {
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        Bloglarga qaytish
+        {t("backToBlog")}
       </Link>
 
       <header className="mb-10">
         <div className="mb-4 flex items-center gap-3">
-          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">Blog</span>
+          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">{t("label")}</span>
           <span className="text-sm text-muted">{article.meta.date}</span>
           <span className="text-sm text-muted">&middot; {article.meta.author}</span>
         </div>

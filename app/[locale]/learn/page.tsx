@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/content";
-import { learnCategories } from "@/lib/learn-categories";
+import { getLearnCategories } from "@/lib/learn-categories";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Startap asoslari",
@@ -21,9 +22,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LearnPage() {
-  const articles = getAllArticles("learn");
+interface Props {
+  params: Promise<{ locale: string }>;
+}
 
+export default async function LearnPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations("learn");
+  const articles = getAllArticles("learn", locale);
+
+  const learnCategories = getLearnCategories(locale);
   const articlesByCategory = learnCategories.map((cat) => ({
     ...cat,
     articles: articles.filter((a) => a.category === cat.slug),
@@ -33,14 +41,13 @@ export default function LearnPage() {
     <div className="mx-auto max-w-5xl px-5 py-20">
       <div className="mb-14">
         <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">
-          O&apos;rganish
+          {t("label")}
         </span>
         <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">
-          Startap asoslari
+          {t("title")}
         </h1>
         <p className="mt-4 max-w-lg text-muted">
-          G&apos;oyadan exitgacha — bosqichma-bosqich qo&apos;llanmalar.
-          Har bir bo&apos;limda mavzulashtirilgan maqolalar.
+          {t("description")}
         </p>
       </div>
 
@@ -78,7 +85,7 @@ export default function LearnPage() {
                 ) : (
                   <div className="mt-4 flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-muted/50" />
-                    <span className="text-xs text-muted">Tez kunda</span>
+                    <span className="text-xs text-muted">{t("noArticles")}</span>
                   </div>
                 )}
               </div>

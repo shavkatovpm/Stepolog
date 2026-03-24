@@ -1,38 +1,51 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { careers, levelColor } from "@/lib/careers";
+import { getTranslations } from "next-intl/server";
+import { getCareers, getLevelLabels, levelColor } from "@/lib/careers";
 
-export const metadata: Metadata = {
-  title: "Kasblar xaritasi",
-  description:
-    "IT sohasidagi kasblar xaritasi — qaysi yo'nalishni tanlash, nimalarni o'rganish va qanday boshlash kerak.",
-  alternates: { canonical: "/kasblar" },
-  openGraph: {
-    title: "Kasblar xaritasi",
-    description: "IT sohasidagi asosiy yo'nalishlar — qaysi kasbni tanlash va nimalarni o'rganish kerak.",
-    url: "/kasblar",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kasblar xaritasi | Stepolog.uz",
-    description: "IT sohasidagi asosiy yo'nalishlar — qaysi kasbni tanlash va nimalarni o'rganish kerak.",
-  },
-};
+interface Props {
+  params: Promise<{ locale: string }>;
+}
 
-export default function KasblarPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "careers" });
+
+  return {
+    title: t("title"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/kasblar" },
+    openGraph: {
+      title: t("title"),
+      description: t("metaOgDescription"),
+      url: "/kasblar",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${t("title")} | Stepolog.uz`,
+      description: t("metaOgDescription"),
+    },
+  };
+}
+
+export default async function KasblarPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "careers" });
+  const careers = getCareers(locale);
+  const levelLabels = getLevelLabels(locale);
+
   return (
     <div className="mx-auto max-w-5xl px-5 py-20">
       <div className="mb-12">
         <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">
-          Kasblar
+          {t("listLabel")}
         </span>
         <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">
-          Kasblar xaritasi
+          {t("title")}
         </h1>
         <p className="mt-4 max-w-lg text-muted">
-          IT sohasidagi asosiy yo&apos;nalishlar — kasbni tanlang va nima qilishi, qanday
-          o&apos;sishi haqida batafsil bilib oling.
+          {t("listDescription")}
         </p>
       </div>
 
@@ -50,7 +63,7 @@ export default function KasblarPage() {
               <span
                 className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelColor[career.level]}`}
               >
-                {career.level}
+                {levelLabels[career.level]}
               </span>
             </div>
 
@@ -70,7 +83,7 @@ export default function KasblarPage() {
             </div>
 
             <span className="text-sm font-bold text-foreground transition-colors group-hover:text-brand">
-              Batafsil &rarr;
+              {t("details")} &rarr;
             </span>
           </Link>
         ))}

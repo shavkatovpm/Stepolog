@@ -1,28 +1,34 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { careers, getCareerBySlug, levelColor } from "@/lib/careers";
+import { getTranslations } from "next-intl/server";
+import { getCareers, getCareerBySlug, getLevelLabels, levelColor } from "@/lib/careers";
 import CareerRoadmap from "@/components/CareerRoadmap";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export function generateStaticParams() {
-  return careers.map((c) => ({ slug: c.slug }));
+  const locales = ["uz", "ru"];
+  return locales.flatMap((locale) =>
+    getCareers(locale).map((c) => ({ locale, slug: c.slug }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const career = getCareerBySlug(slug);
+  const { locale, slug } = await params;
+  const career = getCareerBySlug(slug, locale);
   if (!career) return {};
 
+  const t = await getTranslations({ locale, namespace: "careers" });
+
   return {
-    title: `${career.title} — Kasblar xaritasi`,
-    description: `${career.title} kasbi haqida: nima qiladi, qanday o'sadi, qanday ko'nikmalar kerak. Interaktiv roadmap.`,
+    title: `${career.title} — ${t("title")}`,
+    description: t("detailMetaDescription", { title: career.title }),
     alternates: { canonical: `/kasblar/${slug}` },
     openGraph: {
-      title: `${career.title} — Kasblar xaritasi`,
+      title: `${career.title} — ${t("title")}`,
       description: career.description,
       url: `/kasblar/${slug}`,
       type: "article",
@@ -36,17 +42,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CareerDetailPage({ params }: Props) {
-  const { slug } = await params;
-  const career = getCareerBySlug(slug);
+  const { locale, slug } = await params;
+  const career = getCareerBySlug(slug, locale);
 
   if (!career) notFound();
 
+  const t = await getTranslations({ locale, namespace: "careers" });
+  const levelLabels = getLevelLabels(locale);
+
+  const urlPrefix = locale === "ru" ? "/ru" : "";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: `${career.title} — Kasblar xaritasi`,
+    headline: `${career.title} — ${t("title")}`,
     description: career.description,
-    mainEntityOfPage: `https://stepolog.uz/kasblar/${slug}`,
+    mainEntityOfPage: `https://stepolog.uz${urlPrefix}/kasblar/${slug}`,
     publisher: {
       "@type": "Organization",
       name: "Stepolog",
@@ -68,17 +78,17 @@ export default async function CareerDetailPage({ params }: Props) {
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        Kasblar xaritasi
+        {t("backToCareers")}
       </Link>
 
       {/* Header */}
       <div className="mb-12">
         <div className="mb-4 flex items-center gap-3">
-          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">Kasb</span>
+          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">{t("label")}</span>
           <span
             className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelColor[career.level]}`}
           >
-            {career.level}
+            {levelLabels[career.level]}
           </span>
         </div>
         <h1 className="font-display text-4xl uppercase tracking-wide md:text-5xl">
@@ -89,7 +99,7 @@ export default async function CareerDetailPage({ params }: Props) {
 
       {/* Nima qiladi */}
       <section className="mb-12">
-        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">Nima qiladi?</h2>
+        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">{t("whatDoes")}</h2>
         <div className="space-y-3">
           {career.whatDoes.map((item, i) => (
             <div key={i} className="flex items-start gap-3 rounded-xl border border-border bg-surface p-4">
@@ -104,7 +114,7 @@ export default async function CareerDetailPage({ params }: Props) {
 
       {/* Kompaniyada o'rni */}
       <section className="mb-12">
-        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">Kompaniyada o&apos;rni</h2>
+        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">{t("companyRole")}</h2>
         <div className="rounded-xl border border-border bg-surface p-6">
           <p className="text-sm leading-relaxed text-foreground/80">{career.companyRole}</p>
         </div>
@@ -112,13 +122,13 @@ export default async function CareerDetailPage({ params }: Props) {
 
       {/* Roadmap */}
       <section className="mb-12">
-        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">O&apos;sish yo&apos;li</h2>
+        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">{t("growthPath")}</h2>
         <CareerRoadmap steps={career.roadmap} />
       </section>
 
       {/* Ko'nikmalar */}
       <section className="mb-12">
-        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">Asosiy ko&apos;nikmalar</h2>
+        <h2 className="mb-5 font-display text-2xl uppercase tracking-wide">{t("coreSkills")}</h2>
         <div className="flex flex-wrap gap-2">
           {career.skills.map((skill) => (
             <span

@@ -1,45 +1,62 @@
 import type { MetadataRoute } from "next";
 import { getAllSlugs } from "@/lib/content";
-import { careers } from "@/lib/careers";
+import { getCareers } from "@/lib/careers";
 
 const BASE_URL = "https://stepolog.uz";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const blogSlugs = getAllSlugs("blog");
-  const learnSlugs = getAllSlugs("learn");
+  const locales = ["uz", "ru"] as const;
+  const entries: MetadataRoute.Sitemap = [];
 
-  const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/about/missiya`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/about/bilim`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/about/hamjamiyat`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/about/yol-xarita`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE_URL}/learn`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${BASE_URL}/kasblar`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-  ];
+  for (const locale of locales) {
+    const prefix = locale === "uz" ? "" : "/ru";
+    const blogSlugs = getAllSlugs("blog", locale);
+    const learnSlugs = getAllSlugs("learn", locale);
+    const careerList = getCareers(locale);
 
-  const blogPages: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
-    url: `${BASE_URL}/blog/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+    // Static pages
+    entries.push(
+      { url: `${BASE_URL}${prefix}`, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+      { url: `${BASE_URL}${prefix}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+      { url: `${BASE_URL}${prefix}/about/missiya`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+      { url: `${BASE_URL}${prefix}/about/bilim`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+      { url: `${BASE_URL}${prefix}/about/hamjamiyat`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+      { url: `${BASE_URL}${prefix}/about/yol-xarita`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+      { url: `${BASE_URL}${prefix}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+      { url: `${BASE_URL}${prefix}/learn`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+      { url: `${BASE_URL}${prefix}/kasblar`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    );
 
-  const learnPages: MetadataRoute.Sitemap = learnSlugs.map((slug) => ({
-    url: `${BASE_URL}/learn/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+    // Blog pages
+    for (const slug of blogSlugs) {
+      entries.push({
+        url: `${BASE_URL}${prefix}/blog/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.8,
+      });
+    }
 
-  const careerPages: MetadataRoute.Sitemap = careers.map((c) => ({
-    url: `${BASE_URL}/kasblar/${c.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+    // Learn pages
+    for (const slug of learnSlugs) {
+      entries.push({
+        url: `${BASE_URL}${prefix}/learn/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.8,
+      });
+    }
 
-  return [...staticPages, ...blogPages, ...learnPages, ...careerPages];
+    // Career pages
+    for (const career of careerList) {
+      entries.push({
+        url: `${BASE_URL}${prefix}/kasblar/${career.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+    }
+  }
+
+  return entries;
 }

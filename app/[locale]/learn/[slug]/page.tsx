@@ -4,18 +4,22 @@ import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getArticleBySlug, getAllSlugs } from "@/lib/content";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return getAllSlugs("learn").map((slug) => ({ slug }));
+  const locales = ["uz", "ru"];
+  return locales.flatMap((locale) =>
+    getAllSlugs("learn", locale).map((slug) => ({ locale, slug }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const article = getArticleBySlug("learn", slug);
+  const { locale, slug } = await params;
+  const article = getArticleBySlug("learn", slug, locale);
   if (!article) return {};
 
   return {
@@ -39,10 +43,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function LearnArticlePage({ params }: Props) {
-  const { slug } = await params;
-  const article = getArticleBySlug("learn", slug);
+  const { locale, slug } = await params;
+  const t = await getTranslations("learn");
+  const article = getArticleBySlug("learn", slug, locale);
 
   if (!article) notFound();
+
+  const prefix = locale === "uz" ? "" : "/ru";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -59,7 +66,7 @@ export default async function LearnArticlePage({ params }: Props) {
       name: "Stepolog",
       url: "https://stepolog.uz",
     },
-    mainEntityOfPage: `https://stepolog.uz/learn/${slug}`,
+    mainEntityOfPage: `https://stepolog.uz${prefix}/learn/${slug}`,
   };
 
   return (
@@ -75,12 +82,12 @@ export default async function LearnArticlePage({ params }: Props) {
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        O&apos;rganishga qaytish
+        {t("backToLearn")}
       </Link>
 
       <header className="mb-10">
         <div className="mb-4 flex items-center gap-3">
-          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">O&apos;rganish</span>
+          <span className="text-xs font-bold uppercase tracking-[.2em] text-brand">{t("label")}</span>
           <span className="text-sm text-muted">{article.meta.date}</span>
           <span className="text-sm text-muted">&middot; {article.meta.author}</span>
         </div>

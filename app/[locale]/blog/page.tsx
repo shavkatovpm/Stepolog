@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ArticleCard from "@/components/ArticleCard";
 import { getAllArticles } from "@/lib/content";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Bloglar",
@@ -20,16 +21,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogPage() {
-  const articles = getAllArticles("blog");
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function BlogPage({ params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations("blog");
+  const articles = getAllArticles("blog", locale);
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-20">
       <div className="mb-12">
-        <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">Blog</span>
-        <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">Bloglar</h1>
+        <span className="mb-4 inline-block text-xs font-bold uppercase tracking-[.2em] text-brand">{t("label")}</span>
+        <h1 className="font-display text-5xl uppercase tracking-wide md:text-6xl">{t("title")}</h1>
         <p className="mt-4 max-w-lg text-muted">
-          Startaplar haqida yangliklar, tahlillar va PR maqolalar
+          {t("description")}
         </p>
       </div>
 
@@ -38,7 +45,7 @@ export default function BlogPage() {
           <svg className="mx-auto mb-4 h-12 w-12 text-muted/30" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
-          <p className="text-lg font-medium text-muted">Hozircha maqolalar yo&apos;q. Tez kunda!</p>
+          <p className="text-lg font-medium text-muted">{t("noArticles")}</p>
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

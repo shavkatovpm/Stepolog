@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { RoadmapStep } from "@/lib/careers";
 
 export default function CareerRoadmap({ steps }: { steps: RoadmapStep[] }) {
+  const t = useTranslations("careers");
   const [active, setActive] = useState(0);
 
   return (
@@ -61,7 +63,7 @@ export default function CareerRoadmap({ steps }: { steps: RoadmapStep[] }) {
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2">
-          <span className="text-xs text-muted">Oylik maosh:</span>
+          <span className="text-xs text-muted">{t("salary")}:</span>
           <span className="text-sm font-bold text-green-500">{steps[active].salary}</span>
         </div>
         <div className="mt-4 flex flex-wrap gap-1.5">

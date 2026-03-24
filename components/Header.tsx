@@ -1,21 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { useState, useEffect } from "react";
 import StepologLogo from "@/components/StepologLogo";
 
-const navLinks = [
-  { href: "/", label: "Asosiy sahifa" },
-  { href: "/learn", label: "Startap asoslari" },
-  { href: "/kasblar", label: "Kasblar xaritasi" },
-  { href: "/blog", label: "Maqolalar" },
-  { href: "/about", label: "Haqimizda" },
-];
-
 export default function Header() {
+  const t = useTranslations("nav");
+  const locale = useLocale();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { href: "/", label: t("home") },
+    { href: "/learn", label: t("learn") },
+    { href: "/kasblar", label: t("careers") },
+    { href: "/blog", label: t("blog") },
+    { href: "/about", label: t("about") },
+  ] as const;
 
   // Tashqariga bosilganda yoki scroll qilganda menyu yopilsin
   useEffect(() => {
@@ -66,24 +68,35 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-md md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Menyu"
-        >
-          <div className="flex w-[18px] flex-col gap-[5px]">
-            <span
-              className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "translate-y-[7px] rotate-45" : ""}`}
-            />
-            <span
-              className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "scale-0 opacity-0" : ""}`}
-            />
-            <span
-              className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
-            />
-          </div>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Language toggle — desktop */}
+          <Link
+            href={pathname}
+            locale={locale === "uz" ? "ru" : "uz"}
+            className="hidden h-9 w-9 items-center justify-center rounded-md border border-border text-sm transition-colors hover:border-brand/40 md:flex"
+          >
+            {locale === "uz" ? "🇷🇺" : "🇺🇿"}
+          </Link>
+
+          {/* Mobile hamburger */}
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-md md:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menyu"
+          >
+            <div className="flex w-[18px] flex-col gap-[5px]">
+              <span
+                className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "translate-y-[7px] rotate-45" : ""}`}
+              />
+              <span
+                className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "scale-0 opacity-0" : ""}`}
+              />
+              <span
+                className={`h-[2px] w-full bg-foreground transition-all duration-300 ${mobileOpen ? "-translate-y-[7px] -rotate-45" : ""}`}
+              />
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Mobile nav */}
@@ -112,6 +125,16 @@ export default function Header() {
               </Link>
             );
           })}
+
+          {/* Language toggle — mobile */}
+          <Link
+            href={pathname}
+            locale={locale === "uz" ? "ru" : "uz"}
+            onClick={() => setMobileOpen(false)}
+            className="rounded-md border border-border px-3 py-3 text-center text-[13px] font-medium text-muted-strong transition-colors hover:text-foreground"
+          >
+            {locale === "uz" ? "🇷🇺 Русский" : "🇺🇿 O'zbekcha"}
+          </Link>
         </nav>
       </div>
     </header>

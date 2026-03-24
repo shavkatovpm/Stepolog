@@ -1,7 +1,12 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import StepologLogo from "@/components/StepologLogo";
 
 export default function Footer() {
+  const t = useTranslations("footer");
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-5xl px-5 py-16 md:px-8">
@@ -12,7 +17,7 @@ export default function Footer() {
               <span className="font-display text-[22px] tracking-[.08em] text-brand">STEPOLOG</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              O&apos;zbekiston digital ekotizimi uchun bepul bilim platformasi.
+              {t("description")}
             </p>
             <div className="mt-5 flex gap-3">
               <a
@@ -42,18 +47,18 @@ export default function Footer() {
 
           <div className="flex gap-16">
             <div>
-              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">Sahifalar</h4>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">{t("pages")}</h4>
               <ul className="flex flex-col gap-3 text-sm">
-                <li><Link href="/" className="text-muted-strong transition-colors hover:text-foreground">Asosiy</Link></li>
-                <li><Link href="/learn" className="text-muted-strong transition-colors hover:text-foreground">Startap asoslari</Link></li>
-                <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">Kasblar xaritasi</Link></li>
-                <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">Maqolalar</Link></li>
-                <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">Haqimizda</Link></li>
+                <li><Link href="/" className="text-muted-strong transition-colors hover:text-foreground">{t("homeLink")}</Link></li>
+                <li><Link href="/learn" className="text-muted-strong transition-colors hover:text-foreground">{t("learnLink")}</Link></li>
+                <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">{t("careersLink")}</Link></li>
+                <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">{t("blogLink")}</Link></li>
+                <li><Link href="/about" className="text-muted-strong transition-colors hover:text-foreground">{t("aboutLink")}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">Tarmoqlar</h4>
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">{t("socials")}</h4>
               <ul className="flex flex-col gap-3 text-sm">
                 <li>
                   <a href="https://t.me/stepolog" target="_blank" rel="noopener noreferrer" className="text-muted-strong transition-colors hover:text-foreground">
@@ -71,7 +76,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border pt-6 text-center text-xs text-muted">
-          &copy; {new Date().getFullYear()} Stepolog.uz — Barcha huquqlar himoyalangan.
+          &copy; {new Date().getFullYear()} {t("copyright")}
         </div>
       </div>
     </footer>

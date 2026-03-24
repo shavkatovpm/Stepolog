@@ -1,0 +1,107 @@
+{
+  "hero": {
+    "phrase1": "Harakat qiling",
+    "phrase2": "Rivojlaning",
+    "phrase3": "Natijaga chiqing"
+  },
+  "metadata": {
+    "title": "Stepolog.uz — O'zbekiston digital ekotizimi uchun bepul bilim platformasi",
+    "description": "O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va foydali maqolalar.",
+    "ogTitle": "Stepolog.uz — Bepul bilim platformasi",
+    "ogDescription": "O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va maqolalar."
+  },
+  "nav": {
+    "home": "Asosiy sahifa",
+    "learn": "Startap asoslari",
+    "careers": "Kasblar xaritasi",
+    "blog": "Maqolalar",
+    "about": "Haqimizda"
+  },
+  "footer": {
+    "description": "O'zbekiston digital ekotizimi uchun bepul bilim platformasi.",
+    "pages": "Sahifalar",
+    "socials": "Tarmoqlar",
+    "homeLink": "Asosiy",
+    "learnLink": "Startap asoslari",
+    "careersLink": "Kasblar xaritasi",
+    "blogLink": "Maqolalar",
+    "aboutLink": "Haqimizda",
+    "copyright": "Barcha huquqlar himoyalangan."
+  },
+  "home": {
+    "subtitle": "Bepul bilim platformasi",
+    "learnButton": "Startap asoslari",
+    "careersButton": "Kasblar xaritasi",
+    "aboutLabel": "Biz haqimizda",
+    "whoTitle": "STEPOLOG kim?",
+    "whoDescription": "Stepolog — O'zbekiston digital ekotizimi uchun bepul bilim platformasi. Startaplar, kasblar xaritasi va foydali maqolalar orqali yosh tadbirkorlar va IT mutaxassislariga bilim beramiz.",
+    "moreDetails": "Batafsil",
+    "card01Title": "Bilim",
+    "card01Desc": "Startap asoslari, kasblar va foydali maqolalar",
+    "card02Title": "Yo'l xaritasi",
+    "card02Desc": "Qayerdan boshlashni bilmaydiganlar uchun bosqichma-bosqich yo'nalish",
+    "card03Title": "Jamiyat",
+    "card03Desc": "O'zbekiston startap ekotizimi va tadbirkorlar haqida yangiliklar",
+    "careersLabel": "Kasblar",
+    "careersTitle": "Kasblar xaritasi",
+    "careersDescription": "Zamonaviy kasblarni egallash uchun yo'l xaritasi — qayerdan boshlash va nimalarga e'tibor berish kerak",
+    "allCareers": "Barchasi",
+    "learnLabel": "O'rganish",
+    "learnTitle": "Startap asoslari",
+    "learnDescription": "G'oyadan mahsulotgacha — bosqichma-bosqich qo'llanmalar va bilimlar",
+    "allLearn": "Barchasi"
+  },
+  "about": {
+    "title": "Biz haqimizda",
+    "description": "Stepolog — O'zbekiston digital ekotizimi uchun bepul bilim platformasi",
+    "card01Title": "Missiya",
+    "card01Desc": "Stepolog nima uchun mavjud va biz qanday maqsadni ko'zlaymiz",
+    "card02Title": "Bilim",
+    "card02Desc": "Startap, IT va kasblar bo'yicha bepul bilim va materiallar",
+    "card03Title": "Hamjamiyat",
+    "card03Desc": "Yosh tadbirkorlar va IT mutaxassislari uchun hamjamiyat",
+    "card04Title": "Yo'l xarita",
+    "card04Desc": "Qayerdan boshlashni bilmaydiganlar uchun bosqichma-bosqich yo'nalish"
+  },
+  "careers": {
+    "title": "Kasblar xaritasi",
+    "description": "Zamonaviy kasblarni egallash uchun yo'l xaritasi",
+    "label": "Kasb",
+    "whatDoes": "Nima qiladi?",
+    "companyRole": "Kompaniyada o'rni",
+    "growthPath": "O'sish yo'li",
+    "coreSkills": "Asosiy ko'nikmalar",
+    "salary": "Oylik maosh",
+    "backToCareers": "Kasblar xaritasi",
+    "listLabel": "Kasblar",
+    "listDescription": "IT sohasidagi asosiy yo'nalishlar — kasbni tanlang va nima qilishi, qanday o'sishi haqida batafsil bilib oling.",
+    "details": "Batafsil",
+    "metaDescription": "IT sohasidagi kasblar xaritasi — qaysi yo'nalishni tanlash, nimalarni o'rganish va qanday boshlash kerak.",
+    "metaOgDescription": "IT sohasidagi asosiy yo'nalishlar — qaysi kasbni tanlash va nimalarni o'rganish kerak.",
+    "detailMetaDescription": "{title} kasbi haqida: nima qiladi, qanday o'sadi, qanday ko'nikmalar kerak. Interaktiv roadmap."
+  },
+  "blog": {
+    "title": "Maqolalar",
+    "description": "Startap, IT va raqamli marketing haqida foydali maqolalar",
+    "label": "Blog",
+    "backToBlog": "Bloglarga qaytish",
+    "noArticles": "Hozircha maqolalar yo'q. Tez kunda!"
+  },
+  "learn": {
+    "title": "Startap asoslari",
+    "description": "G'oyadan mahsulotgacha — bosqichma-bosqich qo'llanmalar",
+    "label": "O'rganish",
+    "backToLearn": "Startap asoslari",
+    "noArticles": "Hozircha materiallar yo'q. Tez kunda!",
+    "topicsLabel": "Mavzular"
+  },
+  "common": {
+    "all": "Barchasi",
+    "readMore": "Batafsil"
+  },
+  "notFound": {
+    "title": "Sahifa topilmadi",
+    "description": "Kechirasiz, siz qidirayotgan sahifa mavjud emas.",
+    "backHome": "Asosiy sahifaga qaytish"
+  }
+}

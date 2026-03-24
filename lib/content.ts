@@ -19,8 +19,11 @@ export interface ArticleMeta {
 
 const contentDir = path.join(process.cwd(), "content");
 
-export function getAllArticles(type: "blog" | "learn"): ArticleMeta[] {
-  const dir = path.join(contentDir, type);
+export function getAllArticles(
+  type: "blog" | "learn",
+  locale: string = "uz"
+): ArticleMeta[] {
+  const dir = path.join(contentDir, type, locale);
 
   if (!fs.existsSync(dir)) return [];
 
@@ -47,8 +50,12 @@ export function getAllArticles(type: "blog" | "learn"): ArticleMeta[] {
   );
 }
 
-export function getArticleBySlug(type: "blog" | "learn", slug: string) {
-  const filePath = path.join(contentDir, type, `${slug}.mdx`);
+export function getArticleBySlug(
+  type: "blog" | "learn",
+  slug: string,
+  locale: string = "uz"
+) {
+  const filePath = path.join(contentDir, type, locale, `${slug}.mdx`);
 
   if (!fs.existsSync(filePath)) return null;
 
@@ -69,8 +76,11 @@ export function getArticleBySlug(type: "blog" | "learn", slug: string) {
   };
 }
 
-export function getAllSlugs(type: "blog" | "learn"): string[] {
-  const dir = path.join(contentDir, type);
+export function getAllSlugs(
+  type: "blog" | "learn",
+  locale: string = "uz"
+): string[] {
+  const dir = path.join(contentDir, type, locale);
 
   if (!fs.existsSync(dir)) return [];
 
