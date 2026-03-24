@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
-import { getAllSlugs } from "@/lib/content";
+import { getAllLearnSlugsWithCategory, getAllSlugs } from "@/lib/content";
 import { getCareers } from "@/lib/careers";
+import { getLearnCategories } from "@/lib/learn-categories";
 
 const BASE_URL = "https://stepolog.uz";
 
@@ -11,7 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const locale of locales) {
     const prefix = locale === "uz" ? "" : "/ru";
     const blogSlugs = getAllSlugs("blog", locale);
-    const learnSlugs = getAllSlugs("learn", locale);
+    const learnCategories = getLearnCategories(locale);
+    const learnArticles = getAllLearnSlugsWithCategory(locale);
     const careerList = getCareers(locale);
 
     // Static pages
@@ -37,10 +39,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       });
     }
 
-    // Learn pages
-    for (const slug of learnSlugs) {
+    // Learn category pages
+    for (const cat of learnCategories) {
       entries.push({
-        url: `${BASE_URL}${prefix}/learn/${slug}`,
+        url: `${BASE_URL}${prefix}/learn/${cat.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.8,
+      });
+    }
+
+    // Learn article pages
+    for (const item of learnArticles) {
+      entries.push({
+        url: `${BASE_URL}${prefix}/learn/${item.category}/${item.slug}`,
         lastModified: new Date(),
         changeFrequency: "monthly",
         priority: 0.8,
