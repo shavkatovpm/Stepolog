@@ -16,6 +16,9 @@ const bebasNeue = Bebas_Neue({
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="uz" className="dark">
+      <head>
+        <meta name="google-site-verification" content="uHzs5xDnmIRQFWpvv1SNaeYqjbCpVW1rX0hQ5pFMi6o" />
+      </head>
       <body className={`${manrope.variable} ${bebasNeue.variable} antialiased`}>
         {children}
       </body>
