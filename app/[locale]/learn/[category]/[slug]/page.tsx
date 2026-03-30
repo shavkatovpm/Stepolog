@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -54,7 +54,7 @@ export default async function LearnArticlePage({ params }: Props) {
   const t = await getTranslations("learn");
   const article = getArticleBySlug("learn", slug, locale, category);
 
-  if (!article) notFound();
+  if (!article) redirect(locale === "uz" ? `/learn/${category}` : `/ru/learn/${category}`);
 
   const categories = getLearnCategories(locale);
   const cat = categories.find((c) => c.slug === category);

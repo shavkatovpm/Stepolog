@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -47,7 +47,7 @@ export default async function BlogArticlePage({ params }: Props) {
   const t = await getTranslations("blog");
   const article = getArticleBySlug("blog", slug, locale);
 
-  if (!article) notFound();
+  if (!article) redirect(locale === "uz" ? "/blog" : "/ru/blog");
 
   const prefix = locale === "uz" ? "" : "/ru";
 
