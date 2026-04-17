@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../modad.css";
-import "../analitika.css";
 
 import type { Content, Project, Settings, State, SavedPrompt, Category } from "./types";
 import {
@@ -17,7 +16,6 @@ import IntentSelect from "./components/IntentSelect";
 import CredentialsEditor from "./components/CredentialsEditor";
 import DetailRow from "./components/DetailRow";
 import StatsView from "./components/StatsView";
-import AnalyticsView from "./components/AnalyticsView";
 
 function getDateColor(publishDate: string, status: string): string {
   if (!publishDate) return "var(--m-text3)";
@@ -52,7 +50,7 @@ export default function ModadDashboard() {
   });
   const [currentView, setCurrentView] = useState<"kanban" | "table">("table");
   const [contentMode, setContentMode] = useState<"content" | "planner">("content");
-  const [currentPage, setCurrentPage] = useState<"projects" | "prompts" | "stats" | "analitika" | "settings">("projects");
+  const [currentPage, setCurrentPage] = useState<"projects" | "prompts" | "stats" | "settings">("projects");
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -676,7 +674,7 @@ export default function ModadDashboard() {
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "stats" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("stats"); }}>
               <span>📊</span> Statistika
             </div>
-            <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "analitika" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("analitika"); }}>
+            <div className="m-sidebar-nav-item" onClick={() => router.push("/modad/analitika")}>
               <span>📈</span> Analitika Stepolog
             </div>
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "settings" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("settings"); }}>
@@ -932,11 +930,6 @@ export default function ModadDashboard() {
           {/* STATS VIEW */}
           {currentPage === "stats" && !state.currentProjectId && (
             <StatsView projects={state.projects} contents={state.contents} onOpenProject={openProject} />
-          )}
-
-          {/* ANALITIKA VIEW */}
-          {currentPage === "analitika" && !state.currentProjectId && (
-            <AnalyticsView />
           )}
 
           {/* SETTINGS VIEW */}
