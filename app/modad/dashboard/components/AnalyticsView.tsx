@@ -1,10 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import "../modad.css";
-import "./analitika.css";
 
 interface BotBreakdown {
   name: string;
@@ -63,8 +59,7 @@ function formatReferer(referer: string): string {
   }
 }
 
-export default function AnalitikaPage() {
-  const router = useRouter();
+export default function AnalyticsView() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,10 +68,6 @@ export default function AnalitikaPage() {
     async function load() {
       try {
         const res = await fetch("/api/analytics/stats");
-        if (res.status === 401) {
-          router.push("/modad");
-          return;
-        }
         if (!res.ok) throw new Error("Failed to load");
         const data = await res.json();
         setStats(data);
@@ -87,22 +78,14 @@ export default function AnalitikaPage() {
       }
     }
     load();
-  }, [router]);
+  }, []);
 
   if (loading) {
-    return (
-      <div className="an-wrap">
-        <div className="an-loading">Yuklanmoqda...</div>
-      </div>
-    );
+    return <div className="an-loading">Yuklanmoqda...</div>;
   }
 
   if (error || !stats) {
-    return (
-      <div className="an-wrap">
-        <div className="an-error">Xatolik: {error || "Ma'lumot yo'q"}</div>
-      </div>
-    );
+    return <div className="an-error">Xatolik: {error || "Ma'lumot yo'q"}</div>;
   }
 
   const { summary } = stats;
@@ -130,12 +113,8 @@ export default function AnalitikaPage() {
           <h1 className="an-title">Analitika Stepolog</h1>
           <p className="an-subtitle">Tashriflar, botlar va foydalanuvchi xulqi</p>
         </div>
-        <Link href="/modad/dashboard" className="an-back-btn">
-          ← Dashboard
-        </Link>
       </div>
 
-      {/* Summary cards */}
       <div className="an-summary">
         <div className="an-card">
           <div className="an-card-label">Bugun</div>
@@ -144,23 +123,16 @@ export default function AnalitikaPage() {
             {todayVsYesterday >= 0 ? "↑" : "↓"} {Math.abs(todayVsYesterday)}% (kecha: {summary.yesterdayViews})
           </div>
         </div>
-
         <div className="an-card">
           <div className="an-card-label">7 kun</div>
           <div className="an-card-value">{summary.weekViews}</div>
-          <div className="an-card-delta muted">
-            O&apos;rtacha: {Math.round(summary.weekViews / 7)}/kun
-          </div>
+          <div className="an-card-delta muted">O&apos;rtacha: {Math.round(summary.weekViews / 7)}/kun</div>
         </div>
-
         <div className="an-card">
           <div className="an-card-label">30 kun</div>
           <div className="an-card-value">{summary.monthViews}</div>
-          <div className="an-card-delta muted">
-            O&apos;rtacha: {Math.round(summary.monthViews / 30)}/kun
-          </div>
+          <div className="an-card-delta muted">O&apos;rtacha: {Math.round(summary.monthViews / 30)}/kun</div>
         </div>
-
         <div className="an-card">
           <div className="an-card-label">Jami</div>
           <div className="an-card-value">{summary.totalViews}</div>
@@ -168,7 +140,6 @@ export default function AnalitikaPage() {
         </div>
       </div>
 
-      {/* Today breakdown */}
       <div className="an-section">
         <h2 className="an-section-title">Bugungi taqsimot</h2>
         <div className="an-today-grid">
@@ -190,7 +161,6 @@ export default function AnalitikaPage() {
         </div>
       </div>
 
-      {/* Daily chart */}
       {stats.daily.length > 0 && (
         <div className="an-section">
           <h2 className="an-section-title">30 kunlik trend</h2>
@@ -203,18 +173,9 @@ export default function AnalitikaPage() {
             {stats.daily.map((d) => (
               <div key={d.day} className="an-bar-group" title={`${d.day}: ${d.total} tashrif`}>
                 <div className="an-bar-stack">
-                  <div
-                    className="an-bar human"
-                    style={{ height: `${(d.humans / maxDaily) * 100}%` }}
-                  />
-                  <div
-                    className="an-bar ai"
-                    style={{ height: `${(d.aiBots / maxDaily) * 100}%` }}
-                  />
-                  <div
-                    className="an-bar bot"
-                    style={{ height: `${((d.bots - d.aiBots) / maxDaily) * 100}%` }}
-                  />
+                  <div className="an-bar human" style={{ height: `${(d.humans / maxDaily) * 100}%` }} />
+                  <div className="an-bar ai" style={{ height: `${(d.aiBots / maxDaily) * 100}%` }} />
+                  <div className="an-bar bot" style={{ height: `${((d.bots - d.aiBots) / maxDaily) * 100}%` }} />
                 </div>
                 <div className="an-bar-label">{d.day.slice(5)}</div>
               </div>
@@ -228,7 +189,6 @@ export default function AnalitikaPage() {
         </div>
       )}
 
-      {/* AI bots */}
       <div className="an-section">
         <h2 className="an-section-title">AI botlar (ChatGPT, Claude, Perplexity...)</h2>
         {stats.aiBots.length === 0 ? (
@@ -239,10 +199,7 @@ export default function AnalitikaPage() {
               <div key={bot.name} className="an-list-item">
                 <div className="an-list-label">{bot.name}</div>
                 <div className="an-list-bar-wrap">
-                  <div
-                    className="an-list-bar ai"
-                    style={{ width: `${(bot.count / maxAiBot) * 100}%` }}
-                  />
+                  <div className="an-list-bar ai" style={{ width: `${(bot.count / maxAiBot) * 100}%` }} />
                 </div>
                 <div className="an-list-count">{bot.count}</div>
               </div>
@@ -251,7 +208,6 @@ export default function AnalitikaPage() {
         )}
       </div>
 
-      {/* Search bots */}
       <div className="an-section">
         <h2 className="an-section-title">Qidiruv botlar (Google, Bing, Yandex...)</h2>
         {stats.searchBots.length === 0 ? (
@@ -262,10 +218,7 @@ export default function AnalitikaPage() {
               <div key={bot.name} className="an-list-item">
                 <div className="an-list-label">{bot.name}</div>
                 <div className="an-list-bar-wrap">
-                  <div
-                    className="an-list-bar bot"
-                    style={{ width: `${(bot.count / maxSearchBot) * 100}%` }}
-                  />
+                  <div className="an-list-bar bot" style={{ width: `${(bot.count / maxSearchBot) * 100}%` }} />
                 </div>
                 <div className="an-list-count">{bot.count}</div>
               </div>
@@ -274,7 +227,6 @@ export default function AnalitikaPage() {
         )}
       </div>
 
-      {/* Top pages */}
       <div className="an-section">
         <h2 className="an-section-title">Eng ko&apos;p ko&apos;rilgan sahifalar (30 kun)</h2>
         {stats.topPages.length === 0 ? (
@@ -285,10 +237,7 @@ export default function AnalitikaPage() {
               <div key={p.path} className="an-list-item">
                 <div className="an-list-label path">{p.path}</div>
                 <div className="an-list-bar-wrap">
-                  <div
-                    className="an-list-bar human"
-                    style={{ width: `${(p.count / maxPage) * 100}%` }}
-                  />
+                  <div className="an-list-bar human" style={{ width: `${(p.count / maxPage) * 100}%` }} />
                 </div>
                 <div className="an-list-count">{p.count}</div>
               </div>
@@ -297,7 +246,6 @@ export default function AnalitikaPage() {
         )}
       </div>
 
-      {/* Locale + Referers grid */}
       <div className="an-grid-2">
         <div className="an-section">
           <h2 className="an-section-title">Til bo&apos;yicha</h2>
@@ -312,7 +260,7 @@ export default function AnalitikaPage() {
                   </div>
                   <div className="an-locale-info">
                     <div className="an-locale-name">
-                      {l.locale === "uz" ? "O&apos;zbekcha" : l.locale === "ru" ? "Ruscha" : l.locale}
+                      {l.locale === "uz" ? "O'zbekcha" : l.locale === "ru" ? "Ruscha" : l.locale}
                     </div>
                     <div className="an-locale-count">{l.count} tashrif</div>
                   </div>
@@ -339,16 +287,12 @@ export default function AnalitikaPage() {
         </div>
       </div>
 
-      {/* Hourly */}
       <div className="an-section">
         <h2 className="an-section-title">Kun davomida (7 kunlik o&apos;rtacha)</h2>
         <div className="an-hourly">
           {stats.hourly.map((h) => (
             <div key={h.hour} className="an-hourly-item" title={`${h.hour}:00 — ${h.count} tashrif`}>
-              <div
-                className="an-hourly-bar"
-                style={{ height: `${(h.count / maxHourly) * 100}%` }}
-              />
+              <div className="an-hourly-bar" style={{ height: `${(h.count / maxHourly) * 100}%` }} />
               <div className="an-hourly-label">{h.hour}</div>
             </div>
           ))}
