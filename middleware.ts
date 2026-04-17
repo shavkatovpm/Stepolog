@@ -10,6 +10,24 @@ const apiHits = new Map<string, { count: number; resetAt: number }>();
 const API_MAX = 60;
 const API_WINDOW = 60 * 1000;
 
+function trackPageView(req: NextRequest) {
+  if (req.method !== "GET") return;
+  const path = req.nextUrl.pathname;
+  const userAgent = req.headers.get("user-agent") || "";
+  const referer = req.headers.get("referer") || "";
+  const forwardedFor = req.headers.get("x-forwarded-for") || "";
+
+  fetch(`${req.nextUrl.origin}/api/analytics/track`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-forwarded-for": forwardedFor,
+    },
+    body: JSON.stringify({ path, userAgent, referer }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 function getRateLimitKey(req: NextRequest): string {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -53,7 +71,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // All other routes: locale detection/redirect
+  // Public routes: track page view (fire-and-forget) then handle i18n
+  trackPageView(req);
   return intlMiddleware(req);
 }
 

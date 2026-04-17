@@ -674,6 +674,9 @@ export default function ModadDashboard() {
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "stats" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("stats"); }}>
               <span>📊</span> Statistika
             </div>
+            <div className="m-sidebar-nav-item" onClick={() => router.push("/modad/analitika")}>
+              <span>📈</span> Analitika Stepolog
+            </div>
             <div className={`m-sidebar-nav-item ${!state.currentProjectId && currentPage === "settings" ? "active" : ""}`} onClick={() => { setState((s) => ({ ...s, currentProjectId: null })); setCurrentPage("settings"); }}>
               <span>⚙️</span> Sozlamalar
             </div>

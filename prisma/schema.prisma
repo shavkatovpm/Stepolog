@@ -84,3 +84,22 @@ model Settings {
   promptWriting String @default("")
   customIntents String @default("[]")
 }
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  locale    String?
+  userAgent String   @db.Text
+  isBot     Boolean  @default(false)
+  botName   String?
+  isAiBot   Boolean  @default(false)
+  referer   String?
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([isBot])
+  @@index([isAiBot])
+  @@index([botName])
+  @@index([path])
+}
