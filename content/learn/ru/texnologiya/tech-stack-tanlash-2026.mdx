@@ -1,0 +1,258 @@
+---
+title: "Выбор tech stack: самые эффективные комбинации в 2026 году"
+description: "Выбор tech stack для стартапа — самые эффективные Frontend, Backend, Database, Hosting комбинации в 2026 году. Рекомендации для SaaS, mobile, AI стартапов."
+date: "2026-04-30"
+author: "Stepolog"
+category: "texnologiya"
+faqs:
+  - q: "Какой главный критерий выбора tech stack?"
+    a: "3 критерия: (1) Знания команды — на какой технологии вы и партнёр работаете быстрее, (2) Рынок труда — легко ли найти специалиста, (3) Тип продукта — SaaS, mobile, AI требуют разных стеков. Выбирать trend-технологию из Silicon Valley бессмысленно — стек, в котором вы уверены, даст продукт быстрее."
+  - q: "Какой stack самый быстрый для MVP?"
+    a: "Самый быстрый: Next.js + Tailwind (frontend) + Supabase или Firebase (backend + auth + db) + Vercel (deploy). За 1-2 недели — рабочий SaaS. Для no-code MVP — Bubble или Tilda за 3-7 дней. Часто думают, что нужен код, но no-code достаточен."
+  - q: "Database — SQL или NoSQL?"
+    a: "Для 90% стартапов — SQL (PostgreSQL). Причины: relational data, transaction support, мощный query language, может хранить и JSON. NoSQL (MongoDB) только для конкретных кейсов: real-time chat, много documents. Старт: PostgreSQL + Supabase (auth + realtime + storage)."
+  - q: "Frontend — React, Vue, Svelte?"
+    a: "В 2026 React (с Next.js) — самый безопасный выбор: крупнейшее community, больше всего специалистов, библиотек. Vue и Svelte хороши, но в Узбекистане React-разработчиков в 10 раз больше. Для команды — React. Для соло-проекта — что нравится."
+  - q: "Какой stack для AI-стартапа?"
+    a: "AI-стартап: Python (backend, model serve) + FastAPI + PostgreSQL (с pgvector) + Next.js (frontend) + OpenAI/Anthropic API. Для RAG — Pinecone или Weaviate. Production ML — PyTorch + Modal или AWS SageMaker. Стартап не должен тренировать модели — API достаточно."
+  - q: "Какой хостинг выбрать?"
+    a: "Для MVP — Vercel или Railway: бесплатно или дёшево, быстрый деплой. На масштабе SaaS: AWS, GCP, Azure. В Узбекистане для локальных клиентов — серверы в Ташкенте (uztelecom, beeline cloud). Для старта: Vercel + Supabase достаточно в 95% случаев."
+  - q: "Когда менять tech stack?"
+    a: "3 сигнала: (1) Performance — 100K+ пользователей, продукт тормозит, (2) Не найти разработчика — технология устарела, (3) Стоимость — текущий стек слишком дорог. Главная ошибка — менять стек каждые 6 месяцев. Working stack держите 3-5 лет."
+---
+
+> **Кратко:** Выбор tech stack в 2026 — ответ на 3 вопроса: (1) что знает команда, (2) каких разработчиков легко найти в Узбекистане, (3) какой тип продукта. Для SaaS: Next.js + Supabase + Vercel. AI-стартап: Python + FastAPI + PostgreSQL pgvector + LLM API. Mobile: React Native + Firebase. Главная ошибка — выбирать trend-технологии. Working stack держите 3-5 лет.
+
+Tech stack — это **техническая ДНК вашего стартапа**. Правильный выбор даёт работу в 2-3x быстрее, меньше ошибок и лёгкое масштабирование. Неправильный — проект, который через 6 месяцев придётся переписывать. Но многие стартаперы выбирают стек по принципу "что в trend на Hacker News" — это самая большая ошибка.
+
+На самом деле выбор стека — прагматичное решение. Главный вопрос: **могу ли я работать в этой технологии быстро и найду ли разработчика?** Команде с 5 годами React не имеет смысла переходить на Vue и терять 6 месяцев. Выбирать Rust в Узбекистане, где Rust-разработчиков нет, — значит, при уходе одного человека весь проект встанет.
+
+В этой статье разберём самые эффективные комбинации tech stack в 2026 году, рекомендации для каждого типа продукта и самые частые ошибки.
+
+## Что такое tech stack и зачем он важен?
+
+**Tech stack** — набор технологий для создания и работы продукта:
+
+- **Frontend** — что видит пользователь (React, Vue, Svelte)
+- **Backend** — серверная логика (Node.js, Python, Go)
+- **Database** — хранение данных (PostgreSQL, MongoDB, Redis)
+- **Hosting** — где работает (Vercel, AWS, GCP)
+- **Tooling** — дополнительные инструменты (CI/CD, monitoring, analytics)
+
+Правильный выбор даёт 3 вещи:
+
+**1. Скорость.** MVP за 1 неделю, не за месяц. Это — быстрый выход на рынок.
+
+**2. Расходы.** Vercel начинается с $0, AWS — около $200/мес. Wrong stack = 30% начального капитала.
+
+**3. Потенциал роста.** Если стек не масштабируется, на 100K клиентов придётся переписывать — потеря 6-12 месяцев.
+
+## "Boring stack" 2026 — самый эффективный
+
+**"Boring stack" — это не trend, но рабочие технологии.** Для большинства стартапов:
+
+| Компонент | Лучший выбор 2026 | Причина |
+|-----------|-------------------|---------|
+| **Frontend** | Next.js (React + SSR) | Крупнейшая экосистема, SEO-ready |
+| **CSS** | Tailwind CSS | Быстро, маленький bundle |
+| **Backend** | Next.js API routes / FastAPI | Вместе с frontend или отдельно |
+| **Database** | PostgreSQL (Supabase) | Универсальная, мощная, дешёвая |
+| **Auth** | Supabase Auth / Clerk | За 5 минут установить |
+| **Файлы** | Supabase Storage / S3 | Бесплатный старт |
+| **Email** | Resend / Postmark | Developer-friendly |
+| **Платежи** | Stripe / Click + Payme | Локально и международно |
+| **Hosting** | Vercel | Бесплатно, быстро, легко |
+| **Monitoring** | Sentry + PostHog | Free tier хватает |
+| **Analytics** | PostHog (product) + Plausible (web) | Privacy-friendly |
+| **CI/CD** | GitHub Actions | Бесплатно, native |
+
+Эта комбинация работает **от 0 до 100K пользователей**. Дальше — специальная оптимизация.
+
+## Tech stack по типу продукта
+
+### 1. SaaS (web-приложение)
+
+**Рекомендация:**
+- Frontend: **Next.js 15** + Tailwind + shadcn/ui
+- Backend: **Next.js API routes** (или Hono отдельно)
+- Database: **PostgreSQL** (Supabase или Neon)
+- Auth: **Supabase Auth** или **Clerk**
+- Hosting: **Vercel**
+- Email: **Resend**
+- Analytics: **PostHog**
+
+**Почему?**
+- Один technology stack (TypeScript везде)
+- Vercel + Supabase = $0-50/мес до 10K пользователей
+- Всё стандартное, документация
+- В Узбекистане много Next.js разработчиков
+
+**Пример:** Stepolog построен на этом стеке.
+
+### 2. AI-стартап (с LLM)
+
+**Рекомендация:**
+- Frontend: **Next.js** (для chat UI хорош streaming)
+- Backend: **Python FastAPI** (для AI-экосистемы)
+- Database: **PostgreSQL + pgvector** (vector embeddings)
+- LLM: **OpenAI** + **Anthropic Claude** (multi-provider)
+- Vector DB (альтернатива): **Pinecone** или **Weaviate**
+- Queue: **Redis** + **Celery** (background jobs)
+- Hosting: **Vercel** (frontend) + **Railway** или **Modal** (Python backend)
+
+**Примечание:** AI-стартап не должен тренировать модели — API достаточно в 99% случаев. Кастомные модели — только для очень специфичных кейсов.
+
+### 3. Mobile app
+
+**Рекомендация:**
+- Framework: **React Native** + **Expo** (самый быстрый)
+- Backend: **Supabase** или **Firebase**
+- State: **Zustand** или **Redux Toolkit**
+- Navigation: **React Navigation**
+- Push: **Expo Notifications**
+- Analytics: **Mixpanel** или **Amplitude**
+
+**Native (Swift/Kotlin) только:** для игр или сложной графики.
+
+### 4. Marketplace (multi-sided)
+
+**Рекомендация:**
+- Frontend: **Next.js**
+- Backend: **NestJS** (TypeScript) или **Rails** (Ruby)
+- Database: **PostgreSQL**
+- Search: **Algolia** или **Meilisearch**
+- Real-time: **Pusher** или Supabase Realtime
+- Payments: **Stripe Connect** (split payments)
+
+**Почему NestJS или Rails?** Marketplace — сложная бизнес-логика, нужна структура.
+
+### 5. E-commerce
+
+**Рекомендация:**
+- Платформа: **Shopify** (no-code, быстро) или **Medusa** (open-source)
+- Frontend: **Next.js** + Shopify Hydrogen
+- Платежи: **Stripe** + **Click/Payme** (локально)
+- Маркетинг: **Klaviyo** (email) + **Telegram bot**
+
+**В Узбекистане:** Uzum, OSON — вход на маркетплейсы для старта.
+
+## Локальные факторы рынка Узбекистана
+
+### 1. Платёжные системы
+Для локальных клиентов:
+- **Click** — самая популярная, легко интегрируется
+- **Payme** — близко к Click
+- **Uzcard / Humo** — банковские карты
+- Stripe — для международных клиентов
+
+Для совмещения локальных и международных платежей: **Stripe + Click webhook integration**.
+
+### 2. SMS и push
+- **Eskiz.uz** — отправка SMS, локально
+- **Playmobile** — альтернатива
+- **Firebase Cloud Messaging** — бесплатный push
+
+### 3. Hosting и CDN
+- **Vercel** — глобальный CDN
+- **Cloudflare** — сильный free tier
+- Локальный hosting (Ташкент) — низкая latency, но ограниченный масштаб
+
+### 4. Compliance
+- **Personal data:** Закон о персональных данных Узбекистана (2019) — для определённых типов данных серверы должны быть в Узбекистане
+- **GDPR:** для европейских клиентов
+- **HIPAA:** медицинские данные
+
+## 7 главных ошибок в tech stack
+
+**1. Trend-технологии.** "Bun новый, быстрый!" — да, но Node.js знают 1000 разработчиков, Bun — 5. Риск.
+
+**2. Microservices слишком рано.** До 1000 пользователей monolith достаточен. Microservices = 10x сложности.
+
+**3. Писать всё с нуля.** "Auth напишу сам" = 2 недели + security ошибки. Supabase Auth = 5 минут.
+
+**4. Excel вместо database.** В начале хранить данные в Excel — потом миграция 3 месяца.
+
+**5. Без monitoring.** Sentry или PostHog ставьте с 1-го дня. Иначе не узнаете, что багает.
+
+**6. Без тестов.** "Тесты добавим потом" = никогда. Хотя бы E2E-тест с первого дня (Playwright).
+
+**7. Менять стек каждые 6 месяцев.** Новая технология = новые проблемы. Working stack держите 3-5 лет.
+
+## Framework принятия решения
+
+При выборе tech stack ответьте на 5 вопросов:
+
+| Вопрос | Пример ответа |
+|--------|---------------|
+| Тип продукта? | SaaS, AI, mobile, marketplace |
+| Что знаем в команде? | TypeScript, Python, Java |
+| Сколько пользователей за год? | 100, 10K, 1M |
+| Какой бюджет? | $0-100/мес, $500/мес, $5000/мес |
+| Рынок — локальный или глобальный? | Узбекистан, США |
+
+По ответам стек определяется автоматически.
+
+**Пример:** "SaaS, в команде TypeScript, 1000 пользователей за год, бюджет $50/мес, локальные клиенты" → Next.js + Supabase + Vercel + Click integration.
+
+## Performance и scaling — когда думать
+
+Стартапу **не стоит думать о performance с самого начала**. Это **premature optimization** — потеря времени.
+
+3 этапа:
+
+**Этап 1: 0-1K пользователей** — пусть всё просто работает. Performance не важен. Стек: Next.js + Supabase, всё стандартное.
+
+**Этап 2: 1K-100K пользователей** — добавляйте caching (Redis), оптимизируйте database queries, ставьте CDN.
+
+**Этап 3: 100K+ пользователей** — на этом этапе нанимайте IT-директора. Microservices, Kubernetes, multi-region — для этого этапа.
+
+99% стартапов не доходят до этапа 2-3. Premature optimization — главная потеря времени.
+
+## FAQ: Частые вопросы по tech stack
+
+### Главный критерий выбора?
+
+3 критерия: **(1) знания команды, (2) рынок труда, (3) тип продукта**. Trend-технологии — бессмыслица.
+
+### Какой стек самый быстрый для MVP?
+
+**Next.js + Supabase + Vercel** — 1-2 недели до рабочего SaaS. No-code (Bubble, Tilda) — 3-7 дней.
+
+### Database — SQL или NoSQL?
+
+90% стартапов — **SQL (PostgreSQL)**. NoSQL только для real-time chat или documents-heavy.
+
+### Frontend — React, Vue, Svelte?
+
+В 2026 — **React (с Next.js)** самый безопасный. Самое крупное community.
+
+### Стек для AI?
+
+**Python + FastAPI + PostgreSQL pgvector + Next.js + OpenAI/Anthropic API**. Не нужно тренировать — API достаточно.
+
+### Какой хостинг?
+
+Для MVP — **Vercel + Supabase**. На масштабе — AWS, GCP, Azure.
+
+### Когда менять стек?
+
+3 сигнала: performance, не найти разработчика, стоимость. Но **держите 3-5 лет**.
+
+## Следующий шаг: выберите стек и стройте
+
+Выбор стека — единоразовое решение, но результат держится 3-5 лет.
+
+**Что сделать сегодня:**
+
+1. **Определите тип продукта** — SaaS, AI, mobile, marketplace
+2. **Анализ navыков команды** — кто что знает
+3. **Выберите из рекомендаций** — самый близкий вариант
+4. **Начните с "boring stack"** — Next.js + Supabase + Vercel
+5. **Performance и scaling — потом**
+
+**Следующие статьи:**
+- [30-дневный план MVP](/ru/learn/mvp/mvp-nima-va-qanday-qurish)
+- [SEO с нуля: 1-е место в Google](/ru/learn/marketing/seo-0-dan-google-1-orin)
+- [Сообщество Stepolog](/ru/about/hamjamiyat) — обмен опытом с другими technical founder
+
+Главное — **сегодня выберите стек и начните строить**. Лучше за неделю MVP, чем за месяц выбор технологии.

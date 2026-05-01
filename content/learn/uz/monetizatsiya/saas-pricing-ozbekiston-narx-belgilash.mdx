@@ -1,0 +1,234 @@
+---
+title: "SaaS pricing: O'zbekiston bozori uchun narx belgilash strategiyasi"
+description: "SaaS startap uchun O'zbekistonda narx belgilash strategiyasi — pricing modellari, raqobatchilar tahlili, mahalliy bozor o'ziga xosligi, real misollar va xatolar."
+date: "2026-04-30"
+author: "Stepolog"
+category: "monetizatsiya"
+faqs:
+  - q: "SaaS uchun qaysi pricing modeli eng yaxshi?"
+    a: "Ikki eng samarali model: (1) Subscription tiers — 3 ta plan (Basic, Pro, Enterprise) bilan, har bir tarif progressiv funksiyalar; (2) Per-seat pricing — har bir foydalanuvchiga oylik to'lov. O'zbekistonda Basic plan $5-15/oy, Pro $30-80/oy, Enterprise $200+/oy ishlaydi. Faqat 1 ta narx — bu xato, freemium bilan boshlash juda yaxshi."
+  - q: "O'zbekistonda SaaS qancha turishi kerak?"
+    a: "O'zbekistonda B2B SaaS narxlari xalqaro bozordan 30-50% past. Asosiy sabab: oylik daromad va biznes hajmi farqi. Misol: AQSh da CRM $50-100/oy, O'zbekistonda $15-40/oy adekvat. Lekin xalqaro mijozlar uchun Stripe orqali $50-100 narx ham qo'yiladi. 2 ta tier ham bo'lishi mumkin."
+  - q: "Freemium yaxshi yoki bepul trial?"
+    a: "Boshlang'ich SaaS uchun bepul trial (7-14 kun) yaxshiroq — konversiya 10-20% bo'ladi. Freemium 5-10% konversiya beradi, lekin mijoz oqimini katta. O'zbekistonda mahsulotni avval ko'rsatish muhim, shu sababli 14-kunlik bepul trial — eng samarali yondashuv. Freemium faqat ko'p foydalanuvchili mahsulotlar (Slack, Notion) uchun ishlaydi."
+  - q: "Narxni qanday belgilash kerak?"
+    a: "3 ta yondashuv: (1) Cost-plus — xarajat + foyda foizi (eng oddiy lekin past), (2) Competitor-based — raqobatchilar narxiga qarab (o'rtacha), (3) Value-based — mijoz olayotgan qiymatga qarab (eng yuqori daromad). SaaS uchun value-based eng yaxshi: 'Mijoz oyiga 20 soat tejaydi → 1 soat $10 → tejov $200/oy → narx $40/oy (20%)'."
+  - q: "Yillik to'lov chegirma berish kerakmi?"
+    a: "Ha, kerak. Standard amaliyot: yillik to'lovga 15-25% chegirma. Sabab: (1) cash flow yaxshilanadi, (2) churn rate 50% pasayadi, (3) mijoz 1 yil oldindan to'lab, kuchli yopiq. Misol: $30/oy → $300/yil ($60 chegirma, ya'ni 2 oy bepul). Bu odatga aylangan bozor."
+  - q: "Narx oshirish qachon va qanday?"
+    a: "Har 12-18 oyda 10-20% narx oshirish odatiy amaliyot. Sabab: yangi funksiyalar, infratuzilma xarajatlari, value-based qayta baholash. Mavjud mijozlarga 60 kun oldindan ogohlantiring va eski narxni 6 oy davom ettiring (grandfather pricing). Yangi mijozlar uchun yangi narx darhol qo'llaniladi."
+  - q: "B2B va B2C SaaS narx farqi?"
+    a: "B2B SaaS odatda 5-10x qimmatroq, chunki: (1) biznes ROI ni hisoblay oladi, (2) kompaniya budjeti shaxsiy budjetdan 100x katta, (3) kontrakt uzunroq (yillik). B2C SaaS yuzlab/minglab mijozdan kichik to'lov oladi, B2B esa o'nlab mijozdan katta to'lov. Stepolog tavsiyasi: yangi startap B2B qo'shaversin — daromad tezroq."
+---
+
+> **Qisqacha:** SaaS pricing — narx belgilash startap muvaffaqiyatining 50% omili. Eng yaxshi yondashuv: 3 ta tier (Basic $5-15, Pro $30-80, Enterprise $200+), 14-kun bepul trial, yillik to'lovga 20% chegirma, value-based narx (mijoz olayotgan qiymatdan 10-20%). O'zbekistonda B2B SaaS 30-50% xalqaro narxdan past, lekin xalqaro mijozlarga normal narx. Har 12-18 oyda 10-20% narx oshirish — odatiy amaliyot.
+
+SaaS startaplarning eng katta xatolaridan biri — narxni "biror son tikib qo'yish". Birorta startap "narx $20/oy" deydi va keyin nima uchun mijoz kelmayapti yoki kelgan mijozlar tezda ketib qolayotganini tushunmaydi. Aslida, narx — mahsulotning **70% ahamiyatini ifoda etadi**. To'g'ri narx mijozni jalb qiladi, mahsulotning sifatini namoyon qiladi va daromadni 5-10x oshiradi.
+
+O'zbekistonda SaaS narxlash yana ham qiyinroq, chunki bozor unikal: lokal mijozlarning byudjeti chegaralangan, lekin xalqaro mijozlar normal narx to'laydi. Bu **multi-tier strategiya** kerakligini bildiradi. Ushbu maqolada SaaS pricing ning asoslari, O'zbekiston bozori uchun maxsus moslashuvlar va eng ko'p uchraydigan xatolar haqida ko'rib chiqamiz.
+
+## SaaS pricing nima uchun shu qadar muhim?
+
+Narx — bu shunchaki raqam emas, balki **mahsulot pozitsiyasi va biznes modelining ifodasi**. To'g'ri narxning 3 ta ahamiyati:
+
+**1. Daromad ko'paytiruvchi.** $20/oy va $50/oy o'rtasida 2.5x farq, lekin xarajat ko'pincha bir xil. Narx oshirish — eng tez foyda oshirish yo'li.
+
+**2. Mijoz signali.** Juda arzon mahsulot "sifatsiz" deb qabul qilinadi. Juda qimmat — entry-barrier. To'g'ri narx — mahsulot pozitsiyasi.
+
+**3. Filtr.** Past narx ko'p mijoz oladi, lekin ular ko'pincha murakkab — ko'p qo'llab-quvvatlash kerak, churn yuqori. Yuqori narx — kam, lekin yaxshi mijozlar.
+
+**Real misol:** Notion 2018 da $4/oy edi. 2024 da $10/oy. Bu 2.5x narx oshishi, lekin foydalanuvchilar soni o'sgan, foydalilik — ham. Mahsulot mukammallashgan sari, narx ham.
+
+## SaaS pricing modellarining 5 turi
+
+| Model | Tavsif | Misol | Qachon mos |
+|-------|--------|-------|-----------|
+| **Per-seat** | Har foydalanuvchiga to'lov | Slack ($7/foydalanuvchi/oy) | Jamoaviy mahsulot |
+| **Tiered** | 3-4 daraja narx | Notion ($0/$10/$15/Custom) | Ko'p funksiya bor |
+| **Usage-based** | Foydalanish hajmiga | AWS, Twilio | Texnik mahsulot |
+| **Flat fee** | Bir narx, hammasi ichida | Basecamp ($99/oy) | Oddiy mahsulot |
+| **Freemium** | Bepul + paid funksiyalar | Spotify ($0 / $10) | Massa mahsulot |
+
+Eng ko'p ishlatiladigan: **Tiered** (3-4 daraja). Sabab — har turli mijoz uchun mos plan bor.
+
+## O'zbekistonda SaaS pricing — maxsus omillar
+
+### 1. Daromad farqi
+O'zbekistonda kichik biznes byudjeti AQSh ga nisbatan 5-10x kichik. Lekin biznes muammolari bir xil. Bu degani:
+- Lokal narx 30-50% past
+- Xalqaro mijozlar uchun standard narx
+- Sotuv strategiyasi: "lokal arzon, xalqaro normal"
+
+### 2. To'lov vositalari
+Mijozlar afzal ko'radigan to'lov:
+- **Lokal:** Payme, Click, Uzcard (UZS), bank o'tkazma
+- **Xalqaro:** Stripe (USD), PayPal (cheklangan), kripto (kichik segment)
+
+SaaS startup uchun ham UZS ham USD ni qabul qilish kerak. [Stripe](https://stripe.com) Atlas orqali O'zbekistonliklar AQSh kompaniyasi ochib, Stripe ishlatishi mumkin.
+
+### 3. Til va savdo madaniyati
+- O'zbek mijozlar — **suhbatga moyil** (chat, qo'ng'iroq), credit card kam
+- Self-service "narx → to'lov → ishlash" model bo'lmas uchun ham kontaktlash imkoni qo'shing
+- WhatsApp/Telegram bot — mijoz qo'llab-quvvatlash uchun majburiy
+
+### 4. Yillik tsikl
+- O'zbekistonda yangi yil (yanvar) va Navro'z (mart) byudjet rejalashtirish vaqtlari
+- Ramazon va Qurbon bayrami davrida sotuvlar pasayadi
+- Avgust-sentyabr — biznes faollashuvi (yangi ta'lim yili)
+
+## SaaS pricing belgilashning 4 bosqichli plani
+
+### 1-bosqich: Mijoz tadqiqi (Customer Discovery)
+
+20-30 ta potentsial mijoz bilan suhbat:
+- "Hozir bu muammoni qancha xarajat qilib hal qilayapsiz?" (vaqt + pul)
+- "Yaxshi yechim sizga qancha tejardi?" (ROI)
+- "Qancha pulga to'lashga tayyor bo'lardingiz?" (price sensitivity)
+- "Qaysi raqobatchini bilasiz?" (alternative)
+
+Bu ma'lumot **value-based pricing** asosi.
+
+### 2-bosqich: Raqobat tahlili
+
+Raqobatchilarning narxlarini yig'ing. Eng yaxshi yo'l:
+- Raqobatchilar saytida pricing sahifasi (ko'pincha mavjud)
+- Sales team bilan suhbat (mijoz sifatida)
+- Ex-mijozlar bilan suhbat
+- G2.com, Capterra reviewslari
+
+3 ta toifa:
+- **Arzon:** $5-25/oy — ommaviy bozor
+- **O'rta:** $25-100/oy — asosiy SaaS
+- **Premium:** $100+/oy — Enterprise
+
+### 3-bosqich: Value calculation
+
+**Value-based pricing formulasi:**
+```
+Mijoz tejovi yoki daromadi → Sizning narxingiz = 10-20%
+
+Misol:
+- Mijoz oyiga 20 soat tejaydi
+- 1 soat ish = $10 (O'zbekistonda Junior maoshi)
+- Tejov: $200/oy
+- Narx: $40/oy (20%)
+```
+
+Ushbu formula **biznes yangi qiymatga qaratiladi**, mahsulot narxi xarajatga emas.
+
+### 4-bosqich: Tier larni shakllantirish
+
+Standart 3-tier struktura:
+
+| Tier | Narx | Maqsad | Funksiyalar |
+|------|------|--------|-------------|
+| **Basic / Starter** | $5-15/oy | Yangi boshlovchi | Asosiy 60% funksiya |
+| **Pro / Business** | $30-80/oy | Asosiy mijoz | 90% funksiya + integratsiya |
+| **Enterprise** | $200+/oy | Yirik kompaniya | 100% + premium support |
+
+**Anchor pricing trick:** Eng qimmat tier ni qo'yish, o'rta tier "arzon" ko'rinadi. Bu psixologik hila — Enterprise ko'pincha "ko'rsatish" uchun.
+
+## Real O'zbekiston SaaS misollar
+
+### Misol 1: O'zbek tilidagi CRM
+**Mahsulot:** Kichik biznes uchun CRM (mijozlar, sotuvlar, hisobotlar)
+**Mijoz:** Toshkentdagi 5-15 xodimli kompaniya
+**Tier larx:**
+- Starter: $15/oy (3 user, 500 mijoz)
+- Pro: $40/oy (10 user, cheksiz mijoz)
+- Enterprise: $150/oy (cheksiz user, white-label)
+
+**Daromad model:** 80% Pro plan, 15% Starter, 5% Enterprise
+
+### Misol 2: AI kontent yozuvchi (xalqaro mijozlarga)
+**Mahsulot:** SEO maqolalar yozuvchi AI
+**Mijoz:** AQSh va Yevropadagi kichik biznes
+**Tier larx (USD):**
+- Basic: $19/oy (10 maqola)
+- Pro: $49/oy (50 maqola)
+- Agency: $149/oy (200 maqola + API)
+
+### Misol 3: O'zbekiston EdTech platforma
+**Mahsulot:** Onlayn kurs platformasi (B2B — ta'lim markazlari uchun)
+**Mijoz:** O'quv markazlari, til kurslari
+**Pricing:**
+- Per-student: $1/talaba/oy + $20/oy bazaviy
+- Yillik chegirma: 20%
+
+## SaaS pricing da 7 ta eng katta xato
+
+**1. Faqat 1 ta narx.** "Mahsulot $30/oy" — yo'q. Har turli mijoz turli xohlash. 3 ta tier — minimum.
+
+**2. Cost-plus pricing.** "Server $5, profit 100% → narx $10". Bu eng past daromadli yondashuv. Value-based qiling.
+
+**3. Juda arzon.** "Mijoz jalb qilish uchun $5/oy". Bu mahsulot sifatini past ko'rsatadi va churn yuqori bo'ladi. Past narx → past sifatli mijoz.
+
+**4. Narx oshirishdan qo'rqish.** Mavjud mijozlarni yo'qotishdan qo'rqib, narxni yillar davomida o'zgartirmaslik. Aslida, har 12-18 oyda 10-20% oshirish — me'yor.
+
+**5. Pricing sahifasini yashirish.** "Narx aniqlash uchun aloqaga chiqing" — kichik biznes uchun bu yomon. Ochiq narx — ishonch belgisi.
+
+**6. Yillik chegirma yo'qligi.** 15-25% yillik chegirma — universal odat. Yo'q bo'lsa, mijoz raqibga ketadi.
+
+**7. Refund siyosati yo'qligi.** 30-kunlik money-back kafolat — standart. Yo'qligi mijoz ishonchini past.
+
+## A/B testing — narxni qanday tasdiqlash
+
+Pricing ni "tikib qo'yib, qarab turish" — yo'q. A/B test qiling:
+
+**Bosqichlar:**
+1. 2 ta narx versiyasi tayyorlang ($30 vs $40)
+2. Trafiqni 50/50 bo'ling (tools: VWO, Optimizely)
+3. 100-200 ta mijoz orqali sinab ko'ring
+4. Konversiya va revenue ni taqqoslang
+5. G'olib narxni tanlang
+
+**Eslatma:** Faqat narx emas, balki **buyer behavior** ham muhim. "$40 mijozlar churn past" yoki "$30 mijozlar ko'p qo'llab-quvvatlash kerak" — bularning hammasini hisobga oling.
+
+## FAQ: SaaS pricing bo'yicha eng ko'p beriladigan savollar
+
+### SaaS uchun qaysi pricing modeli eng yaxshi?
+
+Ikki eng samarali model: **Subscription tiers** (3 plan) va **Per-seat pricing**. O'zbekistonda Basic $5-15/oy, Pro $30-80/oy, Enterprise $200+/oy ishlaydi.
+
+### O'zbekistonda SaaS qancha turishi kerak?
+
+Lokal narxlar xalqaro bozordan **30-50% past**. CRM AQSh da $50-100/oy, O'zbekistonda $15-40/oy adekvat.
+
+### Freemium yaxshi yoki bepul trial?
+
+Boshlang'ich SaaS uchun **bepul trial** (7-14 kun) yaxshiroq — konversiya 10-20%. Freemium 5-10% konversiya, lekin mijoz oqimi katta.
+
+### Narxni qanday belgilash kerak?
+
+Eng yaxshi — **Value-based**: mijoz olayotgan qiymatdan 10-20%. Misol: $200 tejov → $40/oy narx.
+
+### Yillik to'lov chegirma berish kerakmi?
+
+Ha. Standart: **15-25% yillik chegirma**. Cash flow yaxshilanadi, churn 50% pasayadi.
+
+### Narx oshirish qachon va qanday?
+
+Har **12-18 oyda 10-20%**. Mavjud mijozlarga 60 kun oldindan ogohlantiring, eski narxni 6 oy davom ettiring.
+
+### B2B va B2C SaaS narx farqi?
+
+B2B odatda **5-10x qimmatroq**. Sabab: biznes ROI hisoblay oladi, kompaniya byudjeti shaxsiy byudjetdan 100x katta.
+
+## Keyingi qadam: pricing strategiyasini yarating
+
+SaaS pricing — bu gipoteza, faqat. Mukammal narx yo'q — faqat data orqali tasdiqlangan narx.
+
+**Bugun qiladigan ishlar:**
+
+1. **Customer discovery** — 5-10 ta potentsial mijoz bilan suhbat, ROI tahlili
+2. **Raqobat tahlili** — 5-7 ta raqobatchining pricing sahifalari
+3. **Value calculation** — formula bo'yicha narx hisoblash
+4. **Tier struktura** — 3 ta tier yarating, anchor pricing ishlating
+5. **A/B test** — birinchi 100 mijozda 2 ta narx sinab ko'ring
+
+**Keyingi qadam bilan birga:**
+- [Unit economics ni hisoblash bo'yicha qo'llanma](/learn/monetizatsiya) — CAC, LTV, payback period
+- [Bozor segmentatsiyasi va target audience](/learn/bozor-tushunish/target-audience-mijoz-portreti) — kim uchun pricing belgilayapsiz
+- [Stepolog hamjamiyati](/about/hamjamiyat) — boshqa SaaS asoschilari bilan tajriba almashing
+
+Eng muhimi — **bugun pricing sahifasini ko'rsatib chiqaring**. Mijoz savol so'ramasdan narxni ko'rishi kerak.

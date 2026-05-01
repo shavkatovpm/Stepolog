@@ -1,0 +1,258 @@
+---
+title: "Tech stack tanlash: 2026-yil uchun eng samarali kombinatsiyalar"
+description: "Startap uchun tech stack tanlash — 2026-yilda eng samarali Frontend, Backend, Database, Hosting kombinatsiyalari. SaaS, mobile, AI startup uchun tavsiyalar."
+date: "2026-04-30"
+author: "Stepolog"
+category: "texnologiya"
+faqs:
+  - q: "Tech stack tanlashda eng muhim mezon nima?"
+    a: "3 ta mezon: (1) Jamoada bilim — siz va sherigingiz qaysi texnologiyada tezroq ishlay olasiz, (2) Bozor talab — bu texnologiya bo'yicha xodim topish oson yoki qiyin, (3) Mahsulot turi — SaaS, mobile, AI uchun turli stacklar mos. Siliconvalley trend texnologiyani tanlash mantiqsiz — shu texnologiyadan vazminroq tanish bo'lgan stack tezroq mahsulot beradi."
+  - q: "MVP uchun qaysi tech stack eng tez?"
+    a: "MVP uchun eng tezkor: Next.js + Tailwind (frontend) + Supabase yoki Firebase (backend + auth + database) + Vercel (deploy). Bu kombinatsiyada 1-2 hafta ichida ishlaydigan SaaS quriladi. No-code MVP uchun Bubble yoki Tilda hatto tezroq — 3-7 kun. Code yozish kerak deb o'ylasangiz ham ko'pincha no-code yetarli."
+  - q: "Database — SQL yoki NoSQL?"
+    a: "90% startaplar uchun SQL (PostgreSQL) tavsiya etiladi. Sabab: relational data, transaction support, kuchli query language, kerak bo'lganda JSON ham saqlay oladi. NoSQL (MongoDB) faqat aniq holatlar uchun: real-time chat, documents bilan ko'p ishlash. Boshlang'ich: PostgreSQL + Supabase (auth + realtime + storage)."
+  - q: "Frontend — React, Vue, Svelte qaysi?"
+    a: "2026-da React (Next.js bilan) eng xavfsiz tanlov — eng katta hamjamiyat, eng ko'p mutaxassis, eng ko'p kutubxona. Vue va Svelte yaxshi, lekin O'zbekistonda React mutaxassislar 10x ko'p. Jamoa kengaytirsangiz — React. Solo loyiha — qaysi biri yoqsa, undan boring."
+  - q: "AI startup uchun qanday stack kerak?"
+    a: "AI startup uchun: Python (backend, model serve uchun) + FastAPI + PostgreSQL (vector extension pgvector bilan) + Next.js (frontend) + OpenAI/Anthropic API. RAG uchun Pinecone yoki Weaviate. Production ML uchun PyTorch + Modal yoki AWS SageMaker. Boshlang'ich AI startup model train qilmasligi kerak — API chaqirish yetarli."
+  - q: "Hosting — qaysi xizmat tanlash kerak?"
+    a: "MVP uchun Vercel yoki Railway — bepul yoki arzon, tez deploy. SaaS scale qilingach: AWS (eng quvvatli), GCP (Google ekosistema), Azure (Enterprise). O'zbekistonda lokal mijoz bo'lsa — Toshkent serverlari ham mavjud (uztelecom, beeline cloud). Boshlang'ich uchun: Vercel + Supabase = 95% holatda yetarli."
+  - q: "Tech stack qachon o'zgartirish kerak?"
+    a: "3 ta signal: (1) Performance muammosi — 100K+ foydalanuvchi va sekin ishlamoqda, (2) Xodim topa olmaslik — texnologiya eskirgan, talabchan emas, (3) Cost — joriy stack juda qimmat. Lekin eng katta xato — har 6 oyda stack o'zgartirish. Working stack ni 3-5 yil ushlab turing, faqat majburiy bo'lganda o'zgartiring."
+---
+
+> **Qisqacha:** Tech stack tanlash — 2026-yilda 3 ta savolga javob: (1) jamoada qaysi texnologiyani bilamiz, (2) qaysi xodim O'zbekistonda ko'p, (3) mahsulot turi nima. SaaS uchun: Next.js + Supabase + Vercel. AI startup: Python + FastAPI + PostgreSQL pgvector + LLM API. Mobile: React Native + Firebase. Eng katta xato — trend texnologiya tanlash. Working stack ni 3-5 yil ushlab turing.
+
+Tech stack — bu sizning startapingizning **texnik DNA si**. To'g'ri tanlov 2-3x tezroq ishlash, kam xato va oson kengaytirishga olib keladi. Noto'g'ri tanlov — 6 oyda qayta yozish kerak bo'ladigan loyiha. Lekin ko'pchilik startapchilar tech stack ni "Hacker News da nima trend" yoki "kim eng yangi" prinsipi asosida tanlaydi — bu eng katta xato.
+
+Aslida tech stack tanlash — pragmatik qaror. Asosiy savol: **bu texnologiyada men tezroq ishlay olamanmi va xodim topa olamanmi?** Reactda 5 yil ishlagan jamoa Vue ga o'tib 6 oy yo'qotmasligi kerak. O'zbekistonda Rust mutaxassisi yo'q paytda Rust ni tanlash — 1 ta xodim ketganida butun loyiha to'xtaydi.
+
+Ushbu maqolada 2026-yil uchun eng samarali tech stack kombinatsiyalari, har bir texnologiya turi uchun tavsiyalar va eng ko'p uchraydigan xatolar haqida ko'rib chiqamiz.
+
+## Tech stack nima va nima uchun muhim?
+
+**Tech stack** — bu sizning mahsulotingizni qurish va ishlatish uchun ishlatiladigan texnologiyalar to'plami:
+
+- **Frontend** — foydalanuvchi ko'radigan qism (React, Vue, Svelte)
+- **Backend** — server tomoni mantiq (Node.js, Python, Go)
+- **Database** — ma'lumot saqlash (PostgreSQL, MongoDB, Redis)
+- **Hosting** — qaerda ishlaydi (Vercel, AWS, GCP)
+- **Tooling** — qo'shimcha vositalar (CI/CD, monitoring, analytics)
+
+To'g'ri tanlov 3 ta narsani beradi:
+
+**1. Tezlik.** MVP 1 oyda emas, 1 haftada quriladi. Bu — bozorga tez chiqish.
+
+**2. Xarajat.** Vercel da $0 dan boshlanadi, AWS da boshlovchi uchun $200/oy. Wrong stack = boshlang'ich kapitalning 30% i.
+
+**3. O'sish potentsiali.** Stack scale qilolmasa, 100K mijoz paytida qayta yozish kerak — 6-12 oy yo'qotish.
+
+## 2026-yil uchun "boring" stack — eng samarali
+
+**"Boring stack" — bu trend emas, lekin ishlaydigan texnologiyalar.** Aksariyat startaplar uchun:
+
+| Komponent | Eng yaxshi tanlov 2026 | Sabab |
+|-----------|----------------------|-------|
+| **Frontend** | Next.js (React + SSR) | Eng katta ekosistema, SEO-ready |
+| **CSS** | Tailwind CSS | Tez yozish, kichik bundle |
+| **Backend** | Next.js API routes / FastAPI | Frontend bilan birga yoki separated |
+| **Database** | PostgreSQL (Supabase) | Universal, kuchli, arzon |
+| **Auth** | Supabase Auth / Clerk | 5 daqiqada o'rnatiladi |
+| **File storage** | Supabase Storage / S3 | Bepul boshlanadi |
+| **Email** | Resend / Postmark | Developer-friendly |
+| **Payments** | Stripe / Click + Payme | Lokal va xalqaro |
+| **Hosting** | Vercel | Bepul, tez, oson |
+| **Monitoring** | Sentry + PostHog | Free tier kifoya |
+| **Analytics** | PostHog (product) + Plausible (web) | Privacy-friendly |
+| **CI/CD** | GitHub Actions | Bepul, native |
+
+Bu kombinatsiya **0 dan 100K foydalanuvchigacha** ishlaydi. Faqat o'shandan keyin maxsus optimizatsiya kerak bo'ladi.
+
+## Mahsulot turi bo'yicha tech stack
+
+### 1. SaaS startup (web ilova)
+
+**Tavsiya:**
+- Frontend: **Next.js 15** + Tailwind + shadcn/ui
+- Backend: **Next.js API routes** (yoki Hono separated)
+- Database: **PostgreSQL** (Supabase yoki Neon)
+- Auth: **Supabase Auth** yoki **Clerk**
+- Hosting: **Vercel**
+- Email: **Resend**
+- Analytics: **PostHog**
+
+**Nega bu kombinatsiya?**
+- 1 ta texnologiya stack (TypeScript hammasida)
+- Vercel + Supabase = $0-50/oy 10K foydalanuvchigacha
+- Hammasi standart, dokumentatsiya ko'p
+- O'zbekistonda Next.js bilanlar ko'p
+
+**Misol:** Stepolog ham aynan shu stack ustida qurilgan.
+
+### 2. AI startup (LLM bilan)
+
+**Tavsiya:**
+- Frontend: **Next.js** (chat UI uchun streaming yaxshi)
+- Backend: **Python FastAPI** (AI ekosistema bilan ishlash uchun)
+- Database: **PostgreSQL + pgvector** (vector embeddings)
+- LLM: **OpenAI** + **Anthropic Claude** (multi-provider)
+- Vector DB (alternative): **Pinecone** yoki **Weaviate**
+- Queue: **Redis** + **Celery** (background jobs)
+- Hosting: **Vercel** (frontend) + **Railway** yoki **Modal** (Python backend)
+
+**Eslatma:** AI startup model train qilmasligi kerak — API chaqirish 99% yetarli. Custom model faqat juda spesifik holatlar uchun.
+
+### 3. Mobile app
+
+**Tavsiya:**
+- Framework: **React Native** + **Expo** (eng tezkor)
+- Backend: **Supabase** yoki **Firebase**
+- State: **Zustand** yoki **Redux Toolkit**
+- Navigation: **React Navigation**
+- Push: **Expo Notifications**
+- Analytics: **Mixpanel** yoki **Amplitude**
+
+**Native (Swift/Kotlin) faqat:** o'yin yoki murakkab grafika kerak bo'lsa.
+
+### 4. Marketplace (multi-sided)
+
+**Tavsiya:**
+- Frontend: **Next.js**
+- Backend: **NestJS** (TypeScript) yoki **Rails** (Ruby)
+- Database: **PostgreSQL**
+- Search: **Algolia** yoki **Meilisearch**
+- Real-time: **Pusher** yoki Supabase Realtime
+- Payments: **Stripe Connect** (split payments)
+
+**Nega NestJS yoki Rails?** Marketplace murakkab biznes logika — boshqa boshqaruv kerak.
+
+### 5. E-commerce
+
+**Tavsiya:**
+- Platform: **Shopify** (no-code, tez) yoki **Medusa** (open-source)
+- Frontend: **Next.js** + Shopify Hydrogen
+- Payments: **Stripe** + **Click/Payme** (lokal)
+- Marketing: **Klaviyo** (email) + **Telegram bot**
+
+**O'zbekistonda:** Uzum, OSON kabi marketplacelarga qo'shilish boshlash uchun yaxshi.
+
+## O'zbekiston bozori uchun lokal omillar
+
+### 1. To'lov tizimlari
+Lokal mijozlarga sotsangiz:
+- **Click** — eng ko'p ishlatiladigan, integration oson
+- **Payme** — Click ga yaqin
+- **Uzcard / Humo** — bank kartalari
+- Stripe — xalqaro mijozlar uchun
+
+Lokal va xalqaro to'lovni birga ishlash uchun: **Stripe + Click webhook integration**.
+
+### 2. SMS va push
+- **Eskiz.uz** — SMS yuborish, lokal
+- **Playmobile** — alternative
+- **Firebase Cloud Messaging** — bepul push
+
+### 3. Hosting va CDN
+- **Vercel** — global CDN, yaxshi
+- **Cloudflare** — bepul tier kuchli
+- Lokal hosting (Toshkent) — past latency, lekin scale chegaralangan
+
+### 4. Compliance
+- **Personal data:** O'zbek Personal Data Law (2019) — agar O'zbekistonliklar ma'lumotini saqlasangiz, server O'zbekistonda bo'lishi kerak (ba'zi turdagi ma'lumotlar uchun)
+- **GDPR:** Yevropa mijozlari bo'lsa
+- **HIPAA:** sog'liq ma'lumotlari
+
+## 7 ta eng katta tech stack xatosi
+
+**1. Trend texnologiya tanlash.** "Bun yangi, tez!" — yaxshi, lekin Node.js da 1000 ta xodim, Bun da 5 ta. Risk.
+
+**2. Microservices erta boshlash.** 1000 foydalanuvchigacha monolith yetarli. Microservices = 10x murakkablik.
+
+**3. Custom hammasini yozish.** "Auth ni o'zim yozaman" = 2 hafta yo'qotish + xavfsizlik xato. Supabase Auth = 5 daqiqa.
+
+**4. Database o'rniga Excel.** Boshlanishida Excel da ma'lumot saqlash — keyin migratsiya 3 oy.
+
+**5. Hech narsa monitoring qilmaslik.** Sentry yoki PostHog ni 1-kundan o'rnating. Aks holda — bug nima ekanini bilmaysiz.
+
+**6. Testing yo'qligi.** "Test keyin qo'shamiz" = hech qachon. Birinchi kundan eng kamida E2E test qo'shing (Playwright).
+
+**7. Stack ni har 6 oyda o'zgartirish.** Yangi technology yangi muammolar. Working stack ni 3-5 yil ushlab turing.
+
+## Qaror qabul qilish framework
+
+Tech stack tanlashda 5 savolga javob bering:
+
+| Savol | Misol javob |
+|-------|------------|
+| Mahsulot turi nima? | SaaS, AI, mobile, marketplace |
+| Jamoada nima bilamiz? | TypeScript, Python, Java |
+| Necha foydalanuvchi 1 yilda? | 100, 10K, 1M |
+| Byudjet qancha? | $0-100/oy, $500/oy, $5000/oy |
+| Bozor — lokal yoki xalqaro? | O'zbekistonliklar, AQSh |
+
+Javoblar asosida stack avtomatik aniqlanadi.
+
+**Misol:** "SaaS, jamoada TypeScript, 1 yilda 1000 foydalanuvchi, byudjet $50/oy, lokal mijoz" → Next.js + Supabase + Vercel + Click integration.
+
+## Performance va scaling — qachon o'ylash kerak
+
+Boshlang'ich startap **performance haqida o'ylamasligi kerak**. Bu **premature optimization** — vaqt isrof.
+
+3 bosqich:
+
+**Bosqich 1: 0-1K foydalanuvchi** — har narsa ishlasin. Performance muhim emas. Stack: Next.js + Supabase, hammasi standart.
+
+**Bosqich 2: 1K-100K foydalanuvchi** — caching qo'shing (Redis), database query optimizatsiyasi, CDN o'rnatish. Hozircha shu kifoya.
+
+**Bosqich 3: 100K+ foydalanuvchi** — bu bosqichda IT direktor yollang. Microservices, Kubernetes, multi-region — bu bosqich uchun.
+
+99% startap 1-2 bosqichdan ortmaydi. Premature optimization — eng katta vaqt isrof.
+
+## FAQ: Tech stack haqida eng ko'p beriladigan savollar
+
+### Tech stack tanlashda eng muhim mezon nima?
+
+3 ta mezon: **(1) jamoa bilimi, (2) bozor talab, (3) mahsulot turi**. Trend texnologiya tanlash mantiqsiz.
+
+### MVP uchun qaysi tech stack eng tez?
+
+**Next.js + Supabase + Vercel** — 1-2 hafta ichida ishlaydigan SaaS. No-code (Bubble, Tilda) — 3-7 kun.
+
+### Database — SQL yoki NoSQL?
+
+90% startap uchun **SQL (PostgreSQL)**. NoSQL faqat real-time chat yoki documents-heavy uchun.
+
+### Frontend — React, Vue, Svelte qaysi?
+
+2026-da **React (Next.js bilan)** eng xavfsiz tanlov. Hamjamiyat va xodim soni eng katta.
+
+### AI startup uchun stack?
+
+**Python + FastAPI + PostgreSQL pgvector + Next.js + OpenAI/Anthropic API**. Model train qilmasligi kerak — API yetarli.
+
+### Hosting — qaysi xizmat?
+
+MVP uchun **Vercel + Supabase**. Scale qilingach: AWS, GCP, Azure.
+
+### Tech stack qachon o'zgartirish kerak?
+
+3 ta signal: performance muammosi, xodim topa olmaslik, narx. Lekin **3-5 yil davomida ushlab turing**.
+
+## Keyingi qadam: stack tanlash va qurish
+
+Tech stack tanlash — bu 1 marotaba qaror, lekin natija 3-5 yil tugaydi.
+
+**Bugun qiladigan ishlar:**
+
+1. **Mahsulot turini aniqlang** — SaaS, AI, mobile, marketplace
+2. **Jamoa skill-set tahlili** — kim nimani biladi
+3. **Yuqoridagi tavsiyalardan tanlang** — eng yaqin variantni
+4. **MVP uchun "boring stack" boshlang** — Next.js + Supabase + Vercel
+5. **Performance va scaling — keyin o'ylang**
+
+**Keyingi maqolalar:**
+- [MVP qurish bo'yicha 30 kunlik plan](/learn/mvp/mvp-nima-va-qanday-qurish)
+- [SEO 0 dan: Google da 1-o'rinda chiqish](/learn/marketing/seo-0-dan-google-1-orin)
+- [Stepolog hamjamiyati](/about/hamjamiyat) — boshqa technical founder lar bilan tajriba almashing
+
+Eng muhimi — **bugun stack ni tanlang va qurishga boshlang**. 1 oy texnologiya tanlash o'rniga, 1 hafta ichida MVP quring.
