@@ -1,0 +1,286 @@
+---
+title: "No-code MVP: Tilda, Bubble, Glide bilan dasturlashsiz ilova qurish"
+description: "No-code MVP qurish — Tilda, Bubble, Glide va boshqa platformalar bilan dasturlashsiz ilova yaratish. O'zbekiston uchun amaliy taqqoslash, narxlar va real misollar."
+date: "2026-05-02"
+author: "Stepolog"
+category: "mvp"
+faqs:
+  - q: "No-code nima va u kimga mos?"
+    a: "No-code — bu kod yozmasdan ilova yoki sayt yaratish vositalari. Drag-and-drop, vizual interfeys, tayyor komponentlar. Mos: (1) startapchilar (MVP tez qurish uchun), (2) biznes egasi (CRM, internal tool), (3) freelancer (mijoz uchun mahsulot), (4) marketolog (landing, lead generation). Texnik bilim talab qilmaydi, faqat mantiqiy fikrlash."
+  - q: "No-code bilan qanday MVP qurish mumkin?"
+    a: "Aksariyat MVP turlari mumkin: (1) Landing page va form (Tilda, Framer), (2) To'liq web ilova (Bubble), (3) Mobile ilova (Glide, Adalo), (4) Marketplace (Bubble, Sharetribe), (5) SaaS (Bubble, Softr), (6) E-commerce (Shopify, Tilda), (7) Telegram bot (Make, BotFather). Faqat juda murakkab AI yoki real-time o'yin uchun mos emas."
+  - q: "Qaysi vosita yaxshi: Tilda, Bubble yoki Glide?"
+    a: "Maqsadiga qarab: (1) Landing va kontent sayti — Tilda yoki Framer (eng oson, $0-15/oy), (2) To'liq SaaS ilova — Bubble (universal, $30-100/oy), (3) Mobile ilova Excel asosida — Glide (eng tez, $25-99/oy), (4) E-commerce — Shopify yoki Tilda. O'zbekiston uchun: Tilda eng mashhur (rus tilida), Bubble murakkab loyihalar uchun."
+  - q: "No-code MVP qancha vaqt va pul oladi?"
+    a: "Vaqt: Landing — 1-3 kun, oddiy SaaS — 1-2 hafta, murakkab marketplace — 2-4 hafta. Bu kod yozishdan 5-10x tezroq. Pul: $0-50/oy bepul tier yoki arzon obuna. Kod yozish bilan qiyoslaganda jami xarajat 10x kam ($500-2000 vs $5000-20000 dasturchi yollash)."
+  - q: "No-code da kamchiliklari bormi?"
+    a: "Ha, 4 ta asosiy: (1) Scalability — 100K+ foydalanuvchida sekin ishlay boshlaydi (lekin MVP uchun yetarli), (2) Vendor lock-in — Bubble dan kod ga o'tish qiyin, (3) Custom funksiyalar cheklangan — juda spesifik xohish bo'lsa qiyin, (4) Oylik to'lov — har platform $20-100/oy. Lekin MVP va birinchi 1000 foydalanuvchigacha — eng yaxshi yo'l."
+  - q: "Bubble bilan SaaS qurish qiyin emasmi?"
+    a: "O'rtacha qiyinlik. Bubble visual programming — drag-and-drop, lekin database, workflow, conditional logic ishlatish kerak. 2-4 hafta o'rganish kerak. YouTube'da bepul kurslar (Buildcamp, NoCode School). Bubble-da SaaS qurish 1 ta dasturchi 6-12 hafta yoziladigan mahsulotni 2-4 haftada beradi."
+  - q: "No-code dan kodga o'tish kerakmi?"
+    a: "Ko'pchilik startap o'tmaydi — no-code 100K+ foydalanuvchigacha yetadi. Lekin agar (1) performance muhim (real-time), (2) custom funksiya kerak, (3) ko'p mijoz va aniq ishlash kerak — kodga o'tish vaqti. O'tish 3-6 oy oladi va dasturchi yollash kerak. Asosan PMF dan keyin va Series A round paytida bo'ladi."
+---
+
+> **Qisqacha:** No-code MVP — kod yozmasdan ilova yaratish. Top platformalar: **Tilda** (landing, $0-15/oy, eng oson), **Bubble** (to'liq SaaS, $30-100/oy, universal), **Glide** (mobile + Excel asosida, $25-99/oy, eng tez), **Framer** (zamonaviy landing, $5-25/oy), **Make + Telegram bot** (avtomatizatsiya). Vaqt: landing 1-3 kun, SaaS 1-2 hafta. Xarajat: $0-50/oy. 100K foydalanuvchigacha yetadi. Vendor lock-in va scaling cheklovlari bor — lekin MVP uchun ideal.
+
+2020-yilda startap qurish uchun dasturchi yoki sherikga muhtoj edingiz. 2026-yilda **no-code platformalar** bu rasmni tubdan o'zgartirdi. Endi kod yozmaslik — orqada qolish emas, balki **tezroq harakat qilish** demakdir. Tilda da landing 3 kunda, Bubble da SaaS 2 haftada, Glide da mobile ilova 1 haftada — bu real raqamlar.
+
+Lekin no-code "sehrli vosita" emas. Har platform o'z afzalliklari va kamchiliklariga ega. Tilda landing uchun mukammal, lekin SaaS uchun yetarli emas. Bubble universal, lekin o'rganish vaqti kerak. Glide tez, lekin Excel asosida — chegaralangan. Bu maqolada **eng yaxshi no-code platformalarni taqqoslab**, qaysi loyiha uchun qaysisi mos kelishini ko'rib chiqamiz. O'zbekiston bozori uchun amaliy maslahatlar bilan.
+
+## No-code nima va nima uchun 2026-da portlash?
+
+**No-code** — bu kod yozmasdan dasturiy mahsulot yaratish vositalari. Drag-and-drop interfeys, tayyor komponentlar, vizual mantiq. Asosiy printsip: kod o'rniga vizual tushuncha.
+
+3 ta sabab nima uchun no-code 2026-da portlash darajasida:
+
+**1. AI bilan birga.** ChatGPT, Claude no-code ga komponent yaratish, mantiq yozish, debug qilish bilan yordam beradi. Avval 2 hafta o'rganishga ketadigan ish endi 3-5 kun.
+
+**2. Kuchli platformalar.** 5 yil avval Bubble juda cheklangan edi. Bugun u 100K+ foydalanuvchili SaaS larni qo'llay oladi. Glide, Softr, Adalo — barchasi portlash darajasida o'sgan.
+
+**3. Tezlik talab.** AI raqobati zamonida bozorga 6 oy emas, 6 hafta ichida chiqish kerak. No-code 5-10x tezroq.
+
+**Real misol:** Toshkentda startapchi ta'lim platformasi qurish uchun avval $5,000-15,000 va 3-6 oy kerak edi. Bubble bilan — $50/oy, 2-3 hafta. Tejov — $5,000+ va 5 oy vaqt.
+
+## Top 5 no-code platforma — taqqoslash
+
+| Platform | Eng yaxshi nima uchun | Narxi (start) | O'rganish | Mosligi |
+|----------|----------------------|---------------|-----------|---------|
+| **Tilda** | Landing, kontent saytlari | $0-15/oy | 1-2 kun | 🟢 Eng oson |
+| **Framer** | Zamonaviy landing, animation | $5-25/oy | 2-3 kun | 🟢 Oson |
+| **Bubble** | To'liq SaaS, marketplace | $0-130/oy | 2-4 hafta | 🟡 O'rtacha |
+| **Glide** | Mobile + Excel asosli | $0-99/oy | 3-7 kun | 🟢 Oson |
+| **Softr** | SaaS + Airtable bilan | $0-79/oy | 1-2 hafta | 🟡 O'rtacha |
+| **Make + Telegram** | Avtomatizatsiya, bot | $0-30/oy | 1-2 hafta | 🟡 O'rtacha |
+
+## Tilda — landing va kontent uchun #1
+
+**Tilda** O'zbekistonda eng mashhur no-code platforma. Sabab — rus va o'zbek tilida, oson, Toshkentdagi 80% biznes saytlari shu yerda qurilgan.
+
+### Tilda nima yaxshi qiladi
+- Landing page (asosiy maqsad)
+- Bloglar va kontent saytlari
+- Portfolio
+- Korporativ saytlar
+- Oddiy e-commerce (kichik do'kon)
+
+### Tilda nima qila olmaydi
+- To'liq SaaS (database va auth bilan)
+- Marketplace
+- Mobile ilova
+- Real-time funksionallik
+
+### Narxlar
+- **Free:** 1 sayt, 50 sahifa, .tilda subdomain
+- **Personal $15/oy:** 1 sayt, custom domain, e-commerce
+- **Business $24/oy:** 5 sayt, ko'proq blok
+
+### Boshlash
+1. [tilda.cc](https://tilda.cc) — ro'yxatdan o'ting
+2. Free template tanlang (1000+ ta bor)
+3. Vizual editor da o'zgartiring
+4. .tilda domain bilan ishga tushiring (yoki custom domain)
+
+**MVP misoli:** Ta'lim markazi uchun landing — 1 kunda, kursni ko'rsatish + ariza forma + WhatsApp integratsiyasi.
+
+## Bubble — to'liq SaaS uchun
+
+**Bubble** — eng kuchli no-code platforma. To'liq web ilova qurish mumkin: database, auth, API, complex workflow.
+
+### Bubble nima yaxshi qiladi
+- To'liq SaaS ilova
+- Marketplace (Airbnb-style)
+- Internal tools va CRM
+- Membership platformalari
+- API bilan ishlovchi murakkab tizimlar
+
+### Bubble nima qila olmaydi (yoki qiyin)
+- Native mobile ilova (web app PWA bo'ladi)
+- Real-time o'yinlar
+- AI yoki ML training (lekin API chaqirish mumkin)
+- Yuqori performance kerakli ilova (100K+ aktiv user)
+
+### Narxlar (2026)
+- **Free:** Sinov uchun, branding bilan
+- **Starter $32/oy:** 1 ilova, custom domain
+- **Growth $134/oy:** Yuqori limit, jamoa
+- **Team $399/oy:** Enterprise funksiyalar
+
+### Bubble bilan boshlash (1-haftalik plan)
+1. **Day 1-2:** Bepul akkaunt + tutorial (YouTube'da Buildcamp, Coaching No Code Apps)
+2. **Day 3-4:** Database struktura (User, Post, Comment kabi)
+3. **Day 5-6:** Workflow va asosiy funksiyalar
+4. **Day 7:** Custom domain va deploy
+
+**MVP misoli:** Toshkentda freelance marketplace — 3 hafta, mijoz va executor profili, ish e'lon, to'lov integratsiyasi.
+
+## Glide — mobile ilova Excel asosida
+
+**Glide** — eng tezkor mobile ilova qurish vositasi. Asosi: Google Sheet yoki Airtable. Sheet ma'lumotlari avtomatik mobile ilovaga aylanadi.
+
+### Glide nima yaxshi qiladi
+- Mobile-first ilovalar
+- Internal tools (xodim ma'lumotlari, inventarizatsiya)
+- Catalog ilovalar (mahsulot, kursi)
+- Event/community apps
+- Field worker tools
+
+### Glide nima qila olmaydi
+- Murakkab e-commerce
+- Real-time chat
+- Murakkab database query
+- 10K+ row li mahsulot katalogi (sekin ishlaydi)
+
+### Narxlar
+- **Free:** 100 row, 10 user
+- **Maker $25/oy:** 25K row, 100 user, branding olib tashlanadi
+- **Team $99/oy:** Cheksiz row, 1000 user
+
+### MVP misoli: O'qituvchi-shogird matching ilova
+1. Google Sheet yarating: o'qituvchilar, fanlar, narx
+2. Glide bilan import qiling
+3. Filter qo'shing (fan bo'yicha)
+4. Booking forma qo'shing → Google Sheet ga yoziladi
+
+3 kun ichida tayyor. Telefonda qayta tushiriladi.
+
+## Framer — zamonaviy landing va dizayn
+
+**Framer** — Tilda ga muqobil, lekin zamonaviyroq, animation va interaction kuchli. Designer larga juda mos.
+
+### Framer afzalliklari
+- Eng zamonaviy dizayn
+- Animation va interaction
+- AI bilan kontent yaratish (Framer AI)
+- Mobile-first responsive
+- Tezroq sayt (performance)
+
+### Tilda vs Framer
+
+| Mezon | Tilda | Framer |
+|-------|-------|--------|
+| Til | UZ/RU + EN | EN |
+| O'rganish | 1-2 kun | 2-3 kun |
+| Animation | Oddiy | Kuchli |
+| Narx | $15/oy | $5-25/oy |
+| O'zbekiston foydalanuvchilar | Ko'p | Kam |
+
+**Tavsiya:** Lokal mijozga sotyapsizmi? — Tilda. Xalqaro yoki premium dizayn? — Framer.
+
+## Make + Telegram bot — eng arzon MVP
+
+O'zbekistonda Telegram juda kuchli. **Make.com (avval Integromat) + BotFather** = $0-30/oy MVP.
+
+### Qaysi MVP turi mos
+- Buyurtma qabul qilish (oziq-ovqat, taksi)
+- Bron qilish (kursi, salon, restoran)
+- Konsultatsiya (chatbot Q&A)
+- Ma'lumot yetkazib berish (yangiliklar)
+- Lead capture (kontakt forma)
+
+### Boshlash (3 kun)
+1. **Day 1:** [BotFather](https://t.me/botfather) da bot yarating
+2. **Day 2:** [Make.com](https://make.com) da workflow yarating (Webhook → Action)
+3. **Day 3:** Sinov va ishga tushirish
+
+**Misol:** Restoran buyurtma boti — mijoz Telegram da menyu ko'radi → tanlaydi → telefon raqam → restoranga yangi buyurtma e'loni Make orqali keladi.
+
+## No-code vs Kod yozish — qachon qaysi?
+
+| Faktor | No-code yaxshi | Kod yaxshi |
+|--------|----------------|------------|
+| **Vaqt** | 1-4 hafta | 2-6 oy |
+| **Byudjet** | $0-100/oy | $5K-50K |
+| **MVP** | ✅ Eng yaxshi | ❌ Sekin |
+| **100+ user** | ✅ Yetarli | ✅ Yetarli |
+| **100K+ user** | ⚠️ Sekinlashadi | ✅ Optimal |
+| **Custom logic** | ❌ Cheklangan | ✅ Cheksiz |
+| **Performance** | ⚠️ O'rta | ✅ Yuqori |
+| **Vendor lock-in** | ⚠️ Bor | ✅ Yo'q |
+
+**Qoida:** MVP — har doim no-code. PMF dan keyin scale uchun kerak bo'lsa — kod ga o'tish.
+
+## 5 ta eng katta xato
+
+**1. Eng murakkab platforma bilan boshlash.** Bubble juda kuchli, lekin landing uchun ortiqcha. **Yechim:** loyiha turini ko'ring, mos platformani tanlang.
+
+**2. AI integratsiyaga ortiq vaqt sarflash.** "AI bo'lsin" deyish yaxshi, lekin MVP da kerak emas. **Yechim:** asosiy funksiya birinchi, AI keyingi versiya.
+
+**3. Pretty design ga 80% vaqt sarflash.** No-code da chiroyli template bor — qabul qilingani bilan ishlatib turing. **Yechim:** template tanlang, kontentga e'tibor bering.
+
+**4. Faqat 1 ta platforma bilan ishlash.** Landing — Tilda, Backend — Bubble, automation — Make. Kombinatsiya kuchli. **Yechim:** stack qiling.
+
+**5. PMF dan oldin kodga o'tishga shoshilish.** "No-code yetarli emas" deyib, kod yozishga 6 oy sarflash. **Yechim:** No-code da 1000 mijoz oling, keyin kod.
+
+## O'zbekistonda no-code real misollar
+
+### Misol 1: Stepolog (kontent platformasi)
+**Stack:** Next.js (kod) — chunki SEO va performance muhim
+**Lekin:** Stepolog ham boshlanishida Tilda da bo'lishi mumkin edi
+**Lesson:** SEO-fokus loyihalar uchun kod yaxshiroq, lekin landing test uchun no-code
+
+### Misol 2: O'qituvchi marketplace (faraziy)
+**Stack:** Bubble (asosiy ilova) + Tilda (landing) + Make (Telegram notifications)
+**Vaqt:** 3 hafta MVP
+**Xarajat:** $80/oy
+
+### Misol 3: Restoran buyurtma boti
+**Stack:** BotFather + Make + Google Sheets
+**Vaqt:** 1 hafta
+**Xarajat:** $0-15/oy
+
+## FAQ: No-code MVP haqida ko'p beriladigan savollar
+
+### No-code nima va kimga mos?
+
+No-code — kod yozmasdan ilova yaratish. **Mos:** startapchilar, biznes egasi, freelancer, marketolog. Texnik bilim shart emas.
+
+### Qanday MVP qurish mumkin?
+
+Aksariyat: landing, SaaS, mobile, marketplace, e-commerce, Telegram bot. **Faqat juda murakkab AI yoki real-time o'yin uchun mos emas.**
+
+### Tilda, Bubble, Glide qaysi yaxshi?
+
+Maqsadiga qarab: **Tilda** — landing/kontent, **Bubble** — to'liq SaaS, **Glide** — mobile Excel asosida.
+
+### Qancha vaqt va pul?
+
+Vaqt: landing 1-3 kun, SaaS 1-2 hafta. Pul: **$0-50/oy**. Kod yozishdan **10x kam**.
+
+### Kamchiliklari bormi?
+
+4 ta: scalability, vendor lock-in, custom funksiya cheklangan, oylik to'lov. **Lekin MVP uchun ideal.**
+
+### Bubble bilan SaaS qurish qiyin emasmi?
+
+O'rtacha qiyinlik. **2-4 hafta o'rganish.** YouTube da bepul kurslar.
+
+### Kod ga qachon o'tish kerak?
+
+100K+ foydalanuvchida. **Aksariyat startap o'tmaydi** — no-code yetadi.
+
+## Keyingi qadam: bugun MVP boshlang
+
+No-code MVP — bu **bugundan boshlanadigan ish**. 2 hafta keyin sizning ilovangiz live bo'lishi mumkin.
+
+**Bugun qiladigan ishlar:**
+
+1. **MVP turini aniqlang** — landing, SaaS, mobile yoki Telegram bot
+2. **Mos platformani tanlang** — yuqoridagi taqqoslashdan
+3. **Bepul akkaunt oching** — Tilda, Bubble yoki Glide
+4. **Tutorial ko'ring** — YouTube'da 1-2 soat
+5. **Birinchi prototip 1 hafta ichida**
+
+**Aloqador maqolalar:**
+- [MVP nima va qanday qurish: 30 kunlik plan](/learn/mvp/mvp-nima-va-qanday-qurish) — to'liq MVP qo'llanmasi
+- [Target audience va mijoz portreti](/learn/bozor-tushunish/target-audience-mijoz-portreti) — kim uchun MVP qurish
+- [SEO 0 dan o'rganish](/learn/marketing/seo-0-dan-google-1-orin) — kontent saytlari uchun
+- [25 ta startap g'oyasi 2026](/learn/goya-topish/ozbekistonda-25-startap-goyasi-2026) — qaysi g'oyani tanlash
+
+**Tashqi manbalar:**
+- [Tilda](https://tilda.cc) — landing va kontent saytlari
+- [Bubble](https://bubble.io) — SaaS va marketplace
+- [Glide](https://glideapps.com) — mobile + Excel
+- [Framer](https://framer.com) — zamonaviy landing
+- [Make.com](https://make.com) — avtomatizatsiya
+
+Eng muhimi — **bugun bepul akkaunt oching va tutorial bilan boshlang**. 2 hafta keyin sizda ishlaydigan MVP bo'ladi.
