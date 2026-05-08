@@ -281,6 +281,26 @@ export const careers: Career[] = [
       { level: "Lead", title: "CISO / Head of Security", skills: ["Security strategy", "Compliance (ISO, GDPR)", "Risk management", "Team building"], duration: "5+ yil", salary: "$4,500–8,000+" },
     ],
   },
+  {
+    slug: "cloud-engineer",
+    title: "Cloud Engineer",
+    description: "AWS, Azure, GCP kabi bulutli platformalarda infratuzilma qurish va boshqarish",
+    level: "advanced",
+    skills: ["AWS/Azure/GCP", "Terraform", "Kubernetes", "Linux"],
+    whatDoes: [
+      "Bulutli platformalarda (AWS, Azure, GCP) infratuzilma loyihalaydi va deploy qiladi",
+      "Terraform va CloudFormation orqali Infrastructure-as-Code yozadi",
+      "Xarajatni optimallashtiradi (cost optimization) va monitoring o'rnatadi",
+      "Kubernetes klasterlari, microservices va serverless arxitektura bilan ishlaydi",
+    ],
+    companyRole: "Engineering yoki Platform jamoasida — barcha ilovalar bulutda barqaror, xavfsiz va arzon ishlashiga javobgar. DevOps Engineer dan ko'ra ko'proq cloud-native va arxitektura tomoniga yo'naltirilgan. 2026-yilda eng tez o'sayotgan IT yo'nalishlardan biri — O'zbekistonda banklar, fintech va xorijiy mijozlarga xizmat qiluvchi kompaniyalar uchun ayniqsa talabgir.",
+    roadmap: [
+      { level: "Junior", title: "Junior Cloud Engineer", skills: ["Linux", "AWS asoslari (EC2, S3, IAM)", "Networking", "Bash/Python"], duration: "0-9 oy", salary: "$500–1,000" },
+      { level: "Middle", title: "Cloud Engineer", skills: ["Terraform", "Kubernetes", "CI/CD", "AWS Solutions Architect Associate sertifikati"], duration: "1-3 yil", salary: "$1,000–2,500" },
+      { level: "Senior", title: "Senior Cloud Engineer", skills: ["Multi-cloud arxitektura", "Cost optimization", "Security (zero-trust)", "AWS/Azure Pro sertifikati"], duration: "3-5 yil", salary: "$2,500–5,000" },
+      { level: "Lead", title: "Cloud Architect / Head of Platform", skills: ["Cloud strategy", "FinOps", "Disaster recovery", "Team building"], duration: "5+ yil", salary: "$5,000–9,000+" },
+    ],
+  },
 ];
 
 export const levelLabels: Record<string, string> = {

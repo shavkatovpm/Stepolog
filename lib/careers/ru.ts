@@ -281,6 +281,26 @@ export const careers: Career[] = [
       { level: "Lead", title: "CISO / Head of Security", skills: ["Security strategy", "Compliance (ISO, GDPR)", "Risk management", "Team building"], duration: "5+ лет", salary: "$4,500–8,000+" },
     ],
   },
+  {
+    slug: "cloud-engineer",
+    title: "Cloud Engineer",
+    description: "Проектирование и управление инфраструктурой в облачных платформах AWS, Azure, GCP",
+    level: "advanced",
+    skills: ["AWS/Azure/GCP", "Terraform", "Kubernetes", "Linux"],
+    whatDoes: [
+      "Проектирует и разворачивает инфраструктуру в облаках (AWS, Azure, GCP)",
+      "Пишет Infrastructure-as-Code через Terraform и CloudFormation",
+      "Оптимизирует расходы (cost optimization) и настраивает мониторинг",
+      "Работает с Kubernetes-кластерами, микросервисами и serverless-архитектурой",
+    ],
+    companyRole: "В команде инженеров или Platform-команде — отвечает за то, чтобы все приложения работали в облаке стабильно, безопасно и недорого. Более cloud-native и архитектурный, чем DevOps Engineer. Одна из самых быстрорастущих IT-специальностей 2026 года — особенно востребована в Узбекистане для банков, финтеха и компаний, обслуживающих зарубежных клиентов.",
+    roadmap: [
+      { level: "Junior", title: "Junior Cloud Engineer", skills: ["Linux", "Основы AWS (EC2, S3, IAM)", "Networking", "Bash/Python"], duration: "0-9 мес", salary: "$500–1,000" },
+      { level: "Middle", title: "Cloud Engineer", skills: ["Terraform", "Kubernetes", "CI/CD", "AWS Solutions Architect Associate"], duration: "1-3 года", salary: "$1,000–2,500" },
+      { level: "Senior", title: "Senior Cloud Engineer", skills: ["Мульти-облачная архитектура", "Cost optimization", "Security (zero-trust)", "AWS/Azure Pro"], duration: "3-5 лет", salary: "$2,500–5,000" },
+      { level: "Lead", title: "Cloud Architect / Head of Platform", skills: ["Cloud strategy", "FinOps", "Disaster recovery", "Team building"], duration: "5+ лет", salary: "$5,000–9,000+" },
+    ],
+  },
 ];
 
 export const levelLabels: Record<string, string> = {
