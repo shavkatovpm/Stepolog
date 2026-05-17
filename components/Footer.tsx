@@ -50,6 +50,7 @@ export default function Footer() {
               <h4 className="mb-4 text-xs font-bold uppercase tracking-[.2em] text-muted">{t("pages")}</h4>
               <ul className="flex flex-col gap-3 text-sm">
                 <li><Link href="/" className="text-muted-strong transition-colors hover:text-foreground">{t("homeLink")}</Link></li>
+                <li><Link href="/agentliklar" className="text-muted-strong transition-colors hover:text-foreground">{t("agenciesLink")}</Link></li>
                 <li><Link href="/learn" className="text-muted-strong transition-colors hover:text-foreground">{t("learnLink")}</Link></li>
                 <li><Link href="/kasblar" className="text-muted-strong transition-colors hover:text-foreground">{t("careersLink")}</Link></li>
                 <li><Link href="/blog" className="text-muted-strong transition-colors hover:text-foreground">{t("blogLink")}</Link></li>
