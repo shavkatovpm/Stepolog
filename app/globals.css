@@ -8,25 +8,25 @@ html {
 
 :root {
   --color-background: #F5F5F5;
-  --color-foreground: #1A1A1A;
+  --color-foreground: #000000;
   --color-brand: #FFDE59;
-  --color-brand-dark: #111111;
+  --color-brand-dark: #000000;
   --color-brand-light: #FFF8DC;
-  --color-border: #E5E5E5;
+  --color-border: rgba(0, 0, 0, 0.25);
   --color-surface: #FFFFFF;
-  --color-muted: #999999;
-  --color-muted-strong: #555555;
+  --color-muted: rgba(0, 0, 0, 0.6);
+  --color-muted-strong: rgba(0, 0, 0, 0.8);
 }
 
 .dark {
-  --color-background: #1A1A1A;
-  --color-foreground: #F5F5F5;
+  --color-background: #000000;
+  --color-foreground: #FFFFFF;
   --color-brand: #FFDE59;
-  --color-brand-dark: #1A1A1A;
-  --color-border: #2A2A2A;
-  --color-surface: #222222;
-  --color-muted: #666666;
-  --color-muted-strong: #444444;
+  --color-brand-dark: #000000;
+  --color-border: rgba(255, 255, 255, 0.25);
+  --color-surface: #111111;
+  --color-muted: rgba(255, 255, 255, 0.6);
+  --color-muted-strong: rgba(255, 255, 255, 0.8);
 }
 
 @theme inline {
