@@ -36,24 +36,11 @@ const sites = async (id: string) =>
 
 const fmtDate = (d: Date) => new Intl.DateTimeFormat("uz-UZ", { timeZone: config.tz, day: "2-digit", month: "2-digit", year: "numeric" }).format(d);
 
-// ---------- Holat matnlari ----------
-async function statusLines(u: User) {
-  const open = u.fields.filter((f) => config.fields.includes(f)).map(fieldName);
-  const digest = u.digest ? `✅ ${u.digest_time} · ${open.join(", ") || "soha tanlanmagan"}` : "o'chiq";
-  const subs: string[] = [];
-  for (const f of config.fields) {
-    const s = await activeSub(u.tg_id, f);
-    subs.push(`📢 ${fieldName(f)} kanali: ${s?.status === "active" ? `✅ ${fmtDate(s.ends_at!)} gacha` : s ? "⏳ tekshirilmoqda" : "obuna yo'q"}`);
-  }
-  const n = (await sites(u.tg_id)).length;
-  return [`📰 Kunlik dayjest: ${digest}`, ...subs, `🌐 Saytlar: ${n} ta`, `📣 Avtopost: ${u.autopost_wait ? "🔔 navbatdasiz" : "tez orada"}`].join("\n");
-}
-
 // ---------- Ekranlar ----------
 const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
-  async root(u) {
+  async root() {
     return {
-      text: `<b>Stepolog</b> · kabinetingiz\nXorijiy saytlardagi muhim yangiliklar o'zbek tilida.\n\n${await statusLines(u)}`,
+      text: "Salom! Men Stepolog 👋\n\nHar kuni siz uchun kerakli ma'lumotlarni qidiraman, ular orasidan eng muhimlarini saralab yuborib turaman.\n\nSiz esa xizmatlarimdan qaysilari kerakligini tanlang. Pastdagi tugmalar orqali 👇",
       kb: new InlineKeyboard().text("📰 Dayjest", "m:digest").text("📢 Kanallar", "m:channels").row()
         .text("🌐 Saytlar", "m:sites").text("📣 Avtopost", "m:autopost").row().text("❓ Yordam", "m:help"),
     };
