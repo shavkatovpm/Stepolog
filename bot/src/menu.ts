@@ -87,10 +87,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
     const v = await votes(u.tg_id);
     const kb = new InlineKeyboard();
     for (const f of config.fields) kb.text(`${u.fields.includes(f) ? "✅" : "⬜️"} ${fieldName(f)}`, `a:field:${f}`).row();
-    SOON_FIELDS.forEach(([k, n], i) => {
-      kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}`);
-      if (i % 2 === 1) kb.row();
-    });
+    for (const [k, n] of SOON_FIELDS) kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}`).row();
     return {
       text: "🗂 <b>Sohalar</b>\n\nOchiq sohalarni belgilang. Yopiqlari uchun 🔔 bosing: ochilganda birinchi bo'lib xabar olasiz.",
       kb: kb.row().text("← Orqaga", "m:digest"),
@@ -104,10 +101,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
       const s = await activeSub(u.tg_id, f);
       kb.text(`${fieldName(f)} · ${s?.status === "active" ? "✅ faol" : s ? "⏳ tekshirilmoqda" : "ochiq"}`, `m:ch:${f}`).row();
     }
-    SOON_FIELDS.slice(0, 4).forEach(([k, n], i) => {
-      kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}:channels`);
-      if (i % 2 === 1) kb.row();
-    });
+    for (const [k, n] of SOON_FIELDS) kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}:channels`).row();
     return {
       text: "📢 <b>Soha kanallari</b> · pullik\n\nKanalda barcha saralangan yangiliklar chiqishi bilan keladi, har birida amaliy izoh. Dushanba kuni haftalik xulosa.\n\nBir nechta kanalga obuna: 3 ta kanal −20%, hammasi −35% (kanallar ochilgani sari).",
       kb: kb.row().text("← Orqaga", "m:root"),
