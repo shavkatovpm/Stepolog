@@ -96,12 +96,12 @@ export default function Header() {
   return (
     <>
       {/* Scroll qilinganda kichrayib, yumaloq va xira fonli panelga aylanadi */}
-      <header className="sticky top-0 z-40 px-3 md:px-4">
+      <header className={`sticky top-0 z-40 px-3 transition-[padding] duration-300 md:px-4 ${scrolled || open ? "pt-3" : "pt-0"}`}>
         <div
           className={`mx-auto flex items-center justify-between gap-4 border transition-all duration-300 ease-out ${
             scrolled || open
-              ? "mt-2.5 h-14 max-w-[1100px] rounded-2xl border-white/[0.1] bg-[#1c1c1c]/70 px-4 shadow-[0_12px_40px_-12px_rgba(0,0,0,.75)] backdrop-blur-xl backdrop-saturate-150 md:mt-3"
-              : "mt-0 h-16 max-w-[1160px] rounded-none border-transparent bg-transparent px-2"
+              ? "h-[52px] max-w-[1100px] rounded-2xl border-white/[0.1] bg-[#1c1c1c]/70 px-4 shadow-[0_12px_40px_-12px_rgba(0,0,0,.75)] backdrop-blur-xl backdrop-saturate-150"
+              : "h-16 max-w-[1160px] rounded-none border-transparent bg-transparent px-2"
           }`}
         >
           <a href={t.path} aria-label="Stepolog" onClick={() => setOpen(false)}>
@@ -135,7 +135,7 @@ export default function Header() {
 
       {/* Mobil menyu */}
       <div
-        className={`fixed inset-0 z-30 overflow-y-auto bg-[#1c1c1c]/95 pt-[72px] backdrop-blur-xl transition-all duration-300 lg:hidden ${
+        className={`fixed inset-0 z-30 overflow-y-auto bg-[#1c1c1c]/95 pt-[84px] backdrop-blur-xl transition-all duration-300 lg:hidden ${
           open ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
