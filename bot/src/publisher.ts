@@ -3,8 +3,12 @@ import { InlineKeyboard, type Api, type Bot } from "grammy";
 import { db, kvGet } from "./db/index.ts";
 import { config } from "./config.ts";
 
-const GAP_MIN = 40; // kanalda postlar orasidagi eng kam vaqt
-const MAX_PER_DAY = 8; // kanalga kuniga ko'pi bilan
+const GAP_MIN = 120; // kanalda postlar orasidagi eng kam vaqt (2 soat)
+const MAX_PER_DAY = 5; // kanalga kuniga ko'pi bilan
+const HOURS = [9, 21]; // faqat kunduzi chiqadi (Toshkent vaqti)
+
+const tashkentHour = () =>
+  Number(new Intl.DateTimeFormat("en-GB", { timeZone: config.tz, hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 const MAX_AGE_H = 24; // bundan eski qoralama avtomatik chiqmaydi
 
 export const isAuto = async () => (await kvGet("mode")) !== "manual";
@@ -39,6 +43,8 @@ export async function publishPost(api: Api, post: Post) {
 // Har 5 daqiqada: navbatdagi eng yuqori balli qoralamani chiqaradi (oraliq va kunlik limit bilan)
 export async function autoPublish(bot: Bot) {
   if (!(await isAuto())) return;
+  const h = tashkentHour();
+  if (h < HOURS[0] || h >= HOURS[1]) return;
   for (const field of config.fields) {
     if (!(await channelFor(field))) continue;
     const { rows: [s] } = await db.query<{ last: Date | null; today: string }>(

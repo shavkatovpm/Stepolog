@@ -54,7 +54,7 @@ export function registerAdmin(bot: Bot) {
 
   admin.command("avto", async (ctx) => {
     await kvSet("mode", "auto");
-    await ctx.reply("Avtomatik rejim: postlar o'zi kanalga chiqadi (oralig'i kamida 40 daqiqa, kuniga 8 tagacha). Chiqishidan oldin ❌ bilan to'xtatishingiz mumkin.");
+    await ctx.reply("Avtomatik rejim: postlar o'zi kanalga chiqadi (09:00-21:00 orasida, kamida 2 soat oraliq bilan, kuniga 5 tagacha). Chiqishidan oldin ❌ bilan to'xtatishingiz mumkin.");
   });
 
   admin.command("qolda", async (ctx) => {
