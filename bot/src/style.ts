@@ -25,6 +25,7 @@ Taqiqlangan:
 - Uzun tire (—) va o'rta tire (–). Ularning o'rniga vergul, nuqta yoki ikki nuqta.
 - "shuni ta'kidlash joizki", "muhim ahamiyatga ega", "ushbu", "mazkur", "bugungi kunda", "zamonaviy dunyoda",
   "inqilobiy", "yangi davr", "o'yin qoidalarini o'zgartiradi", "keling, ko'rib chiqamiz".
+- "Yaratish" ma'nosidagi so'zlar (yaratdi, yaratish, yaratuvchi): yaratish Allohga xos. O'rniga: tayyorladi, ishlab chiqdi, qo'shdi, chiqardi.
 - Heshteg va undov belgilarini ko'paytirish.
 
 Emoji:
@@ -44,7 +45,7 @@ export const EXAMPLES: string[] = [];
 
 export const BANNED = [
   "—", "–", "shuni ta'kidlash joiz", "muhim ahamiyatga ega", "ushbu", "mazkur", "bugungi kunda",
-  "zamonaviy dunyoda", "inqilobiy", "yangi davr", "o'yin qoidalari",
+  "zamonaviy dunyoda", "inqilobiy", "yangi davr", "o'yin qoidalari", "yarat",
 ];
 
 export function findBanned(text: string) {
