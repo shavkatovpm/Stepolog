@@ -1,13 +1,14 @@
 // Oddiy foydalanuvchilar: /start, /stop
 import { InlineKeyboard, type Bot } from "grammy";
 import { db } from "./db/index.ts";
-import { config } from "./config.ts";
+import { config, FIELD_NAMES } from "./config.ts";
 
-const START = `Salom! Men Stepolog botiman.
+// Matn hech bir sohaga bog'lanmaydi: Stepolog istalgan soha uchun. Ochiq sohalar ro'yxati configdan olinadi.
+const START = () => `Salom! Men Stepolog.
 
-Marketing bo'yicha xorijiy saytlarni kuzatib, eng muhim 1-2 yangilikni har kuni soat 20:00 da o'zbek tilida yuboraman.
+Xorijiy saytlarda sohangiz bo'yicha chiqqan eng muhim yangiliklarni saralab, har kuni soat 20:00 da o'zbek tilida qisqa qilib yuboraman.
 
-Barcha yangiliklar darhol kerak bo'lsa, pullik kanalimiz bor.
+Hozir ochiq: ${config.fields.map((f) => FIELD_NAMES[f] ?? f).join(", ")}. Yangi sohalar qo'shilib boradi.
 
 Dayjestni to'xtatish: /stop`;
 
@@ -20,9 +21,9 @@ export function registerUsers(bot: Bot) {
        ON CONFLICT (tg_id) DO UPDATE SET first_name = $2, username = $3, blocked = false, digest = true`,
       [ctx.from.id, ctx.from.first_name, ctx.from.username ?? null],
     );
-    const link = config.channelLinks.marketing;
-    await ctx.reply(START, {
-      reply_markup: link ? new InlineKeyboard().url("Pullik kanal haqida", link) : undefined,
+    const link = config.channelLinks[config.fields[0]];
+    await ctx.reply(START(), {
+      reply_markup: link ? new InlineKeyboard().url("Barcha yangiliklar kanalda", link) : undefined,
     });
   });
 

@@ -14,7 +14,7 @@ const getPost = async (id: number) =>
   (await db.query<PostRow>("SELECT id, field, text, status, admin_msg_id FROM posts WHERE id = $1", [id])).rows[0];
 
 export function registerAdmin(bot: Bot) {
-  // Egasi botni kanalga admin qilsa, kanal avtomatik ulanadi (hozircha bitta soha: marketing)
+  // Egasi botni kanalga admin qilsa, kanal avtomatik ulanadi (hozircha birinchi ochiq soha kanali sifatida)
   bot.on("my_chat_member", async (ctx) => {
     const u = ctx.myChatMember;
     if (u.chat.type !== "channel" || u.from.id !== config.adminChatId) return;

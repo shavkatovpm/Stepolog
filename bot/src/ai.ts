@@ -4,7 +4,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { config } from "./config.ts";
 import { STYLE_RULES, EXAMPLES, findBanned, scrub, limitEmoji } from "./style.ts";
-import { GENERAL_RULES, fieldPrompt } from "./criteria.ts";
+import { GENERAL_RULES, fieldPrompt, FIELD_AUDIENCE } from "./criteria.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
 
@@ -59,12 +59,12 @@ const Post = z.object({
 });
 export type PostDraft = z.infer<typeof Post>;
 
-function system() {
+function system(field: string) {
   const ex = EXAMPLES.length ? `\n\nNamuna postlar (ohangini ushlang):\n\n${EXAMPLES.join("\n\n---\n\n")}` : "";
-  return STYLE_RULES + ex;
+  return `${STYLE_RULES}\n\n${FIELD_AUDIENCE[field] ?? ""}${ex}`;
 }
 
-type WriteInput = Candidate & { url: string; flags?: { confirmation?: string; testing?: boolean } | null };
+type WriteInput = Candidate & { url: string; field: string; flags?: { confirmation?: string; testing?: boolean } | null };
 
 function statusNote(f: WriteInput["flags"]) {
   const n: string[] = [];
@@ -81,7 +81,7 @@ async function writeOnce(a: WriteInput, extra = "") {
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
     output_config: { effort: "medium", format: betaZodOutputFormat(Post) },
-    system: system(),
+    system: system(a.field),
     messages: [
       {
         role: "user",

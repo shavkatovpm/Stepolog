@@ -66,6 +66,12 @@ export const FIELD_CATEGORIES: Record<string, Category[]> = {
   ],
 };
 
+// Post yozuvchi uchun: shu soha o'quvchilari va atamalari
+export const FIELD_AUDIENCE: Record<string, string> = {
+  marketing: `Soha: marketing. O'quvchilar: O'zbekistondagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
+Atamalar aslidagidek: Google Ads, Meta, Instagram, TikTok, Reels, CTR, CPM, ROAS.`,
+};
+
 export const FIELD_RULES: Record<string, string> = {
   marketing: `
 Soha: marketing. O'quvchilar: O'zbekistondagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
