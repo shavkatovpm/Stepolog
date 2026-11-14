@@ -139,7 +139,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async sites(u) {
     const list = await sites(u.tg_id);
     return {
-      text: `✨ <b>Maxsus yo'nalish</b>\n\nO'zingizga alohida yo'nalish yarating: kuzatmoqchi bo'lgan saytlaringizni qo'shing. Ularda yangi maqola chiqsa, qisqa qilib yuboraman.\n\nSaytlaringiz: <b>${list.length} ta</b> · ${SITE_LIMIT} tagacha`,
+      text: `✨ <b>Maxsus yo'nalish</b>\n\nO'zingizga alohida yo'nalish tuzing: kuzatmoqchi bo'lgan saytlaringizni qo'shing. Ularda yangi maqola chiqsa, qisqa qilib yuboraman.\n\nSaytlaringiz: <b>${list.length} ta</b> · ${SITE_LIMIT} tagacha`,
       kb: new InlineKeyboard().text("➕ Sayt qo'shish", "a:site_add").text("📋 Saytlarim", "m:site_list").row().text("← Orqaga", "m:fields"),
     };
   },

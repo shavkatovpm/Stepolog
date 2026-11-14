@@ -63,7 +63,7 @@ export const FIELD_CATEGORIES: Record<string, Category[]> = {
     { id: "brand_campaign", name: "Katta brend kampaniyasi", desc: "taniqli brendning ko'pchilik muhokama qilayotgan kampaniyasi yoki rebrendingi" },
     { id: "small_biz_case", name: "Kichik biznes keysi", desc: "kichik biznes yoki bloger aniq usul bilan natijaga erishgani, raqamlar bilan" },
     { id: "failed_campaign", name: "Muvaffaqiyatsiz kampaniya", desc: "kampaniya yoki rebrending muvaffaqiyatsiz bo'lgani va sababi" },
-    { id: "ads_ai", name: "Reklama platformasidagi AI", desc: "Meta, Google, TikTok reklamasiga qo'shilgan AI: kreativ yaratish, avtomatik kampaniya" },
+    { id: "ads_ai", name: "Reklama platformasidagi AI", desc: "Meta, Google, TikTok reklamasiga qo'shilgan AI: kreativ tayyorlash, avtomatik kampaniya" },
     { id: "chatbot_search", name: "Chatbot va qidiruv", desc: "ChatGPT, Gemini, Perplexity va AI qidiruvning marketingga ta'siri: reklama, brend ko'rinishi, xarid" },
   ],
 };

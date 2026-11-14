@@ -1,4 +1,4 @@
-// Jadvallarni yaratadi va manbalarni qo'shadi: npm run db:init
+// Jadvallarni tayyorlaydi va manbalarni qo'shadi: npm run db:init
 import { readFileSync } from "node:fs";
 import { db } from "./index.ts";
 import { SOURCES } from "../sources.ts";

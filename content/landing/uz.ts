@@ -280,7 +280,7 @@ const landings: Landing[] = [
     ],
     faq: [
       { q: "Sun'iy intellekt kanali qachon ochiladi?", a: "Qaysi soha ko'proq so'ralsa, o'sha birinchi ochiladi. Botda Sun'iy intellekt yo'nalishini belgilasangiz, ochilganda birinchilardan xabar olasiz." },
-      { q: "Qaysi AI vositalari haqida yoziladi?", a: "Keng qo'llaniladigan chat-yordamchilar, rasm va video yaratuvchi vositalar hamda biznes uchun AI xizmatlari haqida." },
+      { q: "Qaysi AI vositalari haqida yoziladi?", a: "Keng qo'llaniladigan chat-yordamchilar, rasm va video tayyorlaydigan vositalar hamda biznes uchun AI xizmatlari haqida." },
       { q: "Texnik bilim kerakmi?", a: "Yo'q. Postlar oddiy tilda yoziladi, atamalar tushuntiriladi." },
       { q: "Narxi qancha bo'ladi?", a: "Boshqa soha kanallari bilan bir xil: oyiga 49 000 so'm, uzoq muddatga olsangiz arzonroq." },
     ],
