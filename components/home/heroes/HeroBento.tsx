@@ -6,9 +6,19 @@ import { BOT, tile, Y } from "../data";
 import { useDict } from "../i18n";
 
 // Bento hero: istalgan soha bo'yicha saralangan yangiliklar
-const TOTAL = 107;
-const SENT = 6;
-const KEEP = [9, 26, 41, 58, 77, 96];
+// Har bir soha uchun namunaviy kunlik raqamlar (tartib: Marketing, AI, Dasturlash, Dizayn, Biznes)
+const STATS = [
+  { total: 107, sent: 6 },
+  { total: 134, sent: 5 },
+  { total: 96, sent: 4 },
+  { total: 58, sent: 3 },
+  { total: 81, sent: 4 },
+];
+const MAX = 140; // to'r balandligi o'zgarmasligi uchun
+
+// Tanlangan materiallarni to'r bo'ylab tekis taqsimlaymiz
+const keepOf = (total: number, sent: number) =>
+  Array.from({ length: sent }, (_, k) => Math.min(total - 1, Math.round(((k + 0.5) * total) / sent) + ((k * 7) % 5) - 2));
 
 export default function HeroBento() {
   const t = useDict();
@@ -17,11 +27,16 @@ export default function HeroBento() {
   const [field, setField] = useState(0);
   const [auto, setAuto] = useState(true);
 
+  const stat = STATS[field % STATS.length];
+  const keep = keepOf(stat.total, stat.sent);
+
+  // Soha almashganda hisoblagich yangi qiymatgacha sanaydi (oshib yoki kamayib)
   useEffect(() => {
-    if (n >= TOTAL) return;
-    const t = setTimeout(() => setN((x) => Math.min(TOTAL, x + 3)), 22);
+    if (n === stat.total) return;
+    const step = Math.max(1, Math.round(Math.abs(stat.total - n) / 18));
+    const t = setTimeout(() => setN((x) => (x < stat.total ? Math.min(stat.total, x + step) : Math.max(stat.total, x - step))), 22);
     return () => clearTimeout(t);
-  }, [n]);
+  }, [n, stat.total]);
 
   useEffect(() => {
     if (!auto) return;
@@ -30,7 +45,7 @@ export default function HeroBento() {
   }, [auto, fields.length]);
 
   const f = fields[field];
-  const done = n >= TOTAL;
+  const done = n === stat.total;
 
   return (
     <section className="flex min-h-[calc(100svh-4rem)] items-center bg-[#1c1c1c]">
@@ -79,18 +94,21 @@ export default function HeroBento() {
             <div className="text-right">
               <p className="text-[13px] text-white/45">{t.hero.published}</p>
               <p className="mt-1 text-[44px] font-semibold leading-none tracking-[-0.03em] transition-colors" style={{ color: done ? Y : "rgba(255,255,255,.2)" }}>
-                {SENT}
+                {stat.sent}
               </p>
             </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-[4px]">
-            {Array.from({ length: TOTAL }).map((_, i) => {
+            {Array.from({ length: MAX }).map((_, i) => {
               const seen = i < n;
+              const out = i >= stat.total; // shu soha uchun kerak emas
               return (
                 <span
                   key={i}
                   className="h-[10px] w-[10px] rounded-[2px] transition-colors duration-300"
-                  style={{ background: !seen ? "rgba(255,255,255,.06)" : KEEP.includes(i) && done ? Y : "rgba(255,255,255,.22)" }}
+                  style={{
+                    background: out ? "transparent" : !seen ? "rgba(255,255,255,.06)" : keep.includes(i) && done ? Y : "rgba(255,255,255,.22)",
+                  }}
                 />
               );
             })}
