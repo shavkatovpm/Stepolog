@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { landings } from "@/content/landing/uz";
 
-const SITE = "https://stepolog.uz";
+const SITE = "https://www.stepolog.uz";
 const homeLangs = { en: SITE, uz: `${SITE}/uz`, ru: `${SITE}/ru` };
 
 export default function sitemap(): MetadataRoute.Sitemap {

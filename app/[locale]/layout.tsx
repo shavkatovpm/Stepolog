@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const t = getDict(locale);
   return {
-    metadataBase: new URL("https://stepolog.uz"),
+    metadataBase: new URL("https://www.stepolog.uz"),
     title: t.meta.title,
     description: t.meta.description,
     alternates: {

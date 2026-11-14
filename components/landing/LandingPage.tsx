@@ -27,7 +27,7 @@ function Visual({ slug }: { slug: string }) {
   return V ? <V /> : null;
 }
 
-const SITE = "https://stepolog.uz";
+const SITE = "https://www.stepolog.uz";
 
 // Strukturali ma'lumot: FAQ, breadcrumb va (bot sahifasida) ilova
 function JsonLd({ l }: { l: Landing }) {
