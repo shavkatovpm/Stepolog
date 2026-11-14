@@ -26,9 +26,8 @@ Taqiqlangan:
 - Heshteg va undov belgilarini ko'paytirish.
 
 Emoji:
-- Postda 1 ta, ko'pi bilan 2 ta emoji. Faqat mazmunga mos, jiddiy ko'rinadiganlari:
-  📈 📉 📊 💡 ⚠️ 🔍 🛠 📱 🎯 💰 🤖 📌 ✅ 🔔.
-- Joyi: sarlavha boshida bitta, xohlasangiz amaliy izoh boshida bitta. Matn ichida emoji yo'q.
+- Postda faqat 1 ta emoji: amaliy izoh ("takeaway") boshida. Sarlavha va asosiy matnda emoji yo'q.
+- Mazmunga mos, jiddiy ko'rinadiganini tanlang: 💡 📈 📉 📊 ⚠️ 🔍 🛠 🎯 💰 🤖 📌.
 - Kulgili va hissiy emojilar (😂 🔥 🚀 😱 👀 💥) ishlatilmaydi.
 `.trim();
 
@@ -50,7 +49,7 @@ export const scrub = (s: string) => s.replace(/\s*[—–]\s*/g, ", ").replace(/
 
 // Postda ko'pi bilan 2 ta emoji qoladi (ortiqchasi olib tashlanadi)
 const EMOJI = /\p{Extended_Pictographic}\uFE0F?/gu;
-export function limitEmoji(parts: string[], max = 2): string[] {
+export function limitEmoji(parts: string[], max = 1): string[] {
   let n = 0;
   return parts.map((p) => p.replace(EMOJI, (m) => (++n <= max ? m : "")).replace(/ {2,}/g, " ").trim());
 }

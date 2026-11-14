@@ -100,6 +100,8 @@ export async function writePost(a: WriteInput): Promise<PostDraft> {
   if (bad.length) {
     p = await writeOnce(a, `\n\nOldingi variantda taqiqlangan iboralar bor edi: ${bad.join(", ")}. Ularsiz yozing.`);
   }
-  const [title, body, takeaway] = limitEmoji([scrub(p.title), scrub(p.body), scrub(p.takeaway)]);
+  // Emoji faqat amaliy izohda, bitta: sarlavha va matndan olib tashlanadi
+  const [title, body] = limitEmoji([scrub(p.title), scrub(p.body)], 0);
+  const [takeaway] = limitEmoji([scrub(p.takeaway)], 1);
   return { title, body, takeaway };
 }
