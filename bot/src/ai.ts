@@ -54,8 +54,7 @@ export async function scoreArticles(list: Candidate[]) {
 
 const Post = z.object({
   title: z.string().describe("sarlavha, 12 so'zdan oshmasin, nuqtasiz"),
-  body: z.string().describe("2-3 qisqa gap: nima bo'ldi"),
-  forYou: z.string().describe("1-2 gap: bu o'quvchiga nima beradi, nima qilish kerak"),
+  body: z.string().describe("2-4 qisqa gap: nima bo'ldi va eng muhim tafsilotlar"),
 });
 export type PostDraft = z.infer<typeof Post>;
 
@@ -86,9 +85,9 @@ async function writeOnce(a: Candidate & { url: string }, extra = "") {
 
 export async function writePost(a: Candidate & { url: string }): Promise<PostDraft> {
   let p = await writeOnce(a);
-  const bad = findBanned(`${p.title} ${p.body} ${p.forYou}`);
+  const bad = findBanned(`${p.title} ${p.body}`);
   if (bad.length) {
     p = await writeOnce(a, `\n\nOldingi variantda taqiqlangan iboralar bor edi: ${bad.join(", ")}. Ularsiz yozing.`);
   }
-  return { title: scrub(p.title), body: scrub(p.body), forYou: scrub(p.forYou) };
+  return { title: scrub(p.title), body: scrub(p.body) };
 }

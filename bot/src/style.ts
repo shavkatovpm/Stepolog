@@ -14,8 +14,8 @@ Til:
 
 Mazmun:
 - Faqat manbadagi faktlar. O'zingizdan raqam, sana yoki da'vo qo'shmang.
-- Avval nima bo'lganini ayting, keyin bu o'quvchiga nima beradi.
-- "Siz uchun" qismi amaliy bo'lsin: nima qilish kerak yoki nimaga e'tibor berish kerak. Umumiy gap emas.
+- Faqat yangilikning o'zi: nima bo'ldi, kimga tegishli, qachondan. Maslahat va xulosa qo'shmang.
+- Eng muhim tafsilot birinchi gapda bo'lsin.
 
 Taqiqlangan:
 - Uzun tire (—) va o'rta tire (–). Ularning o'rniga vergul, nuqta yoki ikki nuqta.

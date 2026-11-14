@@ -7,7 +7,6 @@ export function renderPost(p: PostDraft, source: string, url: string) {
   return [
     `<b>${esc(p.title)}</b>`,
     esc(p.body),
-    `<b>Siz uchun:</b> ${esc(p.forYou)}`,
     `Manba: <a href="${esc(url)}">${esc(source)}</a>`,
   ].join("\n\n");
 }
