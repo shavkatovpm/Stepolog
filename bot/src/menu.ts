@@ -134,7 +134,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async tariffs(_u, arg = "") {
     const [product, field] = arg.split(":");
     const kb = new InlineKeyboard();
-    for (const m of [1, 3, 6, 12]) {
+    for (const m of Object.keys(PRICING.discounts).map(Number)) {
       const d = PRICING.discounts[m];
       kb.text(`${monthsLabel(m)} · ${som(priceFor(m))}${d ? ` (−${d}%)` : ""}`, `m:pay:${product}:${field}:${m}`).row();
     }

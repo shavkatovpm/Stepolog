@@ -39,7 +39,7 @@ export const SOON_FIELDS: [string, string][] = [
 // Tariflar: oylik narx va muddat bo'yicha chegirma (sayt bilan bir xil)
 export const PRICING = {
   monthly: Number(process.env.PRICE_MONTHLY ?? 27000),
-  discounts: { 1: 0, 3: 5, 6: 10, 12: 30 } as Record<number, number>,
+  discounts: { 1: 0, 12: 30 } as Record<number, number>,
 };
 export const priceFor = (months: number) => Math.round(PRICING.monthly * months * (1 - PRICING.discounts[months] / 100));
 export const som = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
