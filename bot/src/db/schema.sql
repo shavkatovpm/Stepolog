@@ -111,4 +111,6 @@ CREATE TABLE IF NOT EXISTS user_site_items (
 );
 
 -- v4: Dayjest Pro
+-- v5: Pro barcha tanlangan yo'nalishlar uchun (field = 'all'), slots = to'langan yo'nalishlar soni
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS slots int NOT NULL DEFAULT 3;
 ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS product text NOT NULL DEFAULT 'channel'; -- channel | pro

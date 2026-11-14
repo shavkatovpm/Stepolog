@@ -46,7 +46,8 @@ export async function publishPost(api: Api, post: Post) {
 async function deliverPro(api: Api, post: Post) {
   const { rows } = await db.query<{ tg_id: string }>(
     `SELECT DISTINCT s.tg_id FROM subscriptions s JOIN users u ON u.tg_id = s.tg_id
-     WHERE s.product = 'pro' AND s.field = $1 AND s.status = 'active' AND s.ends_at > now() AND NOT u.blocked`,
+     WHERE s.product = 'pro' AND s.status = 'active' AND s.ends_at > now() AND NOT u.blocked
+       AND $1 = ANY(u.fields[1:s.slots])`, // to'langan yo'nalishlar soni bo'yicha
     [post.field],
   );
   for (const r of rows) {

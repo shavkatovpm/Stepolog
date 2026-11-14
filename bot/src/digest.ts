@@ -40,7 +40,7 @@ export async function sendDigest(bot: Bot, onlyTo?: number, slot = "20:00") {
       ? [{ tg_id: String(onlyTo) }]
       : (await db.query<{ tg_id: string }>(
           `SELECT tg_id FROM users u WHERE digest AND NOT blocked AND $1 = ANY(fields)
-             AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.tg_id = u.tg_id AND s.field = $1 AND s.product = 'pro'
+             AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.tg_id = u.tg_id AND s.product = 'pro' AND $1 = ANY(u.fields[1:s.slots])
                              AND s.status = 'active' AND s.ends_at > now())`, // Pro obunachilari hammasini allaqachon oladi
           [field],
         )).rows;

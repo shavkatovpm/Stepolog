@@ -43,6 +43,12 @@ export const PRICING = {
   discounts: { 1: 0, 12: 30 } as Record<number, number>,
 };
 export const priceFor = (months: number) => PRICING.plans[months];
+
+// Dayjest Pro: narxga 3 tagacha yo'nalish kiradi, har bir qo'shimchasi alohida (oyiga 9 000, 12 oyga 30% arzon)
+export const PRO_INCLUDED = 3;
+export const PRO_EXTRA: Record<number, number> = { 1: 9000, 12: Math.round(9000 * 12 * 0.7) };
+export const proExtraCount = (dirs: number) => Math.max(0, dirs - PRO_INCLUDED);
+export const proPrice = (months: number, dirs: number) => PRICING.plans[months] + proExtraCount(dirs) * PRO_EXTRA[months];
 export const som = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
 
 export const DIGEST_TIMES = ["20:00"]; // dayjest hammaga bir vaqtda, kun oxirida (user tanlamaydi)
