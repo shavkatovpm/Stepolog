@@ -66,3 +66,8 @@ CREATE TABLE IF NOT EXISTS kv (
   key   text PRIMARY KEY,
   value text NOT NULL
 );
+
+-- v2: ishonchlilik mezonlari
+ALTER TABLE sources  ADD COLUMN IF NOT EXISTS tier text NOT NULL DEFAULT 'media'; -- official | media | blog
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS base_score int;  -- soha bo'yicha ball (AI)
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS flags jsonb;     -- umumiy mezon belgilari (AI)

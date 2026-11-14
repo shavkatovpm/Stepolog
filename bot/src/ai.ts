@@ -4,6 +4,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { config } from "./config.ts";
 import { STYLE_RULES, EXAMPLES, findBanned, scrub } from "./style.ts";
+import { GENERAL_RULES, FIELD_RULES } from "./criteria.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
 
@@ -15,35 +16,32 @@ const Verdicts = z.object({
   items: z.array(
     z.object({
       id: z.number(),
-      score: z.number().describe("1-10: O'zbekistondagi marketolog uchun qanchalik muhim va amaliy"),
+      confirmation: z.enum(["official", "reported", "rumor"]),
+      testing: z.boolean(),
+      clickbait: z.boolean(),
+      opinion: z.boolean(),
+      promo: z.boolean(),
+      stale: z.boolean(),
+      duplicate_of: z.number().nullable(),
+      score: z.number().describe("1-10, soha mezonlari bo'yicha"),
       reason: z.string().describe("bitta qisqa gap, o'zbekcha"),
     }),
   ),
 });
+export type Verdict = z.infer<typeof Verdicts>["items"][number];
 
-const FILTER_PROMPT = `
-Siz O'zbekistondagi marketologlar uchun yangilik saralovchisiz. Har bir maqolaga 1 dan 10 gacha ball bering.
-
-Yuqori ball (8-10): reklama platformalari va ijtimoiy tarmoqlardagi aniq o'zgarishlar
-(Google Ads, Meta, Instagram, TikTok, YouTube, Telegram): yangi funksiya, algoritm o'zgarishi, qoida, narx,
-reklama formati, hisobot vositasi. Marketolog ishini bugun o'zgartiradigan narsa.
-O'rta (5-7): foydali tadqiqot yoki raqamlar, katta brendning ibratli kampaniyasi.
-Past (1-4): reklama postlari, vebinar e'lonlari, "10 ta maslahat" tipidagi umumiy maqolalar, kadrlar almashuvi,
-kompaniya moliyaviy hisobotlari, faqat AQSh bozoriga tegishli mahalliy yangiliklar, SEO texnik tafsilotlari.
-O'zbekistonda ishlamaydigan platformalar ham past (1-3): Amazon, Walmart, eBay, Etsy, Shopify reklamalari,
-AQSh retail media, Amazon DSP. O'zbekistonda asosiylari: Instagram, Telegram, Meta Ads, Google Ads, YouTube, TikTok.
-Ko'rsatma va izohlovchi maqolalar (explainer, "nima bu") yangilik emas: 1-5.
-`.trim();
-
-export async function scoreArticles(list: Candidate[]) {
+// recent: shu sohada oxirgi 48 soatda qabul qilingan yangiliklar (takrorni aniqlash uchun)
+export async function scoreArticles(field: string, list: Candidate[], recent: { id: number; title: string }[]) {
+  const system = `Siz yangilik saralovchisiz. Har bir maqola uchun belgilar va ball qo'ying.\n\n${GENERAL_RULES}\n\n${FIELD_RULES[field]}`;
+  const prev = recent.length ? recent.map((r) => `id=${r.id}: ${r.title}`).join("\n") : "(hali yo'q)";
   const input = list.map((a) => `id=${a.id} | ${a.source}\n${a.title}\n${a.excerpt.slice(0, 500)}`).join("\n\n---\n\n");
 
   const res = await client.messages.parse({
     model: config.models.filter,
-    max_tokens: 4000,
+    max_tokens: 6000,
     output_config: { effort: "low", format: zodOutputFormat(Verdicts) },
-    system: FILTER_PROMPT,
-    messages: [{ role: "user", content: input }],
+    system,
+    messages: [{ role: "user", content: `Avval qabul qilinganlar:\n${prev}\n\nYangi maqolalar:\n\n${input}` }],
   });
 
   if (res.stop_reason === "refusal") throw new Error("saralash: refusal");
@@ -63,7 +61,17 @@ function system() {
   return STYLE_RULES + ex;
 }
 
-async function writeOnce(a: Candidate & { url: string }, extra = "") {
+type WriteInput = Candidate & { url: string; flags?: { confirmation?: string; testing?: boolean } | null };
+
+function statusNote(f: WriteInput["flags"]) {
+  const n: string[] = [];
+  if (f?.confirmation === "reported") n.push("Rasmiy tasdiq yo'q: matnda \"xabar qilinishicha\" yoki manba nomi bilan ayting.");
+  if (f?.confirmation === "rumor") n.push("Bu hali tasdiqlanmagan xabar: buni matnda aniq ayting.");
+  if (f?.testing) n.push("Funksiya hali test bosqichida: buni matnda ayting.");
+  return n.length ? `\n\nHolat: ${n.join(" ")}` : "";
+}
+
+async function writeOnce(a: WriteInput, extra = "") {
   const res = await client.beta.messages.parse({
     model: config.models.writer,
     max_tokens: 4000,
@@ -74,7 +82,7 @@ async function writeOnce(a: Candidate & { url: string }, extra = "") {
     messages: [
       {
         role: "user",
-        content: `Manba: ${a.source}\nHavola: ${a.url}\n\nSarlavha: ${a.title}\n\nMatn:\n${a.excerpt}${extra}`,
+        content: `Manba: ${a.source}\nHavola: ${a.url}\n\nSarlavha: ${a.title}\n\nMatn:\n${a.excerpt}${statusNote(a.flags)}${extra}`,
       },
     ],
   });
@@ -83,7 +91,7 @@ async function writeOnce(a: Candidate & { url: string }, extra = "") {
   return res.parsed_output;
 }
 
-export async function writePost(a: Candidate & { url: string }): Promise<PostDraft> {
+export async function writePost(a: WriteInput): Promise<PostDraft> {
   let p = await writeOnce(a);
   const bad = findBanned(`${p.title} ${p.body}`);
   if (bad.length) {

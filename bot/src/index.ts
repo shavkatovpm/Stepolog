@@ -31,7 +31,12 @@ setInterval(cycle, config.fetchEveryMin * 60_000);
 setInterval(() => maybeSendDigest(bot).catch((e) => console.error("[digest]", e)), 5 * 60_000);
 void cycle();
 
-for (const sig of ["SIGINT", "SIGTERM"] as const) process.once(sig, () => bot.stop());
+for (const sig of ["SIGINT", "SIGTERM"] as const) {
+  process.once(sig, async () => {
+    await bot.stop().catch(() => {});
+    process.exit(0);
+  });
+}
 
 console.log("Stepolog bot ishga tushdi");
 await bot.start({ allowed_updates: ["message", "callback_query"] });
