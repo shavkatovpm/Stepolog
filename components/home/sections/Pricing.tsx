@@ -15,12 +15,12 @@ export default function Pricing() {
 
   return (
     <section id="narx" className="scroll-mt-16">
-      <div className="mx-auto max-w-[1160px] px-5 py-24 md:py-32">
+      <div className="mx-auto max-w-[1160px] px-5 py-16 md:py-32">
         <Reveal>
-          <h2 className="max-w-[820px] text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[48px]">{pr.title}</h2>
+          <h2 className="max-w-[820px] text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.035em] md:text-[48px]">{pr.title}</h2>
         </Reveal>
 
-        <Reveal delay={100} className="mt-16 grid gap-14 border-t border-white/[0.1] pt-12 md:grid-cols-[1.1fr_1fr] md:gap-20">
+        <Reveal delay={100} className="mt-10 grid gap-12 border-t md:mt-16 md:gap-14 border-white/[0.1] pt-12 md:grid-cols-[1.1fr_1fr] md:gap-20">
           <div>
             <p className="text-[14px] text-white/45">
               {pr.field} · {pr.labels[sel]}

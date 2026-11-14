@@ -12,9 +12,9 @@ export default function Faq() {
 
   return (
     <section id="savollar" className="scroll-mt-16 border-t border-white/[0.08]">
-      <div className="mx-auto grid max-w-[1160px] gap-12 px-5 py-24 md:grid-cols-[0.8fr_1.4fr] md:py-32">
+      <div className="mx-auto grid max-w-[1160px] gap-10 px-5 py-16 md:gap-12 md:grid-cols-[0.8fr_1.4fr] md:py-32">
         <Reveal>
-          <h2 className="text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[48px]">{t.faq.title}</h2>
+          <h2 className="text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.035em] md:text-[48px]">{t.faq.title}</h2>
           <p className="mt-5 text-[16px] text-white/55">
             {t.faq.notFound}{" "}
             <a href={BOT} className="font-semibold underline-offset-4 hover:underline" style={{ color: Y }}>

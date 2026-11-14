@@ -4,7 +4,10 @@
 
 export type LandingPost = { title: string; body: string; why: string; source: string; time: string; views: string };
 
+export type LandingId = "bot" | "site" | "translate" | "marketing" | "ai" | "autopost";
+
 export type Landing = {
+  id: LandingId;
   slug: string;
   status: "open" | "soon";
   nav: string; // havolalar va breadcrumb uchun qisqa nom
@@ -24,7 +27,7 @@ export type Landing = {
   audienceTitle: string;
   audience: { title: string; text: string }[];
   faq: { q: string; a: string }[];
-  related: string[];
+  related: LandingId[]; // boshqa sahifalar id'lari
   cta: string;
   app?: boolean; // SoftwareApplication schema
 };
@@ -38,8 +41,9 @@ const marketingPost: LandingPost = {
   views: "1,4K",
 };
 
-export const landings: Landing[] = [
+const landings: Landing[] = [
   {
+    id: "bot",
     slug: "telegram-yangiliklar-boti",
     status: "open",
     nav: "Telegram yangiliklar boti",
@@ -48,8 +52,8 @@ export const landings: Landing[] = [
     metaDescription:
       "Stepolog boti siz tanlagan soha bo'yicha muhim yangiliklarni saralab, o'zbek tilida qisqa post qilib Telegram'ga yuboradi. Bepul boshlash mumkin.",
     kicker: "Telegram bot",
-    h1: "Sohangiz yangiliklarini o'zbek tilida yuboradigan Telegram bot",
-    lead: "Stepolog yuzlab xorijiy saytlarni kuzatadi, takroriy va reklama materiallarini chiqarib tashlaydi, qolganini qisqa o'zbekcha postga aylantiradi. Sizga faqat o'qish qoladi.",
+    h1: "Telegram yangiliklar boti o'zbek tilida",
+    lead: "Xorijiy saytlardagi muhim yangiliklarni saralab, o'zbek tilida qisqa post qilib yuboradi.",
     answer:
       "Stepolog (@stepologbot) siz tanlagan soha bo'yicha xorijiy saytlardagi muhim yangiliklarni avtomatik saralab, o'zbek tilida qisqa post qilib Telegram'ga yuboradigan bot. Bepul botda kuniga eng muhim 1-2 yangilik kechki dayjestda keladi. Hozir Marketing yo'nalishi ishlaydi, boshqa sohalar navbatda.",
     featuresTitle: "Bot nimalar qila oladi",
@@ -83,11 +87,12 @@ export const landings: Landing[] = [
       { q: "Yangiliklar qayerdan olinadi?", a: "Har bir soha bo'yicha rasmiy bloglar va yirik nashrlardan. Har bir post ostida manba havolasi turadi." },
       { q: "Botni qanday to'xtatish mumkin?", a: "Botni istalgan vaqtda Telegram'da to'xtatish yoki o'chirib qo'yish mumkin. Bepul botda hech qanday to'lov yo'q." },
     ],
-    related: ["sayt-yangiliklarini-telegramga-yuborish", "xorijiy-yangiliklar-ozbek-tilida", "marketing-yangiliklari"],
+    related: ["site", "translate", "marketing"],
     cta: "Botni ochish",
     app: true,
   },
   {
+    id: "site",
     slug: "sayt-yangiliklarini-telegramga-yuborish",
     status: "open",
     nav: "Sayt yangiliklarini Telegram'ga yuborish",
@@ -97,7 +102,7 @@ export const landings: Landing[] = [
       "Kuzatadigan saytingiz havolasini botga yuboring: unda chiqqan yangi maqolalar o'zbek tilida qisqa xabar bo'lib Telegram'ga keladi. Saytda RSS bo'lishi shart emas.",
     kicker: "Sayt kuzatish",
     h1: "Istalgan sayt yangiliklarini Telegram'ga oling",
-    lead: "Saytga har kuni kirib tekshirish shart emas. Havolani botga yuborasiz, yangi maqola chiqqanda Stepolog uni o'qib, qisqa o'zbekcha xabar qilib yuboradi.",
+    lead: "Havolani botga yuboring: saytda yangi maqola chiqsa, qisqa o'zbekcha xabar keladi.",
     answer:
       "Saytdagi yangiliklarni Telegram'ga olish uchun Stepolog botiga (@stepologbot) sayt havolasini yuborish kifoya. Bot saytni muntazam tekshiradi va yangi maqola chiqqanda uning mazmunini o'zbek tilida qisqa qilib yuboradi. Saytda RSS lentasi bo'lishi shart emas.",
     featuresTitle: "Sayt kuzatish imkoniyatlari",
@@ -131,10 +136,11 @@ export const landings: Landing[] = [
       { q: "Login talab qiladigan saytlar ishlaydimi?", a: "Yo'q. Faqat hamma uchun ochiq sahifalarni kuzatish mumkin." },
       { q: "Yangi maqola qanchalik tez keladi?", a: "Bot qo'shilgan saytlarni kun davomida muntazam tekshiradi. Yangi maqola chiqqanidan ko'p o'tmay xabar keladi." },
     ],
-    related: ["telegram-yangiliklar-boti", "xorijiy-yangiliklar-ozbek-tilida", "telegram-kanalga-avtopost"],
+    related: ["bot", "translate", "autopost"],
     cta: "Sayt qo'shish",
   },
   {
+    id: "translate",
     slug: "xorijiy-yangiliklar-ozbek-tilida",
     status: "open",
     nav: "Xorijiy yangiliklar o'zbek tilida",
@@ -143,8 +149,8 @@ export const landings: Landing[] = [
     metaDescription:
       "Ingliz va rus tilidagi soha yangiliklarini so'zma-so'z tarjima emas, tushunarli o'zbekcha qisqa post qilib yuboramiz. Har postda asl manba havolasi bor.",
     kicker: "Tarjima va qisqartirish",
-    h1: "Ingliz va rus tilidagi yangiliklar, o'zbek tilida va qisqa",
-    lead: "Sohangizdagi eng tezkor yangiliklar ko'pincha ingliz tilida chiqadi. Stepolog ularni so'zma-so'z tarjima qilmaydi, mazmunini tushunarli o'zbek tilida qayta yozadi.",
+    h1: "Xorijiy yangiliklar o'zbek tilida, qisqa va tushunarli",
+    lead: "Ingliz va rus tilidagi maqolalar so'zma-so'z emas, mazmuni bo'yicha qayta yoziladi.",
     answer:
       "Stepolog ingliz va rus tilidagi xorijiy yangiliklarni o'zbek tiliga moslab qayta yozadigan Telegram bot. Har bir post 2-3 gapli mazmun, yangilikning ishingiz uchun ahamiyati va asl manba havolasidan iborat. Ingliz tilini bilmasangiz ham sohangizdagi o'zgarishlardan o'z vaqtida xabardor bo'lasiz.",
     featuresTitle: "Oddiy tarjimadan farqi",
@@ -178,10 +184,11 @@ export const landings: Landing[] = [
       { q: "Ma'noda xato bo'lsa nima qilaman?", a: "Har bir post ostida asl manba havolasi bor, solishtirib ko'rishingiz mumkin. Xato topsangiz, botga yozing, tuzatamiz." },
       { q: "Ingliz tilini bilmasam ham foydalanaveramanmi?", a: "Ha. Postlar to'liq o'zbek tilida, atamalar ham tushuntiriladi." },
     ],
-    related: ["telegram-yangiliklar-boti", "marketing-yangiliklari", "suniy-intellekt-yangiliklari"],
+    related: ["bot", "marketing", "ai"],
     cta: "Botni ochish",
   },
   {
+    id: "marketing",
     slug: "marketing-yangiliklari",
     status: "open",
     nav: "Marketing yangiliklari",
@@ -190,8 +197,8 @@ export const landings: Landing[] = [
     metaDescription:
       "Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi o'zgarishlar o'zbek tilida, izoh bilan. Bepul botda kunlik dayjest, kanalda barcha yangiliklar.",
     kicker: "Marketing kanali · ochiq",
-    h1: "Marketing yangiliklari o'zbek tilida, har kuni Telegram'da",
-    lead: "Reklama platformalari, ijtimoiy tarmoqlar va qidiruv tizimlaridagi o'zgarishlarni biz kuzatamiz. Sizga ishingizga ta'sir qiladiganlari o'zbekcha va izoh bilan keladi.",
+    h1: "Marketing yangiliklari o'zbek tilida",
+    lead: "Google Ads, Meta, TikTok va Instagram o'zgarishlari har kuni, izoh bilan.",
     answer:
       "Stepolog Marketing kanali Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi muhim o'zgarishlarni o'zbek tilida, kuniga o'rtacha 6 ta qisqa post qilib yetkazadi. Obuna oyiga 49 000 so'm. Bepul botda esa eng muhim 1-2 yangilik kechki dayjestda keladi.",
     featuresTitle: "Kanalda qaysi mavzular bor",
@@ -225,10 +232,11 @@ export const landings: Landing[] = [
       { q: "Instagram yoki Google Ads'da o'zgarish bo'lsa, qachon bilaman?", a: "Kanalda yangilik manbada chiqqanidan keyin tez orada joylanadi. Bepul botda esa shu kunning kechki dayjestida keladi." },
       { q: "Bepul variant bormi?", a: "Ha. @stepologbot bepul: har kuni kechqurun eng muhim 1-2 marketing yangiligi keladi." },
     ],
-    related: ["telegram-yangiliklar-boti", "xorijiy-yangiliklar-ozbek-tilida", "suniy-intellekt-yangiliklari"],
+    related: ["bot", "translate", "ai"],
     cta: "Kanalga obuna bo'lish",
   },
   {
+    id: "ai",
     slug: "suniy-intellekt-yangiliklari",
     status: "soon",
     nav: "Sun'iy intellekt yangiliklari",
@@ -238,7 +246,7 @@ export const landings: Landing[] = [
       "ChatGPT, Gemini va boshqa AI vositalaridagi amaliy yangiliklar o'zbek tilida, qisqa va izoh bilan. Kanal tez orada ochiladi, navbatga yoziling.",
     kicker: "Sun'iy intellekt kanali · tez orada",
     h1: "Sun'iy intellekt yangiliklari o'zbek tilida",
-    lead: "AI vositalari har hafta yangilanadi. Ishingizda haqiqatan foydalanish mumkin bo'lganlarini ajratib, o'zbekcha va qisqa qilib yetkazamiz.",
+    lead: "AI vositalaridagi amaliy yangiliklar, o'zbekcha va qisqa.",
     answer:
       "Stepolog Sun'iy intellekt kanali ChatGPT, Gemini va boshqa AI vositalaridagi amaliy yangiliklarni o'zbek tilida qisqa post qilib yetkazadi. Kanal hali ochilmagan. Navbatga yozilish uchun @stepologbot da Sun'iy intellekt yo'nalishini belgilang, kanal ochilganda birinchilardan xabar olasiz.",
     featuresTitle: "Kanalda nimalar bo'ladi",
@@ -278,10 +286,11 @@ export const landings: Landing[] = [
       { q: "Texnik bilim kerakmi?", a: "Yo'q. Postlar oddiy tilda yoziladi, atamalar tushuntiriladi." },
       { q: "Narxi qancha bo'ladi?", a: "Boshqa soha kanallari bilan bir xil: oyiga 49 000 so'm, uzoq muddatga olsangiz arzonroq." },
     ],
-    related: ["marketing-yangiliklari", "xorijiy-yangiliklar-ozbek-tilida", "telegram-yangiliklar-boti"],
+    related: ["marketing", "translate", "bot"],
     cta: "Navbatga yozilish",
   },
   {
+    id: "autopost",
     slug: "telegram-kanalga-avtopost",
     status: "soon",
     nav: "Telegram kanalga avtopost",
@@ -290,8 +299,8 @@ export const landings: Landing[] = [
     metaDescription:
       "Siz tanlagan saytlardagi yangiliklar kanalingiz uslubida yozilib, jadval bo'yicha joylanadi. Telegram kanal egalari uchun avtopost xizmati tez orada.",
     kicker: "Kanal egalari uchun · tez orada",
-    h1: "Telegram kanalingiz uchun avtomatik yangilik postlari",
-    lead: "Siz tanlagan saytlardagi yangiliklar kanalingiz uslubida yoziladi va belgilangan jadval bo'yicha joylanadi. Kanal yuritishga ketadigan vaqt sezilarli qisqaradi.",
+    h1: "Telegram kanalga avtomatik post joylash",
+    lead: "Tanlagan saytlaringiz yangiliklari kanalingiz uslubida, jadval bo'yicha joylanadi.",
     answer:
       "Stepolog Telegram kanal egalari uchun avtopost xizmatini tayyorlamoqda. Siz manbalar va uslubni belgilaysiz, bot yangiliklarni shu uslubda matnli post qilib, jadval bo'yicha kanalingizga joylaydi. Xizmat hali ishga tushmagan, navbatga @stepologbot orqali yozilish mumkin.",
     featuresTitle: "Avtopost imkoniyatlari",
@@ -325,9 +334,9 @@ export const landings: Landing[] = [
       { q: "Mualliflik huquqi buzilmaydimi?", a: "Postlar asl matnni ko'chirmaydi. Mazmun qayta yoziladi va har bir postda manba ko'rsatiladi." },
       { q: "Rasmli postlar bo'ladimi?", a: "Boshida matnli postlar bo'ladi. Rasmli postlar keyingi bosqichda qo'shiladi." },
     ],
-    related: ["sayt-yangiliklarini-telegramga-yuborish", "telegram-yangiliklar-boti", "marketing-yangiliklari"],
+    related: ["site", "bot", "marketing"],
     cta: "Navbatga yozilish",
   },
 ];
 
-export const getLanding = (slug: string) => landings.find((l) => l.slug === slug);
+export default landings;

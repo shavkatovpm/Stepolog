@@ -12,7 +12,7 @@ const en = {
   hero: {
     titleA: "Never miss what matters",
     titleB: "in your field",
-    sub: "We follow hundreds of sources around the world. Only the news that affects your work reaches you on Telegram, short and clear.",
+    sub: "We pick what matters from hundreds of sources and send it to your Telegram, short and clear.",
     fieldsLabel: "Fields",
     andMore: "and more",
     open: "open",
@@ -147,6 +147,8 @@ const en = {
       { q: "Does the subscription renew automatically?", a: "No. The bot reminds you 3 days before it ends. If you don't renew, you simply leave the channel. Nothing else happens." },
     ],
   },
+  features: { title: "What Stepolog can do", sub: "Each one in detail: what it does, how it works and who it's for." },
+  page: { home: "Home", shortAnswer: "Short answer", more: "Learn more", faq: "Questions and answers", notFound: "Didn't find an answer?", ask: "Ask the bot", other: "Other features", sample: "sample post", openNote: "Start free · no sign-up needed", soonNote: "Join the waitlist for now · free" },
   footer: { sections: "Sections", contact: "Contact", tagline: "Never miss what matters in your field." },
   final: { pre: "Be the ", hl: "first", post: " to know what matters in your field", cta: "Start free", rights: "© 2026 Stepolog" },
 };

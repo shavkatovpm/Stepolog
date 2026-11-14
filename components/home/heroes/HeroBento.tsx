@@ -36,16 +36,16 @@ export default function HeroBento() {
     <section className="flex min-h-[calc(100svh-4rem)] items-center bg-[#1c1c1c]">
       <div className="mx-auto grid w-full max-w-[1160px] gap-3 px-5 py-10 md:grid-cols-4 md:py-14">
         {/* Sarlavha va soha tanlash */}
-        <div className={`${tile} anim-rise flex flex-col justify-between p-7 md:col-span-2 md:row-span-2 md:p-10`}>
+        <div className={`${tile} anim-rise flex flex-col justify-between p-6 md:col-span-2 md:row-span-2 md:p-10`}>
           <LogoMark size={28} />
-          <div className="mt-14">
-            <h1 className="text-balance text-[36px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[50px]">
+          <div className="mt-8 md:mt-14">
+            <h1 className="text-balance text-[28px] font-semibold leading-[1.12] tracking-[-0.03em] sm:text-[34px] md:text-[50px] md:leading-[1.06] md:tracking-[-0.035em]">
               {t.hero.titleA} <span className="text-white/40">{t.hero.titleB}</span>
             </h1>
-            <p className="mt-5 max-w-[460px] text-[17px] leading-[1.6] text-white/60">
+            <p className="mt-4 max-w-[440px] text-[15.5px] leading-[1.6] text-white/60 md:mt-5 md:text-[17px]">
               {t.hero.sub}
             </p>
-            <div className="mt-8">
+            <div className="mt-7 md:mt-8">
               <p className="text-[13px] text-white/40">{t.hero.fieldsLabel}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {fields.map((x, i) => (
@@ -121,7 +121,7 @@ export default function HeroBento() {
           style={{ background: Y, animationDelay: "240ms" }}
         >
           <span className="text-[13px] font-medium text-black/60">@stepologbot</span>
-          <span className="mt-10 flex items-end justify-between gap-3 text-[24px] font-semibold leading-[1.1] tracking-[-0.02em]">
+          <span className="mt-6 flex items-end justify-between gap-3 md:mt-10 text-[24px] font-semibold leading-[1.1] tracking-[-0.02em]">
             <span className="max-w-[140px]">{t.hero.cta}</span>
             <span className="text-[32px] transition-transform group-hover:translate-x-1">→</span>
           </span>

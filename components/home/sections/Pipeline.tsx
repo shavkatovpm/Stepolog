@@ -24,9 +24,9 @@ export default function Pipeline() {
 
   return (
     <section id="jarayon" className="scroll-mt-16">
-      <div ref={ref} className="mx-auto max-w-[1160px] px-5 py-24 md:py-32">
+      <div ref={ref} className="mx-auto max-w-[1160px] px-5 py-16 md:py-32">
         <div className={`reveal ${inView ? "is-in" : ""} grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-end`}>
-          <h2 className="text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[48px]">
+          <h2 className="text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.035em] md:text-[48px]">
             {t.pipeline.titleA} <span style={{ color: Y }}>{t.pipeline.titleB}</span>
           </h2>
           <p className="max-w-[400px] text-[16px] leading-[1.6] text-white/55 md:justify-self-end">

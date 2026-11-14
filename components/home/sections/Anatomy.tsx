@@ -31,7 +31,7 @@ export default function Anatomy() {
       <div className="mx-auto grid max-w-[1160px] gap-14 px-5 py-24 md:grid-cols-[1fr_1fr] md:items-center md:gap-20 md:py-32">
         <Reveal>
           <p className="text-[14px] font-medium text-black/50">{t.anatomy.kicker}</p>
-          <h2 className="mt-4 text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[48px]">
+          <h2 className="mt-4 text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.035em] md:text-[48px]">
             {t.anatomy.title}
           </h2>
           <div className="mt-12 border-t border-black/15">

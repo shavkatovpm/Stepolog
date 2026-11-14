@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FlagGB, FlagRU, FlagUZ } from "@/components/Flags";
 import { useDict } from "./i18n";
+import { useAltLinks } from "./AltLinks";
 
 const langs = [
   { code: "en", short: "EN", name: "English", href: "/", Flag: FlagGB },
@@ -14,6 +15,7 @@ const flagCls = "h-[14px] w-[20px] shrink-0 overflow-hidden rounded-[3px] ring-1
 
 export default function LangSwitcher() {
   const t = useDict();
+  const alt = useAltLinks();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const current = langs.find((l) => l.code === t.locale)!;
@@ -60,7 +62,7 @@ export default function LangSwitcher() {
           return (
             <li key={l.code} role="option" aria-selected={on}>
               <a
-                href={l.href}
+                href={alt ? alt[l.code] : l.href}
                 hrefLang={l.code}
                 className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-[14px] transition-colors ${on ? "bg-white/[0.08] text-white" : "text-white/70 hover:bg-white/[0.05] hover:text-white"}`}
               >

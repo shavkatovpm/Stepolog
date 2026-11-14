@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Y } from "@/components/home/data";
+import { useDict } from "@/components/home/i18n";
 import { useSteps } from "./shared";
 
 // Tarjima: inglizcha matnda muhim gaplar belgilanadi → o'zbekcha post yig'iladi
@@ -27,7 +28,14 @@ function Num({ n }: { n: number }) {
   );
 }
 
+const T = {
+  uz: { src: "1 840 so'z · ~9 daqiqa", out: "62 so'z · ~30 soniya" },
+  en: { src: "1,840 words · ~9 min", out: "62 words · ~30 sec · in Uzbek" },
+  ru: { src: "1 840 слов · ~9 мин", out: "62 слова · ~30 сек · на узбекском" },
+};
+
 export default function TranslateVisual() {
+  const t = T[useDict().locale];
   const [step] = useSteps(TIMES);
 
   return (
@@ -36,7 +44,7 @@ export default function TranslateVisual() {
       <div className="rounded-2xl bg-[#f6f5f1] p-5 text-[#2a2a2a] shadow-[0_30px_80px_-30px_rgba(0,0,0,.8)] md:mr-16">
         <div className="flex items-center justify-between text-[11.5px] text-black/45">
           <span>blog.google · EN</span>
-          <span>1 840 so&apos;z · ~9 daqiqa</span>
+          <span>{t.src}</span>
         </div>
         <p className="mt-3 text-[16px] font-semibold leading-snug text-black">Introducing channel-level reporting for Performance Max</p>
         <p className="mt-2.5 text-[13px] leading-[1.65] text-black/55">
@@ -55,7 +63,7 @@ export default function TranslateVisual() {
       >
         <div className="flex items-center justify-between text-[11.5px] text-white/45">
           <span style={{ color: Y }}>Stepolog · UZ</span>
-          <span>62 so&apos;z · ~30 soniya</span>
+          <span>{t.out}</span>
         </div>
         <p className="mt-3 text-[14.5px] font-semibold leading-snug">
           <Num n={1} />

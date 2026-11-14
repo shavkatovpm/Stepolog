@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
-import { landingLinks } from "@/content/landing/links";
+import { landingLinks, landingPath } from "@/content/landing/links";
 import { BOT, Y } from "../data";
 import { useDict } from "../i18n";
 import { Reveal } from "../ui";
@@ -10,7 +10,6 @@ import { Reveal } from "../ui";
 // Yakun: katta tipografiya va ustunli footer
 export default function FinalCta() {
   const t = useDict();
-  const uz = t.locale === "uz";
   const sections = [
     { href: `${t.path}#post`, label: t.nav.post },
     { href: `${t.path}#jarayon`, label: t.nav.flow },
@@ -24,9 +23,9 @@ export default function FinalCta() {
 
   return (
     <footer className="border-t border-white/[0.08]">
-      <div className="mx-auto max-w-[1160px] px-5 pb-10 pt-24 md:pt-32">
+      <div className="mx-auto max-w-[1160px] px-5 pb-10 pt-16 md:pt-32">
         <Reveal>
-          <p className="max-w-[900px] text-balance text-[40px] font-semibold leading-[1.02] tracking-[-0.045em] md:text-[80px]">
+          <p className="max-w-[900px] text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.04em] md:text-[80px] md:leading-[1.02]">
             {t.final.pre}
             <span style={{ color: Y }}>{t.final.hl}</span>
             {t.final.post}
@@ -36,19 +35,19 @@ export default function FinalCta() {
           </a>
         </Reveal>
 
-        <div className={`mt-28 grid gap-12 border-t border-white/[0.08] pt-12 sm:grid-cols-2 ${uz ? "lg:grid-cols-[1.2fr_1.3fr_1fr_0.8fr]" : "lg:grid-cols-[1.4fr_1fr_0.8fr]"}`}>
-          <div>
+        <div className={`mt-20 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/[0.08] pt-12 md:mt-28 lg:grid-cols-[1.2fr_1.3fr_1fr_0.8fr]`}>
+          <div className="col-span-2 lg:col-span-1">
             <Logo />
             <p className="mt-4 max-w-[260px] text-[14px] leading-[1.6] text-white/45">{t.footer.tagline}</p>
           </div>
 
-          {uz && (
-            <div>
+          {(
+            <div className="col-span-2 lg:col-span-1">
               <p className={head}>{t.nav.features}</p>
               <ul className="mt-4 space-y-2.5">
-                {landingLinks.map((l) => (
+                {landingLinks[t.locale].map((l) => (
                   <li key={l.slug}>
-                    <Link href={`/uz/${l.slug}`} className={link}>
+                    <Link href={landingPath(t.locale, l.slug)} className={link}>
                       {l.nav}
                     </Link>
                   </li>

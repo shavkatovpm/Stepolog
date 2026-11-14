@@ -18,13 +18,13 @@ export default function DayRuler() {
 
   return (
     <section id="kun" className="scroll-mt-16 border-t border-white/[0.08]">
-      <div ref={ref} className="mx-auto max-w-[1160px] px-5 py-24 md:py-32">
+      <div ref={ref} className="mx-auto max-w-[1160px] px-5 py-16 md:py-32">
         <div className={`reveal ${inView ? "is-in" : ""}`}>
-          <h2 className="max-w-[720px] text-balance text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] md:text-[48px]">{t.day.title}</h2>
+          <h2 className="max-w-[720px] text-balance text-[30px] font-semibold leading-[1.08] tracking-[-0.035em] md:text-[48px]">{t.day.title}</h2>
           <p className="mt-5 max-w-[520px] text-[16px] leading-[1.6] text-white/55">{t.day.sub}</p>
         </div>
 
-        <div className="mt-16">
+        <div className="mt-10 md:mt-16">
           <div className="hidden grid-cols-[240px_1fr] gap-10 pb-3 md:grid">
             <span />
             <div className="relative h-4 text-[11.5px] tabular-nums text-white/35">

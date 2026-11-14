@@ -13,7 +13,7 @@ const uz: Dict = {
   hero: {
     titleA: "Sohangiz bo'yicha muhim yangiliklarni",
     titleB: "o'tkazib yubormang",
-    sub: "Dunyodagi yuzlab saytlarni biz kuzatamiz. Telegram'ga faqat ishingizga ta'sir qiladigan yangiliklar o'zbek tilida, qisqa va tushunarli bo'lib keladi.",
+    sub: "Yuzlab xorijiy saytlardan muhimini saralab, Telegram'ingizga o'zbek tilida qisqa qilib yuboramiz.",
     fieldsLabel: "Sohalar",
     andMore: "va boshqalar",
     open: "ochiq",
@@ -148,6 +148,8 @@ const uz: Dict = {
       { q: "Obuna o'z-o'zidan yangilanadimi?", a: "Yo'q. Muddat tugashidan 3 kun oldin bot eslatadi. Uzaytirmasangiz, kanaldan chiqasiz, boshqa hech narsa bo'lmaydi." },
     ],
   },
+  features: { title: "Stepolog imkoniyatlari", sub: "Har biri haqida batafsil: nima qiladi, qanday ishlaydi va kimga kerak." },
+  page: { home: "Bosh sahifa", shortAnswer: "Qisqa javob", more: "Batafsil", faq: "Savol-javob", notFound: "Javob topmadingizmi?", ask: "Botga yozing", other: "Boshqa imkoniyatlar", sample: "namuna post", openNote: "Bepul boshlash · ro'yxatdan o'tish shart emas", soonNote: "Hozircha navbatga yozilish mumkin · bepul" },
   footer: { sections: "Bo'limlar", contact: "Aloqa", tagline: "Sohangiz bo'yicha muhim yangiliklar, o'zbek tilida." },
   final: { pre: "Sohangizdagi muhim yangiliklarni ", hl: "birinchilardan", post: " biling", cta: "Bepul boshlash", rights: "© 2026 Stepolog" },
 };
