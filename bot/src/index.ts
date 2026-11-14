@@ -5,6 +5,7 @@ import { registerUsers } from "./users.ts";
 import { fetchAll } from "./fetcher.ts";
 import { scorePending, writeDrafts } from "./pipeline.ts";
 import { maybeSendDigest } from "./digest.ts";
+import { autoPublish } from "./publisher.ts";
 
 const bot = new Bot(config.botToken);
 registerAdmin(bot);
@@ -28,6 +29,7 @@ async function cycle() {
 }
 
 setInterval(cycle, config.fetchEveryMin * 60_000);
+setInterval(() => autoPublish(bot).catch((e) => console.error("[publish]", e)), 5 * 60_000);
 setInterval(() => maybeSendDigest(bot).catch((e) => console.error("[digest]", e)), 5 * 60_000);
 void cycle();
 

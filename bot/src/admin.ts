@@ -3,6 +3,7 @@ import { InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config } from "./config.ts";
 import { esc } from "./format.ts";
+import { channelFor, isAuto, publishPost } from "./publisher.ts";
 
 export const draftKeyboard = (id: number) =>
   new InlineKeyboard().text("✅ Chiqarish", `pub:${id}`).text("❌ Kerak emas", `rej:${id}`);
@@ -11,11 +12,6 @@ type PostRow = { id: number; field: string; text: string; status: string; admin_
 
 const getPost = async (id: number) =>
   (await db.query<PostRow>("SELECT id, field, text, status, admin_msg_id FROM posts WHERE id = $1", [id])).rows[0];
-
-// Kanal: .env da berilgan bo'lsa o'sha, bo'lmasa bot admin qilingan kanal (kv da saqlanadi)
-export async function channelFor(field: string) {
-  return config.channels[field] || Number(await kvGet(`channel:${field}`)) || 0;
-}
 
 export function registerAdmin(bot: Bot) {
   // Egasi botni kanalga admin qilsa, kanal avtomatik ulanadi (hozircha bitta soha: marketing)
@@ -41,17 +37,29 @@ export function registerAdmin(bot: Bot) {
   admin.callbackQuery(/^pub:(\d+)$/, async (ctx) => {
     const post = await getPost(Number(ctx.match[1]));
     if (!post || post.status !== "draft") return ctx.answerCallbackQuery("Allaqachon ko'rib chiqilgan");
-    const channel = await channelFor(post.field);
-    let channelMsgId: number | null = null;
-    if (channel) {
-      const msg = await ctx.api.sendMessage(channel, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
-      channelMsgId = msg.message_id;
+    const toChannel = await publishPost(ctx.api, post);
+    await ctx.answerCallbackQuery(toChannel ? "Kanalga chiqdi" : "Tasdiqlandi (kanal ulanmagan)");
+  });
+
+  admin.callbackQuery(/^del:(\d+)$/, async (ctx) => {
+    const { rows: [p] } = await db.query<{ field: string; channel_msg_id: string | null }>(
+      "SELECT field, channel_msg_id FROM posts WHERE id = $1", [Number(ctx.match[1])]);
+    if (p?.channel_msg_id) {
+      await ctx.api.deleteMessage(await channelFor(p.field), Number(p.channel_msg_id)).catch(() => {});
     }
-    await db.query("UPDATE posts SET status = 'published', channel_msg_id = $2, published_at = now() WHERE id = $1", [post.id, channelMsgId]);
-    await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-    const note = channel ? "kanalga chiqdi" : "tasdiqlandi (kanal hali ulanmagan)";
-    await ctx.reply(`✅ #${post.id} ${note}`, { reply_parameters: { message_id: ctx.callbackQuery.message!.message_id } });
-    await ctx.answerCallbackQuery("Tasdiqlandi");
+    await db.query("UPDATE posts SET status = 'deleted' WHERE id = $1", [Number(ctx.match[1])]);
+    await ctx.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
+    await ctx.answerCallbackQuery("Kanaldan o'chirildi");
+  });
+
+  admin.command("avto", async (ctx) => {
+    await kvSet("mode", "auto");
+    await ctx.reply("Avtomatik rejim: postlar o'zi kanalga chiqadi (oralig'i kamida 40 daqiqa, kuniga 8 tagacha). Chiqishidan oldin ❌ bilan to'xtatishingiz mumkin.");
+  });
+
+  admin.command("qolda", async (ctx) => {
+    await kvSet("mode", "manual");
+    await ctx.reply("Qo'lda rejim: postlar faqat ✅ bosganingizda chiqadi.");
   });
 
   admin.callbackQuery(/^rej:(\d+)$/, async (ctx) => {
@@ -96,7 +104,7 @@ export function registerAdmin(bot: Bot) {
         (SELECT count(*) FROM users WHERE NOT blocked) AS users,
         (SELECT count(*) FROM sources WHERE last_error IS NOT NULL) AS broken`);
     await ctx.reply(
-      `So'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
+      `Rejim: ${(await isAuto()) ? "avtomatik (/qolda)" : "qo'lda (/avto)"}\n\nSo'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
     );
   });
 }
