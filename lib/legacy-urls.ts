@@ -61,15 +61,15 @@ export type LegacyResult =
 export function matchLegacy(rawPath: string): LegacyResult {
   let path = rawPath.replace(/\/+$/, "") || "/";
 
-  // v1 da rus tili /ru prefiksi bilan edi. Yangi sayt hozircha faqat o'zbekcha.
-  if (path === "/ru") return { type: "redirect", to: "/" };
-  if (path.startsWith("/ru/")) path = path.slice(3);
+  // v1: o'zbekcha prefikssiz, ruscha /ru/... edi.
+  // v2: "/" inglizcha, "/uz" va "/ru" yangi sahifalar. Shuning uchun faqat aniq eski yo'llar ushlanadi.
+  const isRu = path.startsWith("/ru/");
+  if (isRu) path = path.slice(3);
 
-  if (LEGACY_REDIRECTS[path]) return { type: "redirect", to: LEGACY_REDIRECTS[path] };
+  if (LEGACY_REDIRECTS[path]) return { type: "redirect", to: isRu ? "/ru" : "/uz" };
   if (GONE_EXACT.has(path)) return { type: "gone" };
   if (GONE_PREFIXES.some((p) => path === p || path.startsWith(p + "/"))) {
     return { type: "gone" };
   }
-  if (rawPath.startsWith("/ru/")) return { type: "gone" };
   return null;
 }
