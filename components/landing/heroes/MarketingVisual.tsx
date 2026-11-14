@@ -32,9 +32,9 @@ const rows = {
   ],
 };
 const T = {
-  uz: { ch: "Stepolog · Marketing", today: "bugun 6 ta post", weekly: "Dushanba: haftalik xulosa", note: "har biri izoh bilan" },
-  en: { ch: "Stepolog · Marketing", today: "6 posts today", weekly: "Monday: weekly summary", note: "each with a note" },
-  ru: { ch: "Stepolog · Маркетинг", today: "сегодня 6 постов", weekly: "Понедельник: недельная сводка", note: "к каждому пояснение" },
+  uz: { ch: "Stepolog · Marketing", today: "bugun 6 ta post", weekly: "Dushanba: haftalik xulosa", note: "har biri manbasi bilan" },
+  en: { ch: "Stepolog · Marketing", today: "6 posts today", weekly: "Monday: weekly summary", note: "each with a source link" },
+  ru: { ch: "Stepolog · Маркетинг", today: "сегодня 6 постов", weekly: "Понедельник: недельная сводка", note: "к каждому ссылка на источник" },
 };
 
 export default function MarketingVisual() {

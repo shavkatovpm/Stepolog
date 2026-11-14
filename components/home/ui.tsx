@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Y } from "./data";
-import { useDict } from "./i18n";
 import type { Dict } from "./i18n/en";
 
-type Field = Pick<Dict["fields"][number], "title" | "body" | "why" | "source" | "views" | "time">;
+type Field = Pick<Dict["fields"][number], "title" | "body" | "source" | "views" | "time">;
 
 // Ko'rinishga kirganda paydo bo'ladi; inView ni bolalarga ham beradi
 export function useInView<T extends HTMLElement>(threshold = 0.2) {
@@ -62,10 +61,9 @@ export function Corners({ show = true, inset = -8 }: { show?: boolean; inset?: n
   );
 }
 
-export type PostPart = "title" | "why" | "source" | null;
+export type PostPart = "title" | "body" | "source" | null;
 
 export function TgPost({ p, focus = null }: { p: Field; focus?: PostPart }) {
-  const t = useDict();
   const part = (name: Exclude<PostPart, null>, children: ReactNode, cls = "") => (
     <div className={`relative transition-opacity duration-300 ${focus && focus !== name ? "opacity-30" : ""} ${cls}`}>
       {focus !== null && <Corners show={focus === name} inset={-7} />}
@@ -74,20 +72,8 @@ export function TgPost({ p, focus = null }: { p: Field; focus?: PostPart }) {
   );
   return (
     <div className="w-full rounded-[16px] rounded-bl-[4px] bg-[#2b2b2b] px-4 pb-2.5 pt-3.5 text-[15px] leading-[1.5] text-[#ececec]">
-      {part(
-        "title",
-        <>
-          <p className="font-semibold">{p.title}</p>
-          <p className="mt-2 text-[#d4d4d4]">{p.body}</p>
-        </>
-      )}
-      {part(
-        "why",
-        <p className="text-[#d4d4d4]">
-          <span className="font-semibold text-[#ececec]">{t.forYou}</span> {p.why}
-        </p>,
-        "mt-2.5"
-      )}
+      {part("title", <p className="font-semibold">{p.title}</p>)}
+      {part("body", <p className="text-[#d4d4d4]">{p.body}</p>, "mt-2")}
       {part(
         "source",
         <p className="text-[14px]" style={{ color: Y }}>

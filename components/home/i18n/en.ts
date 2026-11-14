@@ -21,7 +21,6 @@ const en = {
     published: "Published",
     cta: "Start free",
   },
-  forYou: "Why it matters:",
   fields: [
     {
       name: "Marketing",
@@ -30,7 +29,6 @@ const en = {
       views: "1.4K",
       title: "Google Ads opens channel-level reporting for Performance Max",
       body: "You can now see how ads perform on Search, YouTube and Discover separately. This data used to be hidden.",
-      why: "You will finally see which part of the budget isn't working.",
       source: "Google Ads Blog",
     },
     {
@@ -40,7 +38,6 @@ const en = {
       views: "2.1K",
       title: "ChatGPT now lets companies add a business profile",
       body: "Businesses can submit their name, services and contact details directly to ChatGPT.",
-      why: "Fill in your profile now so your brand shows up correctly in AI answers.",
       source: "OpenAI Blog",
     },
     {
@@ -50,7 +47,6 @@ const en = {
       views: "1.2K",
       title: "GitHub makes secret scanning free for private repositories",
       body: "The check that finds passwords and API keys left in code now works on every plan.",
-      why: "Small teams can catch leaked keys in their code automatically.",
       source: "GitHub Blog",
     },
     {
@@ -60,7 +56,6 @@ const en = {
       views: "860",
       title: "Figma adds a grid mode to auto layout",
       body: "Auto layout now supports column and row grids without plugins.",
-      why: "Build responsive layouts without calculating everything by hand.",
       source: "Figma Blog",
     },
     {
@@ -70,7 +65,6 @@ const en = {
       views: "1.7K",
       title: "Telegram updates revenue sharing rules for channels",
       body: "The minimum requirements for channels to receive a share of ad revenue have changed.",
-      why: "If you run a channel, recheck the new requirements for earning.",
       source: "Telegram Blog",
     },
   ],
@@ -78,8 +72,8 @@ const en = {
     kicker: "Post format",
     title: "Every post takes 30 seconds to read",
     parts: [
-      { title: "What happened", text: "The core of the news in 2-3 sentences. Terms explained, no filler." },
-      { title: "Why it matters", text: "What this changes in your work and what to do next." },
+      { title: "Headline", text: "One bold line that tells you what the news is about." },
+      { title: "What happened", text: "The core of the news in 2-4 short sentences. Terms explained, no filler." },
       { title: "Source", text: "A link to the original. One tap if you want to check." },
     ],
     channel: "Stepolog · Marketing",
@@ -94,7 +88,7 @@ const en = {
       { t: "08:02", title: "Published", text: "A new article appears on a foreign site." },
       { t: "08:04", title: "Picked up", text: "Collected with everything else published that hour." },
       { t: "08:06", title: "Filtered", text: "Duplicates, ads and hype are dropped." },
-      { t: "08:11", title: "Rewritten", text: "Short, clear and with a \"why it matters\" note." },
+      { t: "08:11", title: "Rewritten", text: "Short and clear, the main facts only." },
       { t: "08:15", title: "On Telegram", text: "You're reading it." },
     ],
   },
@@ -106,7 +100,7 @@ const en = {
     channel: {
       name: "Field channel",
       price: "49 000 UZS / month",
-      points: "Everything as it happens, each with a \"why it matters\" note, plus a weekly summary on Monday",
+      points: "Everything as it happens, plus a weekly summary on Monday",
       cta: "See pricing",
     },
   },

@@ -2,7 +2,7 @@
 // Har bir sahifa bitta qidiruv ehtiyojiga javob beradi.
 // Narx va raqamlar bosh sahifadagi bilan bir xil bo'lishi shart.
 
-export type LandingPost = { title: string; body: string; why: string; source: string; time: string; views: string };
+export type LandingPost = { title: string; body: string; source: string; time: string; views: string };
 
 export type LandingId = "bot" | "site" | "translate" | "marketing" | "ai" | "autopost";
 
@@ -35,7 +35,6 @@ export type Landing = {
 const marketingPost: LandingPost = {
   title: "Google Ads'da Performance Max uchun kanal hisobotlari ochildi",
   body: "Endi reklama Qidiruv, YouTube va Discover'da qanday ishlayotganini alohida ko'rish mumkin. Oldin bu ma'lumot yopiq edi.",
-  why: "Byudjetning qaysi qismi samarasiz ketayotganini endi aniq ko'rasiz.",
   source: "Google Ads Blog",
   time: "08:15",
   views: "1,4K",
@@ -60,7 +59,7 @@ const landings: Landing[] = [
     features: [
       { title: "Yangiliklarni saralaydi", text: "Kuniga yuzlab material ko'rib chiqiladi. Takroriy, reklama va shov-shuv maqsadidagilari tushib qoladi, sizga ishingizga ta'sir qiladiganlari yetib keladi." },
       { title: "O'zbek tilida yozadi", text: "Ingliz va rus tilidagi maqolalar so'zma-so'z tarjima qilinmaydi, mazmuni o'zbekcha qayta yoziladi. Atamalar tushuntiriladi." },
-      { title: "30 soniyada o'qiladi", text: "Har bir post uch qismdan iborat: nima bo'ldi, bu siz uchun nima degani va asl manba havolasi." },
+      { title: "30 soniyada o'qiladi", text: "Har bir post qisqa sarlavha, nima bo'lgani haqida 2-4 gap va asl manba havolasidan iborat." },
       { title: "Kechki dayjest yuboradi", text: "Bepul botda kun davomidagi eng muhim 1-2 yangilik kechqurun bitta xabarda keladi. Kun bo'yi bildirishnoma bezovta qilmaydi." },
       { title: "O'zingiz kuzatadigan saytni qo'shadi", text: "Kerakli sayt ro'yxatda bo'lmasa, havolasini botga yuborasiz. Undagi yangi maqolalar ham sizga keladi." },
       { title: "Muharrir tekshiradi", text: "Postlarni sun'iy intellekt tayyorlaydi, kanalga chiqishdan oldin muharrir har birini ko'rib chiqadi." },
@@ -83,7 +82,7 @@ const landings: Landing[] = [
     faq: [
       { q: "Telegram yangiliklar boti bepulmi?", a: "Ha. Bot bepul: kuniga eng muhim 1-2 yangilik kechki dayjestda keladi. Barcha yangiliklarni chiqishi bilan olish uchun soha kanaliga obuna bo'lish mumkin, narxi oyiga 49 000 so'm." },
       { q: "Bot qaysi sohalar bo'yicha yangilik yuboradi?", a: "Hozir Marketing yo'nalishi ishlaydi. Sun'iy intellekt, dasturlash, SMM, dizayn va biznes navbatda turibdi. Qaysi biri ko'proq so'ralsa, o'sha birinchi ochiladi." },
-      { q: "Oddiy RSS botdan farqi nima?", a: "RSS bot saytdagi hamma narsani asl tilida, saralamasdan yuboradi. Stepolog avval muhimini ajratadi, keyin uni o'zbek tilida qisqa qilib yozadi va bu yangilik ishingiz uchun nima degani ekanini qo'shadi." },
+      { q: "Oddiy RSS botdan farqi nima?", a: "RSS bot saytdagi hamma narsani asl tilida, saralamasdan yuboradi. Stepolog avval muhimini ajratadi, keyin uni o'zbek tilida qisqa qilib yozadi va asl manba havolasini qo'shadi." },
       { q: "Yangiliklar qayerdan olinadi?", a: "Har bir soha bo'yicha rasmiy bloglar va yirik nashrlardan. Har bir post ostida manba havolasi turadi." },
       { q: "Botni qanday to'xtatish mumkin?", a: "Botni istalgan vaqtda Telegram'da to'xtatish yoki o'chirib qo'yish mumkin. Bepul botda hech qanday to'lov yo'q." },
     ],
@@ -109,7 +108,7 @@ const landings: Landing[] = [
     features: [
       { title: "RSS bo'lmasa ham ishlaydi", text: "Yangi maqola saytning RSS lentasi, sitemap fayli yoki sahifadagi o'zgarishlar orqali topiladi." },
       { title: "Faqat yangi maqolalar", text: "Bir marta yuborilgan material qayta kelmaydi. Eski sahifalardagi kichik tahrirlar yangilik hisoblanmaydi." },
-      { title: "Qisqa mazmun", text: "Uzun maqolaning to'liq matni o'rniga 2-3 gapli mazmun va asl havola keladi." },
+      { title: "Qisqa mazmun", text: "Uzun maqolaning to'liq matni o'rniga 2-4 gapli mazmun va asl havola keladi." },
       { title: "Istalgan tildagi saytlar", text: "Ingliz, rus yoki boshqa tildagi saytlarning yangiliklari o'zbekcha mazmun bilan keladi." },
       { title: "Bir nechta sayt bir joyda", text: "Bir necha saytni qo'shib, ularning hammasini bitta Telegram chatida kuzatasiz." },
       { title: "Mavzu bo'yicha filtr", text: "Saytda turli mavzular bo'lsa, faqat sizni qiziqtirgan yo'nalishdagi maqolalarni olish mumkin." },
@@ -131,7 +130,7 @@ const landings: Landing[] = [
     ],
     faq: [
       { q: "Saytda RSS bo'lmasa ham yangiliklarni Telegram'ga olsa bo'ladimi?", a: "Ha. Stepolog yangi maqolani RSS lentasi, sitemap fayli yoki sahifadagi o'zgarishlar orqali topadi. Sizdan faqat sayt havolasi kerak." },
-      { q: "RSS botdan nimasi bilan farq qiladi?", a: "RSS bot maqolani asl tilida va to'liq yuboradi. Stepolog mazmunini o'zbek tilida 2-3 gapga qisqartiradi va asl havolani qoldiradi." },
+      { q: "RSS botdan nimasi bilan farq qiladi?", a: "RSS bot maqolani asl tilida va to'liq yuboradi. Stepolog mazmunini o'zbek tilida 2-4 gapga qisqartiradi va asl havolani qoldiradi." },
       { q: "Nechta sayt qo'shish mumkin?", a: "Bepul botda qo'shiladigan saytlar soni cheklangan. Ko'proq sayt kuzatish pullik tarifda bo'ladi." },
       { q: "Login talab qiladigan saytlar ishlaydimi?", a: "Yo'q. Faqat hamma uchun ochiq sahifalarni kuzatish mumkin." },
       { q: "Yangi maqola qanchalik tez keladi?", a: "Bot qo'shilgan saytlarni kun davomida muntazam tekshiradi. Yangi maqola chiqqanidan ko'p o'tmay xabar keladi." },
@@ -152,20 +151,20 @@ const landings: Landing[] = [
     h1: "Xorijiy yangiliklar o'zbek tilida, qisqa va tushunarli",
     lead: "Ingliz va rus tilidagi maqolalar so'zma-so'z emas, mazmuni bo'yicha qayta yoziladi.",
     answer:
-      "Stepolog ingliz va rus tilidagi xorijiy yangiliklarni o'zbek tiliga moslab qayta yozadigan Telegram bot. Har bir post 2-3 gapli mazmun, yangilikning ishingiz uchun ahamiyati va asl manba havolasidan iborat. Ingliz tilini bilmasangiz ham sohangizdagi o'zgarishlardan o'z vaqtida xabardor bo'lasiz.",
+      "Stepolog ingliz va rus tilidagi xorijiy yangiliklarni o'zbek tiliga moslab qayta yozadigan Telegram bot. Har bir post qisqa sarlavha, nima bo'lgani haqida 2-4 gap va asl manba havolasidan iborat. Ingliz tilini bilmasangiz ham sohangizdagi o'zgarishlardan o'z vaqtida xabardor bo'lasiz.",
     featuresTitle: "Oddiy tarjimadan farqi",
     features: [
       { title: "Tarjima emas, qayta yozish", text: "Matn o'zbek tilida tabiiy o'qiladigan qilib yoziladi. Ingliz tilidagi gap tuzilishi ko'chirilmaydi." },
       { title: "Atamalar tushuntiriladi", text: "CTR, CPC kabi atamalar birinchi uchraganda oddiy so'z bilan izohlanadi." },
       { title: "Bo'rttirishlarsiz", text: "Sarlavhadagi shov-shuvli so'zlar olib tashlanadi, faqat fakt qoladi." },
-      { title: "O'zbek bozoriga moslab", text: "Yangilik O'zbekistondagi ishingizga qanday ta'sir qilishi alohida yoziladi." },
+      { title: "O'zbekiston uchun saralangan", text: "Yangiliklar O'zbekistondagi o'quvchi uchun tanlanadi. Bu yerda ishlamaydigan platforma va xizmatlar haqidagilari tushib qoladi." },
       { title: "Asl manba doim yonida", text: "Tekshirmoqchi yoki to'liq o'qimoqchi bo'lsangiz, havola post ostida turadi." },
       { title: "Inson tekshiruvi", text: "Matnni sun'iy intellekt tayyorlaydi, muharrir ma'no to'g'ri berilganini tekshiradi." },
     ],
     stepsTitle: "Inglizcha maqoladan o'zbekcha postgacha",
     steps: [
       { title: "Asl maqola o'qiladi", text: "Xorijiy saytdagi to'liq matn olinadi, o'rtacha 1 500-2 000 so'z." },
-      { title: "Mohiyati ajratiladi", text: "Asosiy fakt, uning ahamiyati va amaliy xulosa topiladi." },
+      { title: "Mohiyati ajratiladi", text: "Asosiy faktlar olinadi, qolgani tashlab ketiladi." },
       { title: "O'zbekcha yoziladi", text: "Natija o'rtacha 60-80 so'zli, 30 soniyada o'qiladigan post." },
     ],
     postTitle: "Inglizcha maqoladan tayyorlangan post",
@@ -195,10 +194,10 @@ const landings: Landing[] = [
     keyword: "marketing yangiliklari bot",
     metaTitle: "Marketing yangiliklari o'zbek tilida, Telegram kanal | Stepolog",
     metaDescription:
-      "Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi o'zgarishlar o'zbek tilida, izoh bilan. Bepul botda kunlik dayjest, kanalda barcha yangiliklar.",
+      "Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi o'zgarishlar o'zbek tilida, qisqa postlarda. Bepul botda kunlik dayjest, kanalda barcha yangiliklar.",
     kicker: "Marketing kanali · ochiq",
     h1: "Marketing yangiliklari o'zbek tilida",
-    lead: "Google Ads, Meta, TikTok va Instagram o'zgarishlari har kuni, izoh bilan.",
+    lead: "Google Ads, Meta, TikTok va Instagram o'zgarishlari har kuni, qisqa va lo'nda.",
     answer:
       "Stepolog Marketing kanali Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi muhim o'zgarishlarni o'zbek tilida, kuniga o'rtacha 6 ta qisqa post qilib yetkazadi. Obuna oyiga 49 000 so'm. Bepul botda esa eng muhim 1-2 yangilik kechki dayjestda keladi.",
     featuresTitle: "Kanalda qaysi mavzular bor",
@@ -226,7 +225,7 @@ const landings: Landing[] = [
       { title: "Agentlik va biznes egalari", text: "Jamoa va mijozlar oldida sohadagi o'zgarishlardan xabardor bo'lish uchun." },
     ],
     faq: [
-      { q: "Marketing yangiliklarini o'zbek tilida qayerdan kuzatish mumkin?", a: "Stepolog Marketing kanalida. Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi muhim o'zgarishlar o'zbek tilida, manbasi va izohi bilan chiqadi." },
+      { q: "Marketing yangiliklarini o'zbek tilida qayerdan kuzatish mumkin?", a: "Stepolog Marketing kanalida. Google Ads, Meta, TikTok, Instagram va qidiruv tizimlaridagi muhim o'zgarishlar o'zbek tilida, manba havolasi bilan chiqadi." },
       { q: "Kanalda kuniga nechta post chiqadi?", a: "O'rtacha 6 ta. Faqat ishingizga ta'sir qiladigan yangiliklar chiqadi, shuning uchun son kundan kunga farq qilishi mumkin." },
       { q: "Obuna narxi qancha?", a: "Oyiga 49 000 so'm. 3 oyga olsangiz 5%, 6 oyga 10%, 1 yilga 15% arzon. Pul avtomatik yechilmaydi." },
       { q: "Instagram yoki Google Ads'da o'zgarish bo'lsa, qachon bilaman?", a: "Kanalda yangilik manbada chiqqanidan keyin tez orada joylanadi. Bepul botda esa shu kunning kechki dayjestida keladi." },
@@ -243,7 +242,7 @@ const landings: Landing[] = [
     keyword: "sun'iy intellekt yangiliklari telegram bot",
     metaTitle: "Sun'iy intellekt yangiliklari o'zbek tilida | Stepolog",
     metaDescription:
-      "ChatGPT, Gemini va boshqa AI vositalaridagi amaliy yangiliklar o'zbek tilida, qisqa va izoh bilan. Kanal tez orada ochiladi, navbatga yoziling.",
+      "ChatGPT, Gemini va boshqa AI vositalaridagi amaliy yangiliklar o'zbek tilida, qisqa va tushunarli. Kanal tez orada ochiladi, navbatga yoziling.",
     kicker: "Sun'iy intellekt kanali · tez orada",
     h1: "Sun'iy intellekt yangiliklari o'zbek tilida",
     lead: "AI vositalaridagi amaliy yangiliklar, o'zbekcha va qisqa.",
@@ -252,7 +251,7 @@ const landings: Landing[] = [
     featuresTitle: "Kanalda nimalar bo'ladi",
     features: [
       { title: "Yangi vositalar va funksiyalar", text: "Mashhur AI xizmatlaridagi yangi imkoniyatlar va ular nimaga yarashi." },
-      { title: "Amaliy qo'llash", text: "Har bir yangilik ostida undan ishda qanday foydalanish mumkinligi." },
+      { title: "Yangi model versiyalari", text: "ChatGPT, Gemini va boshqa modellarning yangi versiyalarida nima o'zgargani." },
       { title: "Narx va cheklovlar", text: "Tariflar, limitlar va mintaqaviy cheklovlardagi o'zgarishlar." },
       { title: "Biznesga ta'siri", text: "AI javoblarida brend ko'rinishi kabi marketing va biznesga tegishli yangiliklar." },
       { title: "Shov-shuvsiz", text: "Har kuni chiqadigan baland e'lonlardan faqat haqiqiy o'zgarishlar qoladi." },
@@ -268,7 +267,6 @@ const landings: Landing[] = [
     post: {
       title: "ChatGPT'da kompaniyalar o'z biznes profilini qo'sha oladigan bo'ldi",
       body: "Bizneslar endi nomi, xizmatlari va aloqa ma'lumotlarini to'g'ridan-to'g'ri ChatGPT'ga taqdim eta oladi.",
-      why: "Brendingiz AI javoblarida to'g'ri ko'rinishi uchun profilni hozirdan to'ldiring.",
       source: "OpenAI Blog",
       time: "10:40",
       views: "namuna",

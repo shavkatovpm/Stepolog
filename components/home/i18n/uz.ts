@@ -22,7 +22,6 @@ const uz: Dict = {
     published: "Kanalga chiqdi",
     cta: "Bepul boshlash",
   },
-  forYou: "Siz uchun:",
   fields: [
     {
       name: "Marketing",
@@ -31,7 +30,6 @@ const uz: Dict = {
       views: "1,4K",
       title: "Google Ads'da Performance Max uchun kanal hisobotlari ochildi",
       body: "Endi reklama Qidiruv, YouTube va Discover'da qanday ishlayotganini alohida ko'rish mumkin. Oldin bu ma'lumot yopiq edi.",
-      why: "Byudjetning qaysi qismi samarasiz ketayotganini endi aniq ko'rasiz.",
       source: "Google Ads Blog",
     },
     {
@@ -41,7 +39,6 @@ const uz: Dict = {
       views: "2,1K",
       title: "ChatGPT'da kompaniyalar o'z biznes profilini qo'sha oladigan bo'ldi",
       body: "Bizneslar endi nomi, xizmatlari va aloqa ma'lumotlarini to'g'ridan-to'g'ri ChatGPT'ga taqdim eta oladi.",
-      why: "Brendingiz AI javoblarida to'g'ri ko'rinishi uchun profilni hozirdan to'ldiring.",
       source: "OpenAI Blog",
     },
     {
@@ -51,7 +48,6 @@ const uz: Dict = {
       views: "1,2K",
       title: "GitHub xususiy repozitoriyalar uchun maxfiy kalitlarni tekshirishni bepul qildi",
       body: "Kod ichida qolib ketgan parol va API kalitlarni topadigan tekshiruv endi barcha tariflarda ishlaydi.",
-      why: "Kichik jamoalar ham kod ichidagi parol va kalitlarni avtomatik topa oladi.",
       source: "GitHub Blog",
     },
     {
@@ -61,7 +57,6 @@ const uz: Dict = {
       views: "860",
       title: "Figma'da auto layout uchun grid rejimi qo'shildi",
       body: "Auto layout endi ustun va qatorlarga bo'lingan to'r bilan ishlaydi, plaginsiz.",
-      why: "Moslashuvchan sahifalarni qo'lda hisoblamasdan yig'asiz.",
       source: "Figma Blog",
     },
     {
@@ -71,7 +66,6 @@ const uz: Dict = {
       views: "1,7K",
       title: "Telegram kanallar uchun reklama daromadini bo'lish shartlari o'zgardi",
       body: "Reklama daromadidan ulush olish uchun kanalga qo'yiladigan minimal talablar yangilandi.",
-      why: "Kanalingiz bo'lsa, daromad olish uchun yangi talablarni tekshirib chiqing.",
       source: "Telegram Blog",
     },
   ],
@@ -79,8 +73,8 @@ const uz: Dict = {
     kicker: "Post tuzilishi",
     title: "Har bir post 30 soniyada o'qiladi",
     parts: [
-      { title: "Nima bo'ldi", text: "Yangilikning mohiyati 2-3 gapda. Atamalar tushuntirilgan, ortiqcha kirish yo'q." },
-      { title: "Siz uchun", text: "Bu o'zgarish ishingizda nimani o'zgartiradi va endi nima qilish kerak." },
+      { title: "Sarlavha", text: "Yangilik nima haqida ekanini bir qatorda aytadi." },
+      { title: "Nima bo'ldi", text: "Yangilikning mohiyati 2-4 ta qisqa gapda. Atamalar tushuntirilgan, ortiqcha kirish yo'q." },
       { title: "Manba", text: "Asl maqolaga havola. Tekshirmoqchi bo'lsangiz, bir bosishda." },
     ],
     channel: "Stepolog · Marketing",
@@ -95,7 +89,7 @@ const uz: Dict = {
       { t: "08:02", title: "Manbada chiqdi", text: "Xorijiy saytda yangi maqola paydo bo'ldi." },
       { t: "08:04", title: "Topildi", text: "Shu soatda chiqqan boshqa materiallar bilan birga olindi." },
       { t: "08:06", title: "Saralandi", text: "Takroriy, reklama va shov-shuv materiallari tushib qoldi." },
-      { t: "08:11", title: "Qayta yozildi", text: "O'zbek tilida, qisqa va \"siz uchun\" izohi bilan." },
+      { t: "08:11", title: "Qayta yozildi", text: "O'zbek tilida, qisqa va faqat asosiy faktlar bilan." },
       { t: "08:15", title: "Telegram'da", text: "Siz o'qiyapsiz." },
     ],
   },
@@ -107,7 +101,7 @@ const uz: Dict = {
     channel: {
       name: "Soha kanali",
       price: "49 000 so'm / oy",
-      points: "Hammasi chiqishi bilan, har birida \"siz uchun\" izohi, dushanba kuni haftalik xulosa",
+      points: "Hammasi chiqishi bilan, dushanba kuni haftalik xulosa",
       cta: "Narxlarni ko'rish",
     },
   },

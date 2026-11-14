@@ -7,7 +7,7 @@ import { useDict } from "../i18n";
 import { Reveal, TgPost, type PostPart } from "../ui";
 
 // Post tuzilishi: och fon, chapda qatorlar, o'ngda post
-const ids: Exclude<PostPart, null>[] = ["title", "why", "source"];
+const ids: Exclude<PostPart, null>[] = ["title", "body", "source"];
 
 export default function Anatomy() {
   const t = useDict();

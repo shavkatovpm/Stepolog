@@ -49,8 +49,8 @@ export default function TranslateVisual() {
         <p className="mt-3 text-[16px] font-semibold leading-snug text-black">Introducing channel-level reporting for Performance Max</p>
         <p className="mt-2.5 text-[13px] leading-[1.65] text-black/55">
           Over the past year, we&apos;ve heard from many of you that understanding where your ads run is critical.{" "}
-          <Hl on={step >= 1} n={1}>Advertisers can now see performance by channel, including Search, YouTube and Discover.</Hl> The report is available in
-          the Insights tab. <Hl on={step >= 2} n={2}>It helps identify which channels may need budget adjustments.</Hl> Learn more in the{" "}
+          <Hl on={step >= 1} n={1}>Advertisers can now see performance by channel, including Search, YouTube and Discover.</Hl> <Hl on={step >= 2} n={2}>The report is available in
+          the Insights tab.</Hl> It helps identify which channels may need budget adjustments. Learn more in the{" "}
           <Hl on={step >= 3} n={3}>Help Center</Hl>.
         </p>
       </div>
@@ -71,7 +71,7 @@ export default function TranslateVisual() {
         </p>
         <p className={`mt-2 text-[13.5px] leading-[1.55] text-white/70 transition-opacity duration-500 ${step >= 5 ? "opacity-100" : "opacity-0"}`}>
           <Num n={2} />
-          <span className="font-semibold text-white">Siz uchun:</span> byudjetning qaysi qismi samarasiz ketayotganini endi aniq ko&apos;rasiz.
+          Reklama Qidiruv, YouTube va Discover&apos;da qanday ishlayotganini endi alohida ko&apos;rish mumkin. Hisobot Insights bo&apos;limida.
         </p>
         <p className={`mt-2 text-[13px] transition-opacity duration-500 ${step >= 6 ? "opacity-100" : "opacity-0"}`} style={{ color: Y }}>
           <Num n={3} />

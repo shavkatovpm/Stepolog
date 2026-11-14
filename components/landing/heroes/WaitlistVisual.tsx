@@ -8,30 +8,30 @@ import { TgWindow } from "./shared";
 // AI kanali (tez orada): xira post ustida navbatga yozilish
 const T = {
   uz: {
-    title: "Stepolog · Sun'iy intellekt", sub: "kanal tez orada ochiladi", forYou: "Siz uchun:", soon: "Tez orada",
+    title: "Stepolog · Sun'iy intellekt", sub: "kanal tez orada ochiladi", soon: "Tez orada",
     head: "Kanal ochilganda birinchilardan bilasiz", joined: "✓ Navbatdasiz · botda tasdiqlang", btn: "Menga kerak",
     posts: [
-      { t: "ChatGPT'da kompaniyalar o'z biznes profilini qo'sha oladigan bo'ldi", w: "Brendingiz AI javoblarida to'g'ri ko'rinishi uchun profilni hozirdan to'ldiring." },
-      { t: "Gemini Google Sheets ichida jadval tahlilini avtomatlashtirdi", w: "Hisobotlarni qo'lda yig'ishga ketadigan vaqt qisqaradi." },
-      { t: "Yangi rasm modeli matnli bannerlarni xatosiz chiza boshladi", w: "Oddiy reklama bannerlarini dizaynersiz tayyorlash osonlashadi." },
+      { t: "ChatGPT'da kompaniyalar o'z biznes profilini qo'sha oladigan bo'ldi", b: "Bizneslar endi nomi, xizmatlari va aloqa ma'lumotlarini to'g'ridan-to'g'ri ChatGPT'ga taqdim eta oladi." },
+      { t: "Gemini Google Sheets ichida jadval tahlilini avtomatlashtirdi", b: "Gemini endi jadvaldagi ma'lumotlarni o'zi tahlil qilib, xulosa va grafik tayyorlab beradi." },
+      { t: "Yangi rasm modeli matnli bannerlarni xatosiz chiza boshladi", b: "Model rasm ichidagi yozuvlarni imlo xatolarisiz va aniq o'qiladigan qilib chizadi." },
     ],
   },
   en: {
-    title: "Stepolog · AI", sub: "channel opening soon", forYou: "Why it matters:", soon: "Coming soon",
+    title: "Stepolog · AI", sub: "channel opening soon", soon: "Coming soon",
     head: "Be the first to know when the channel opens", joined: "✓ You're on the list · confirm in the bot", btn: "I need this",
     posts: [
-      { t: "ChatGPT now lets companies add a business profile", w: "Fill it in now so your brand shows up correctly in AI answers." },
-      { t: "Gemini automates spreadsheet analysis in Google Sheets", w: "Less time spent building reports by hand." },
-      { t: "A new image model renders text in banners without errors", w: "Simple ad banners get easier to make without a designer." },
+      { t: "ChatGPT now lets companies add a business profile", b: "Businesses can now submit their name, services and contact details directly to ChatGPT." },
+      { t: "Gemini automates spreadsheet analysis in Google Sheets", b: "Gemini can now analyze the data in a sheet and build summaries and charts on its own." },
+      { t: "A new image model renders text in banners without errors", b: "The model draws text inside images with correct spelling and clear lettering." },
     ],
   },
   ru: {
-    title: "Stepolog · ИИ", sub: "канал скоро откроется", forYou: "Для вас:", soon: "Скоро",
+    title: "Stepolog · ИИ", sub: "канал скоро откроется", soon: "Скоро",
     head: "Узнайте первыми, когда канал откроется", joined: "✓ Вы в списке · подтвердите в боте", btn: "Мне нужно",
     posts: [
-      { t: "В ChatGPT компании могут добавить бизнес-профиль", w: "Заполните его сейчас, чтобы бренд правильно отображался в ответах ИИ." },
-      { t: "Gemini автоматизировал анализ таблиц в Google Sheets", w: "Меньше времени на ручную сборку отчётов." },
-      { t: "Новая модель изображений пишет текст на баннерах без ошибок", w: "Простые рекламные баннеры проще делать без дизайнера." },
+      { t: "В ChatGPT компании могут добавить бизнес-профиль", b: "Бизнес теперь может передать название, услуги и контакты напрямую в ChatGPT." },
+      { t: "Gemini автоматизировал анализ таблиц в Google Sheets", b: "Gemini теперь сам анализирует данные в таблице и готовит выводы и графики." },
+      { t: "Новая модель изображений пишет текст на баннерах без ошибок", b: "Модель рисует надписи на изображениях разборчиво и без орфографических ошибок." },
     ],
   },
 };
@@ -47,9 +47,7 @@ export default function WaitlistVisual() {
           {t.posts.map((p) => (
             <div key={p.t} className="rounded-[16px] rounded-bl-[4px] bg-[#262626] px-3.5 py-3 text-[14px] leading-[1.5]">
               <p className="font-semibold">{p.t}</p>
-              <p className="mt-1.5 text-white/60">
-                <span className="font-semibold text-white/80">{t.forYou}</span> {p.w}
-              </p>
+              <p className="mt-1.5 text-white/60">{p.b}</p>
             </div>
           ))}
         </div>

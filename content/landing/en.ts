@@ -7,7 +7,6 @@ import type { Landing } from "./uz";
 const marketingPost = {
   title: "Google Ads opens channel reporting for Performance Max",
   body: "You can now see how your ads perform on Search, YouTube and Discover separately. This data used to be hidden.",
-  why: "You can now see exactly which part of your budget is being wasted.",
   source: "Google Ads Blog",
   time: "08:15",
   views: "1.4K",
@@ -32,7 +31,7 @@ const landings: Landing[] = [
     features: [
       { title: "Filters the news", text: "Hundreds of articles are reviewed every day. Duplicates, ads and hype are dropped, and only the stories that affect your work reach you." },
       { title: "Writes in Uzbek", text: "English and Russian articles are not translated word for word. Their meaning is rewritten in Uzbek, and terms are explained." },
-      { title: "Takes 30 seconds to read", text: "Every post has three parts: what happened, what it means for you, and a link to the original source." },
+      { title: "Takes 30 seconds to read", text: "Every post has a short headline, 2-4 sentences on what happened, and a link to the original source." },
       { title: "Sends an evening digest", text: "The free bot sends the 1-2 most important stories of the day in a single message at 20:00. No notifications bothering you all day." },
       { title: "Adds the sites you follow", text: "If a site you need isn't on the list, send its link to the bot. New articles from it will reach you too." },
       { title: "An editor reviews every post", text: "Posts are prepared by AI, and an editor reviews each one before it goes out." },
@@ -55,7 +54,7 @@ const landings: Landing[] = [
     faq: [
       { q: "Is the Telegram news bot free?", a: "Yes. The bot is free and sends the 1-2 top stories of the day in an evening digest at 20:00. To get every story as soon as it's published, you can subscribe to a field channel for 49,000 UZS per month." },
       { q: "Is there a Telegram bot that sends industry news in Uzbek?", a: "Yes, Stepolog (@stepologbot). The Marketing field is live now. AI, Development, SMM, Design and Business are in the queue. Whichever is requested most will open first." },
-      { q: "How is it different from a regular RSS bot?", a: "An RSS bot sends everything from a site in its original language, without filtering. Stepolog first picks out what matters, then writes it up briefly in Uzbek and adds what the news means for your work." },
+      { q: "How is it different from a regular RSS bot?", a: "An RSS bot sends everything from a site in its original language, without filtering. Stepolog first picks out what matters, then writes it up briefly in Uzbek and adds a link to the original source." },
       { q: "Where does the news come from?", a: "From official blogs and major publications in each field. Every post includes a link to the source." },
       { q: "How do I stop the bot?", a: "You can stop or mute the bot in Telegram at any time. The free bot has no charges at all." },
     ],
@@ -81,7 +80,7 @@ const landings: Landing[] = [
     features: [
       { title: "Works without RSS", text: "New articles are found through the site's RSS feed, its sitemap, or changes on the page." },
       { title: "Only new articles", text: "Anything already sent won't arrive again. Small edits to old pages don't count as news." },
-      { title: "Short summary", text: "Instead of the full text of a long article, you get a 2-3 sentence summary and the original link." },
+      { title: "Short summary", text: "Instead of the full text of a long article, you get a 2-4 sentence summary and the original link." },
       { title: "Sites in any language", text: "News from English, Russian or other language sites arrives with a summary in Uzbek." },
       { title: "Several sites in one place", text: "Add several sites and follow all of them in a single Telegram chat." },
       { title: "Topic filter", text: "If a site covers many topics, you can get only the articles in the areas you care about." },
@@ -103,7 +102,7 @@ const landings: Landing[] = [
     ],
     faq: [
       { q: "How do I get website updates in Telegram if the site has no RSS feed?", a: "Send the site's link to @stepologbot. Stepolog finds new articles through the RSS feed, the sitemap or changes on the page. All it needs from you is the link." },
-      { q: "How is this different from an RSS to Telegram bot?", a: "An RSS bot sends the full article in its original language. Stepolog shortens the content to 2-3 sentences in Uzbek and keeps the original link." },
+      { q: "How is this different from an RSS to Telegram bot?", a: "An RSS bot sends the full article in its original language. Stepolog shortens the content to 2-4 sentences in Uzbek and keeps the original link." },
       { q: "How many sites can I add?", a: "The free bot has a limit on the number of sites. Monitoring more sites will be part of a paid plan." },
       { q: "Does it work with sites that require a login?", a: "No. Only publicly accessible pages can be monitored." },
       { q: "How quickly do new articles arrive?", a: "The bot checks the sites you added regularly throughout the day. You get a message shortly after a new article is published." },
@@ -124,20 +123,20 @@ const landings: Landing[] = [
     h1: "Foreign news in Uzbek, short and clear",
     lead: "English and Russian articles are rewritten by meaning, not translated word for word.",
     answer:
-      "Stepolog (@stepologbot) is a Telegram bot that delivers foreign news in Uzbek by rewriting English and Russian industry stories as short, clear Uzbek posts. Each post contains a 2-3 sentence summary, why the news matters for your work, and a link to the original source. You can keep up with changes in your field even if you don't read English.",
+      "Stepolog (@stepologbot) is a Telegram bot that delivers foreign news in Uzbek by rewriting English and Russian industry stories as short, clear Uzbek posts. Each post contains a short headline, a 2-4 sentence summary of what happened, and a link to the original source. You can keep up with changes in your field even if you don't read English.",
     featuresTitle: "How it differs from plain translation",
     features: [
       { title: "Rewritten, not translated", text: "The text is written to read naturally in Uzbek. English sentence structure is not copied over." },
       { title: "Terms are explained", text: "Terms like CTR and CPC are explained in plain words the first time they appear." },
       { title: "No exaggeration", text: "Hype words in headlines are removed. Only the facts remain." },
-      { title: "Adapted to the Uzbek market", text: "Each post notes how the news may affect your work in Uzbekistan." },
+      { title: "Picked for Uzbekistan", text: "Stories are chosen for readers in Uzbekistan. News about platforms and services that don't work here is filtered out." },
       { title: "The source is always there", text: "If you want to check it or read the full piece, the link sits under the post." },
       { title: "Human review", text: "AI prepares the text, and an editor checks that the meaning is conveyed correctly." },
     ],
     stepsTitle: "From an English article to an Uzbek post",
     steps: [
       { title: "The original article is read", text: "The full text is taken from the foreign site, usually 1,500-2,000 words." },
-      { title: "The key point is extracted", text: "The main fact, why it matters and the practical takeaway are identified." },
+      { title: "The key point is extracted", text: "The main facts are picked out, and everything else is left behind." },
       { title: "It's written in Uzbek", text: "The result is a post of about 60-80 words that takes 30 seconds to read." },
     ],
     postTitle: "A post made from an English article",
@@ -167,10 +166,10 @@ const landings: Landing[] = [
     keyword: "marketing news telegram channel",
     metaTitle: "Marketing News Telegram Channel in Uzbek | Stepolog",
     metaDescription:
-      "Changes in Google Ads, Meta, TikTok, Instagram and search engines, explained in Uzbek. A daily digest in the free bot, and every story in the paid channel.",
+      "Changes in Google Ads, Meta, TikTok, Instagram and search engines, in short posts in Uzbek. A daily digest in the free bot, and every story in the paid channel.",
     kicker: "Marketing channel · open",
     h1: "Marketing news in Uzbek, every day",
-    lead: "Google Ads, Meta, TikTok and Instagram changes, each with a short note.",
+    lead: "Google Ads, Meta, TikTok and Instagram changes, every day, short and to the point.",
     answer:
       "Stepolog runs a marketing news Telegram channel that covers key changes in Google Ads, Meta, TikTok, Instagram and search engines in Uzbek, with about 6 short posts a day. A subscription costs 49,000 UZS per month. The free @stepologbot sends the 1-2 top stories in an evening digest at 20:00.",
     featuresTitle: "Topics covered in the channel",
@@ -198,7 +197,7 @@ const landings: Landing[] = [
       { title: "Agencies and business owners", text: "To stay informed about industry changes in front of their team and clients." },
     ],
     faq: [
-      { q: "Is there a marketing news Telegram channel in Uzbek?", a: "Yes, the Stepolog Marketing channel. Key changes in Google Ads, Meta, TikTok, Instagram and search engines are posted in Uzbek, with the source and an explanation." },
+      { q: "Is there a marketing news Telegram channel in Uzbek?", a: "Yes, the Stepolog Marketing channel. Key changes in Google Ads, Meta, TikTok, Instagram and search engines are posted in Uzbek, each with a link to the source." },
       { q: "How many posts does the channel publish per day?", a: "About 6. Only news that affects your work gets posted, so the number can vary from day to day." },
       { q: "How much does a subscription cost?", a: "49,000 UZS per month. 3 months are 5% cheaper, 6 months 10% and 1 year 15%. There are no automatic charges, and the bot reminds you 3 days before your subscription expires." },
       { q: "If something changes in Instagram or Google Ads, when will I know?", a: "In the channel, the news is posted shortly after it appears at the source. In the free bot, it arrives in that day's evening digest." },
@@ -215,7 +214,7 @@ const landings: Landing[] = [
     keyword: "ai news telegram bot",
     metaTitle: "AI News Telegram Bot and Channel in Uzbek | Stepolog",
     metaDescription:
-      "Practical news about ChatGPT, Gemini and other AI tools, written in Uzbek, short and explained. The channel is opening soon, so join the waitlist in the bot.",
+      "Practical news about ChatGPT, Gemini and other AI tools, written in Uzbek, short and clear. The channel is opening soon, so join the waitlist in the bot.",
     kicker: "AI channel · coming soon",
     h1: "AI news in Uzbek",
     lead: "Practical news about AI tools, short and in Uzbek.",
@@ -224,7 +223,7 @@ const landings: Landing[] = [
     featuresTitle: "What the channel will cover",
     features: [
       { title: "New tools and features", text: "New capabilities in popular AI services and what they are good for." },
-      { title: "Practical use", text: "Under each story, how you can use it in your work." },
+      { title: "New model versions", text: "What changed in new versions of ChatGPT, Gemini and other models." },
       { title: "Pricing and limits", text: "Changes in plans, usage limits and regional restrictions." },
       { title: "Impact on business", text: "News relevant to marketing and business, such as brand visibility in AI answers." },
       { title: "No hype", text: "Out of the loud announcements made every day, only real changes make it in." },
@@ -240,7 +239,6 @@ const landings: Landing[] = [
     post: {
       title: "Companies can now add their business profile to ChatGPT",
       body: "Businesses can now submit their name, services and contact details directly to ChatGPT.",
-      why: "Fill in your profile now so your brand shows up correctly in AI answers.",
       source: "OpenAI Blog",
       time: "10:40",
       views: "sample",

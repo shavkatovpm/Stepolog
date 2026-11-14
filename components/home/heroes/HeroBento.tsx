@@ -123,7 +123,7 @@ export default function HeroBento() {
           </p>
           <div key={field} className="anim-rise mt-3 flex-1">
             <p className="text-[15px] font-semibold leading-snug">{f.title}</p>
-            <p className="mt-2 text-[13.5px] leading-snug text-white/55">{f.why}</p>
+            <p className="mt-2 text-[13.5px] leading-snug text-white/55">{f.body}</p>
           </div>
           <div className="mt-4 flex gap-1">
             {fields.map((x, i) => (
