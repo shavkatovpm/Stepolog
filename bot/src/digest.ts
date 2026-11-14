@@ -1,4 +1,4 @@
-// Kunlik dayjest: har user o'zi tanlagan vaqtda (08:00/13:00/20:00/22:00) bugungi eng muhim postlar
+// Kunlik dayjest: har kuni kun oxirida (20:00) bugungi eng muhim postlar
 import { GrammyError, InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config, FIELD_NAMES, DIGEST_TIMES } from "./config.ts";
@@ -39,10 +39,10 @@ export async function sendDigest(bot: Bot, onlyTo?: number, slot = "20:00") {
     const users = onlyTo
       ? [{ tg_id: String(onlyTo) }]
       : (await db.query<{ tg_id: string }>(
-          `SELECT tg_id FROM users u WHERE digest AND NOT blocked AND $1 = ANY(fields) AND digest_time = $2
+          `SELECT tg_id FROM users u WHERE digest AND NOT blocked AND $1 = ANY(fields)
              AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.tg_id = u.tg_id AND s.field = $1 AND s.product = 'pro'
                              AND s.status = 'active' AND s.ends_at > now())`, // Pro obunachilari hammasini allaqachon oladi
-          [field, slot],
+          [field],
         )).rows;
     const kb = new InlineKeyboard().text("📢 Barcha yangiliklar: kanal", `o:ch:${field}`);
     const head = `<b>${FIELD_NAMES[field] ?? field}: bugungi eng muhimi</b>`;

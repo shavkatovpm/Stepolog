@@ -45,7 +45,7 @@ export const PRICING = {
 export const priceFor = (months: number) => PRICING.plans[months];
 export const som = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
 
-export const DIGEST_TIMES = ["08:00", "13:00", "20:00", "22:00"];
+export const DIGEST_TIMES = ["20:00"]; // dayjest hammaga bir vaqtda, kun oxirida (user tanlamaydi)
 export const SITE_LIMIT = Number(process.env.SITE_LIMIT ?? 2); // bepul tarifda kuzatiladigan sayt
 export const SITE_DAILY = 10; // bitta userga saytlardan kuniga ko'pi bilan
 export const PAY_CARD = process.env.PAY_CARD ?? ""; // to'lov uchun karta raqami

@@ -2,7 +2,7 @@
 // Callback ma'lumotlari: "m:<ekran>[:arg]" — ekranni ochish, "a:<amal>[:arg]" — amal bajarib, ekranni yangilash.
 import { InlineKeyboard, type Bot, type Context } from "grammy";
 import { db } from "./db/index.ts";
-import { config, FIELD_NAMES, SOON_FIELDS, DIGEST_TIMES, SITE_LIMIT, PAY_CARD, SUPPORT, PRICING, priceFor, som } from "./config.ts";
+import { config, FIELD_NAMES, SOON_FIELDS, SITE_LIMIT, PAY_CARD, SUPPORT, PRICING, priceFor, som } from "./config.ts";
 import { addSite } from "./sites.ts";
 import { notifyAdminReceipt } from "./subs.ts";
 
@@ -74,11 +74,11 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
 
   async digest(u) {
     const pro = await activeSub(u.tg_id, config.fields[0], "pro");
-    const kb = new InlineKeyboard().text("🗂 Sohalar", "m:fields").text("🕗 Vaqt", "m:time").row();
+    const kb = new InlineKeyboard().text("🗂 Sohalar", "m:fields").row();
     kb.text(pro?.status === "active" ? "⚡ Dayjest Pro · faol" : "⚡ Dayjest Pro", `m:pro:${config.fields[0]}`);
     u.digest ? kb.text("🔕 O'chirish", "a:digest:off") : kb.text("🔔 Yoqish", "a:digest:on");
     return {
-      text: `📰 <b>Kunlik dayjest</b>\n\nKun davomida yangiliklarni men kuzataman. Siz esa kun yakunida eng muhimlarini bitta xabarda olasiz.\n\nPastdan sohalarni va o'zingizga qulay vaqtni tanlang.${u.digest ? "" : "\n\nHozir dayjest o'chiq."}`,
+      text: `📰 <b>Kunlik dayjest</b>\n\nKun davomida yangiliklarni men kuzataman. Siz esa kun yakunida eng muhimlarini bitta xabarda olasiz.\n\nPastdan sohalarni tanlang.${u.digest ? "" : "\n\nHozir dayjest o'chiq."}`,
       kb: kb.row().text("← Orqaga", "m:root"),
     };
   },
@@ -95,15 +95,6 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
       text: "🗂 <b>Sohalar</b>\n\nOchiq sohalarni belgilang. Yopiqlari uchun 🔔 bosing: ochilganda birinchi bo'lib xabar olasiz.",
       kb: kb.row().text("← Orqaga", "m:digest"),
     };
-  },
-
-  async time(u) {
-    const kb = new InlineKeyboard();
-    DIGEST_TIMES.forEach((t, i) => {
-      kb.text(`${u.digest_time === t ? "✅ " : ""}${t}`, `a:time:${t}`);
-      if (i % 2 === 1) kb.row();
-    });
-    return { text: "🕗 Dayjest qaysi vaqtda kelsin? (Toshkent vaqti)", kb: kb.row().text("← Orqaga", "m:digest") };
   },
 
   async channels(u) {
@@ -259,10 +250,6 @@ export function registerMenu(bot: Bot) {
         screen = back === "channels" ? "channels" : "fields";
         break;
       }
-      case "time":
-        if (DIGEST_TIMES.includes(arg)) await db.query("UPDATE users SET digest_time = $2 WHERE tg_id = $1", [id, arg]);
-        screen = "time"; toast = `Dayjest ${arg} da keladi`;
-        break;
       case "wait":
         await db.query("UPDATE users SET autopost_wait = NOT autopost_wait WHERE tg_id = $1", [id]);
         screen = "autopost"; toast = u.autopost_wait ? "Navbatdan chiqdingiz" : "Navbatga yozildingiz";
