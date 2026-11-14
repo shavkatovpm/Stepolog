@@ -1,13 +1,13 @@
 // Manbalarni o'qib, yangi maqolalarni bazaga yozadi. AI bu yerda ishlamaydi (tekin).
 import Parser from "rss-parser";
 import { db } from "./db/index.ts";
+import { config } from "./config.ts";
 
 const parser = new Parser({
   timeout: 15000,
   headers: { "User-Agent": "Mozilla/5.0 (compatible; StepologBot/1.0; +https://www.stepolog.uz)" },
 });
 
-const MAX_AGE_H = 48; // eski maqolalarni olmaymiz
 
 const clean = (s = "") =>
   s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 1200);
@@ -25,7 +25,7 @@ export async function fetchAll() {
         const url = it.link?.trim();
         if (!url || !it.title) continue;
         const date = it.isoDate ? new Date(it.isoDate) : null;
-        if (date && Date.now() - date.getTime() > MAX_AGE_H * 3600_000) continue;
+        if (date && Date.now() - date.getTime() > config.maxAgeH * 3600_000) continue;
 
         const r = await db.query(
           `INSERT INTO articles (source_id, url, title, excerpt, published_at)

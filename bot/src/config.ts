@@ -20,6 +20,11 @@ export const config = {
   },
   minScore: Number(process.env.MIN_SCORE ?? 7), // shu balldan yuqorisi post bo'ladi
   fetchEveryMin: Number(process.env.FETCH_EVERY_MIN ?? 20),
+  // Test (lokal) uchun tejamkor sozlamalar
+  autoCycle: process.env.AUTO_CYCLE !== "0", // 0 bo'lsa faqat /yangila bilan ishlaydi
+  scoreLimit: Number(process.env.SCORE_LIMIT ?? 100), // bir aylanishda baholanadigan maqola
+  writeLimit: Number(process.env.WRITE_LIMIT ?? 10), // bir aylanishda yoziladigan post
+  maxAgeH: Number(process.env.MAX_AGE_H ?? 48), // bundan eski maqola olinmaydi
   digestHour: 20, // Toshkent vaqti
   tz: "Asia/Tashkent",
 };

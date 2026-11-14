@@ -19,7 +19,12 @@ export async function maybeSendDigest(bot: Bot) {
   const key = `digest:${date}`;
   if (await kvGet(key)) return;
   await kvSet(key, "sending");
+  await sendDigest(bot);
+  await kvSet(key, "done");
+}
 
+// onlyTo berilsa, faqat o'sha chatga yuboriladi (test uchun)
+export async function sendDigest(bot: Bot, onlyTo?: number) {
   for (const field of config.fields) {
     const { rows: posts } = await db.query<{ text: string }>(
       `SELECT text FROM posts WHERE field = $1 AND status = 'published' AND published_at > now() - interval '24 hours'
@@ -28,10 +33,12 @@ export async function maybeSendDigest(bot: Bot) {
     );
     if (!posts.length) continue;
 
-    const { rows: users } = await db.query<{ tg_id: string }>(
-      "SELECT tg_id FROM users WHERE digest AND NOT blocked AND $1 = ANY(fields)",
-      [field],
-    );
+    const users = onlyTo
+      ? [{ tg_id: String(onlyTo) }]
+      : (await db.query<{ tg_id: string }>(
+          "SELECT tg_id FROM users WHERE digest AND NOT blocked AND $1 = ANY(fields)",
+          [field],
+        )).rows;
     const link = config.channelLinks[field];
     const kb = link ? new InlineKeyboard().url("Barcha yangiliklar kanalda", link) : undefined;
     const head = `<b>${FIELD_NAMES[field] ?? field}: bugungi eng muhimi</b>`;
@@ -57,5 +64,4 @@ export async function maybeSendDigest(bot: Bot) {
     }
     console.log(`[digest] ${field}: ${sent}/${users.length}`);
   }
-  await kvSet(key, "done");
 }

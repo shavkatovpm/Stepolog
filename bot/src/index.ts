@@ -4,7 +4,7 @@ import { registerAdmin } from "./admin.ts";
 import { registerUsers } from "./users.ts";
 import { fetchAll } from "./fetcher.ts";
 import { scorePending, writeDrafts } from "./pipeline.ts";
-import { maybeSendDigest } from "./digest.ts";
+import { maybeSendDigest, sendDigest } from "./digest.ts";
 import { autoPublish } from "./publisher.ts";
 
 const bot = new Bot(config.botToken);
@@ -28,10 +28,30 @@ async function cycle() {
   }
 }
 
-setInterval(cycle, config.fetchEveryMin * 60_000);
-setInterval(() => autoPublish(bot).catch((e) => console.error("[publish]", e)), 5 * 60_000);
-setInterval(() => maybeSendDigest(bot).catch((e) => console.error("[digest]", e)), 5 * 60_000);
-void cycle();
+// Test buyruqlari (faqat admin): hozir yangilash, hozir chiqarish, dayjestni o'zimga yuborish
+const admin = bot.filter((ctx) => ctx.chat?.id === config.adminChatId);
+admin.command("yangila", async (ctx) => {
+  if (busy) return ctx.reply("Hozir ishlayapti, biroz kuting.");
+  await ctx.reply("Manbalar o'qilmoqda va saralanmoqda...");
+  await cycle();
+  await ctx.reply("Tayyor. Yangi qoralamalar yuqorida (bo'lsa). /holat");
+});
+admin.command("chiqar", async (ctx) => {
+  await autoPublish(bot, true);
+  await ctx.reply("Navbatdagi eng yaxshi qoralama chiqarildi (bo'lsa).");
+});
+admin.command("dayjest", async (ctx) => {
+  await sendDigest(bot, ctx.chat.id);
+});
+
+if (config.autoCycle) {
+  setInterval(cycle, config.fetchEveryMin * 60_000);
+  setInterval(() => autoPublish(bot).catch((e) => console.error("[publish]", e)), 5 * 60_000);
+  setInterval(() => maybeSendDigest(bot).catch((e) => console.error("[digest]", e)), 5 * 60_000);
+  void cycle();
+} else {
+  console.log("Test rejimi: avtomatik tsikl o'chiq, /yangila bilan ishga tushiring");
+}
 
 for (const sig of ["SIGINT", "SIGTERM"] as const) {
   process.once(sig, async () => {

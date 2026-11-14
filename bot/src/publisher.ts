@@ -42,20 +42,21 @@ export async function publishPost(api: Api, post: Post) {
 }
 
 // Har 5 daqiqada: navbatdagi eng yuqori balli qoralamani chiqaradi (oraliq va kunlik limit bilan)
-export async function autoPublish(bot: Bot) {
-  if (!(await isAuto())) return;
+// force: test uchun vaqt, oraliq va kunlik limitni e'tiborsiz qoldiradi
+export async function autoPublish(bot: Bot, force = false) {
+  if (!force && !(await isAuto())) return;
   const h = tashkentHour();
-  if (h < HOURS[0] || h >= HOURS[1]) return;
+  if (!force && (h < HOURS[0] || h >= HOURS[1])) return;
   for (const field of config.fields) {
-    if (!(await channelFor(field))) continue;
+    if (!force && !(await channelFor(field))) continue;
     const { rows: [s] } = await db.query<{ last: Date | null; today: string }>(
       `SELECT max(published_at) AS last,
               count(*) FILTER (WHERE published_at > now() - interval '24 hours') AS today
        FROM posts WHERE field = $1 AND status = 'published' AND channel_msg_id IS NOT NULL`,
       [field],
     );
-    if (s.last && Date.now() - new Date(s.last).getTime() < GAP_MIN * 60_000) continue;
-    if (Number(s.today) >= MAX_PER_DAY) continue;
+    if (!force && s.last && Date.now() - new Date(s.last).getTime() < GAP_MIN * 60_000) continue;
+    if (!force && Number(s.today) >= MAX_PER_DAY) continue;
 
     const { rows: [post] } = await db.query<Post>(
       `SELECT p.id, p.field, p.text, p.admin_msg_id FROM posts p

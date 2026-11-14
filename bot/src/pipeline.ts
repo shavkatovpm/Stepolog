@@ -23,7 +23,8 @@ export async function scorePending() {
   const { rows } = await db.query<Row>(
     `SELECT a.id, a.title, a.excerpt, a.url, s.name AS source, s.field, s.tier
      FROM articles a JOIN sources s ON s.id = a.source_id
-     WHERE a.verdict = 'pending' ORDER BY s.tier = 'official' DESC, a.id LIMIT 100`,
+     WHERE a.verdict = 'pending' ORDER BY s.tier = 'official' DESC, a.id DESC LIMIT $1`,
+    [config.scoreLimit],
   );
   const byField = new Map<string, Row[]>();
   for (const r of rows) byField.set(r.field, [...(byField.get(r.field) ?? []), r]);
@@ -65,7 +66,8 @@ export async function writeDrafts(bot: Bot) {
     `SELECT a.id, a.title, a.excerpt, a.url, a.score, a.flags, s.name AS source, s.field, s.tier
      FROM articles a JOIN sources s ON s.id = a.source_id
      LEFT JOIN posts p ON p.article_id = a.id
-     WHERE a.verdict = 'keep' AND p.id IS NULL ORDER BY a.score DESC LIMIT 10`,
+     WHERE a.verdict = 'keep' AND p.id IS NULL ORDER BY a.score DESC LIMIT $1`,
+    [config.writeLimit],
   );
 
   for (const a of rows) {
