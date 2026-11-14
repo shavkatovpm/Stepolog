@@ -30,6 +30,9 @@ reklama formati, hisobot vositasi. Marketolog ishini bugun o'zgartiradigan narsa
 O'rta (5-7): foydali tadqiqot yoki raqamlar, katta brendning ibratli kampaniyasi.
 Past (1-4): reklama postlari, vebinar e'lonlari, "10 ta maslahat" tipidagi umumiy maqolalar, kadrlar almashuvi,
 kompaniya moliyaviy hisobotlari, faqat AQSh bozoriga tegishli mahalliy yangiliklar, SEO texnik tafsilotlari.
+O'zbekistonda ishlamaydigan platformalar ham past (1-3): Amazon, Walmart, eBay, Etsy, Shopify reklamalari,
+AQSh retail media, Amazon DSP. O'zbekistonda asosiylari: Instagram, Telegram, Meta Ads, Google Ads, YouTube, TikTok.
+Ko'rsatma va izohlovchi maqolalar (explainer, "nima bu") yangilik emas: 1-5.
 `.trim();
 
 export async function scoreArticles(list: Candidate[]) {

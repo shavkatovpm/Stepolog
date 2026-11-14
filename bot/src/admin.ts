@@ -19,11 +19,16 @@ export function registerAdmin(bot: Bot) {
     const post = await getPost(Number(ctx.match[1]));
     if (!post || post.status !== "draft") return ctx.answerCallbackQuery("Allaqachon ko'rib chiqilgan");
     const channel = config.channels[post.field];
-    const msg = await ctx.api.sendMessage(channel, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
-    await db.query("UPDATE posts SET status = 'published', channel_msg_id = $2, published_at = now() WHERE id = $1", [post.id, msg.message_id]);
+    let channelMsgId: number | null = null;
+    if (channel) {
+      const msg = await ctx.api.sendMessage(channel, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
+      channelMsgId = msg.message_id;
+    }
+    await db.query("UPDATE posts SET status = 'published', channel_msg_id = $2, published_at = now() WHERE id = $1", [post.id, channelMsgId]);
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-    await ctx.reply(`✅ #${post.id} kanalga chiqdi`, { reply_parameters: { message_id: ctx.callbackQuery.message!.message_id } });
-    await ctx.answerCallbackQuery("Chiqdi");
+    const note = channel ? "kanalga chiqdi" : "tasdiqlandi (kanal hali ulanmagan)";
+    await ctx.reply(`✅ #${post.id} ${note}`, { reply_parameters: { message_id: ctx.callbackQuery.message!.message_id } });
+    await ctx.answerCallbackQuery("Tasdiqlandi");
   });
 
   admin.callbackQuery(/^rej:(\d+)$/, async (ctx) => {

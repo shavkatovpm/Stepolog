@@ -7,8 +7,10 @@ function need(name: string): string {
 export const config = {
   botToken: need("BOT_TOKEN"),
   databaseUrl: need("DATABASE_URL"),
-  adminChatId: Number(need("ADMIN_CHAT_ID")), // tasdiqlash guruhi
-  channels: { marketing: Number(need("CHANNEL_MARKETING")) } as Record<string, number>,
+  adminChatId: Number(need("ADMIN_CHAT_ID")), // hozircha egasining shaxsiy chati, keyin guruh
+  fields: ["marketing"],
+  // Kanal hali yo'q bo'lsa bo'sh qoladi: tasdiqlangan post faqat bazada belgilanadi
+  channels: { marketing: Number(process.env.CHANNEL_MARKETING) || 0 } as Record<string, number>,
   channelLinks: { marketing: process.env.CHANNEL_MARKETING_LINK ?? "" } as Record<string, string>,
   // ANTHROPIC_API_KEY ni SDK o'zi o'qiydi
 

@@ -20,7 +20,7 @@ export async function maybeSendDigest(bot: Bot) {
   if (await kvGet(key)) return;
   await kvSet(key, "sending");
 
-  for (const field of Object.keys(config.channels)) {
+  for (const field of config.fields) {
     const { rows: posts } = await db.query<{ text: string }>(
       `SELECT text FROM posts WHERE field = $1 AND status = 'published' AND published_at > now() - interval '24 hours'
        ORDER BY score DESC, published_at DESC LIMIT 2`,
