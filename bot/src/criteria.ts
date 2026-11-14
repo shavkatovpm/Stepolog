@@ -1,3 +1,5 @@
+import { AUDIENCE } from "./audience.ts";
+
 // Saralash mezonlari: 1-qavat umumiy (har soha uchun), 2-qavat soha bo'yicha.
 
 export type Tier = "official" | "media" | "blog";
@@ -68,14 +70,14 @@ export const FIELD_CATEGORIES: Record<string, Category[]> = {
 
 // Post yozuvchi uchun: shu soha o'quvchilari va atamalari
 export const FIELD_AUDIENCE: Record<string, string> = {
-  marketing: `Soha: marketing. O'quvchilar: O'zbekistondagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
+  marketing: `Soha: marketing. O'quvchilar: ${AUDIENCE.market} bozoridagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
 Atamalar aslidagidek: Google Ads, Meta, Instagram, TikTok, Reels, CTR, CPM, ROAS.`,
 };
 
 export const FIELD_RULES: Record<string, string> = {
   marketing: `
-Soha: marketing. O'quvchilar: O'zbekistondagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
-Asosiy platformalar: Instagram, Telegram, Meta Ads, Google Ads, YouTube, TikTok.
+Soha: marketing. O'quvchilar: ${AUDIENCE.market} bozoridagi marketologlar, SMM mutaxassislari, targetologlar, tadbirkorlar.
+${AUDIENCE.platforms}
 
 Maqsad: duch kelgan yangilik emas, faqat o'quvchining ishiga aniq foyda beradigan yangilik.
 
@@ -86,11 +88,11 @@ Maqsad: duch kelgan yangilik emas, faqat o'quvchining ishiga aniq foyda beradiga
 Oddiy yangilik hayp emas. true faqat haqiqatan ham katta, hamma gapirayotgan voqea uchun.
 
 "score" (1-10) foyda testi:
-- 9-10: O'zbekistondagi marketolog shu hafta ishida qo'llaydi yoki bilmasa zarar ko'radi (pul, qamrov, akkaunt).
+- 9-10: ${AUDIENCE.market} bozoridagi marketolog shu hafta ishida qo'llaydi yoki bilmasa zarar ko'radi (pul, qamrov, akkaunt).
 - 7-8: aniq foydali, ishiga bevosita tegishli, lekin shoshilinch emas.
 - 5-6: qiziq, lekin amaliy foydasi kam.
 - 1-4: umumiy gap, faqat boshqa bozorga tegishli, uzoq kelajak haqida, yoki o'quvchi hech narsa qilmaydi.
-O'zbekistonda ishlamaydigan platformalar (Amazon, Walmart, eBay, Etsy, Shopify, AQSh retail media): 1-2.
+Shu bozorda ishlamaydigan platformalar haqidagi yangiliklar: 1-2.
 "10 ta maslahat" tipidagi maqolalar, izohlovchi maqolalar ("nima bu"), kadrlar almashuvi, moliyaviy hisobotlar: 1-3.
 `.trim(),
 };

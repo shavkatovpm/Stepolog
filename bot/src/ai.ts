@@ -26,7 +26,7 @@ const Verdicts = z.object({
       category: z.string().describe("soha turlaridan birining id si yoki other"),
       hype: z.boolean(),
       score: z.number().describe("1-10, soha mezonlari bo'yicha"),
-      reason: z.string().describe("bitta qisqa gap, o'zbekcha"),
+      reason: z.string().describe("bitta qisqa gap"),
     }),
   ),
 });
@@ -50,7 +50,7 @@ export async function scoreArticles(field: string, list: Candidate[], recent: { 
   return res.parsed_output?.items ?? [];
 }
 
-// ---------- 2. O'zbekcha post (Sonnet) ----------
+// ---------- 2. Post (Sonnet), til auditoriyaga qarab ----------
 
 const Post = z.object({
   title: z.string().describe("sarlavha, 12 so'zdan oshmasin, nuqtasiz"),
@@ -106,9 +106,9 @@ export async function writePost(a: WriteInput): Promise<PostDraft> {
   return { title, body, takeaway };
 }
 
-// ---------- 3. User saytlari uchun qisqa o'zbekcha mazmun (Haiku: arzon) ----------
+// ---------- 3. User saytlari uchun qisqa mazmun (Haiku: arzon) ----------
 const Short = z.object({
-  title: z.string().describe("o'zbekcha sarlavha, 12 so'zdan oshmasin"),
+  title: z.string().describe("sarlavha, 12 so'zdan oshmasin"),
   body: z.string().describe("1-2 qisqa gap: maqola nima haqida"),
 });
 
@@ -117,7 +117,7 @@ export async function summarizeShort(a: { title: string; excerpt: string }) {
     model: config.models.filter,
     max_tokens: 1500,
     output_config: { effort: "low", format: zodOutputFormat(Short) },
-    system: `${STYLE_RULES}\n\nBu userning o'zi tanlagan saytidan maqola. Uni o'zbek tilida qisqa qilib bering. Amaliy izoh va emoji kerak emas.`,
+    system: `${STYLE_RULES}\n\nBu userning o'zi tanlagan saytidan maqola. Uni post tilida qisqa qilib bering. Amaliy izoh va emoji kerak emas.`,
     messages: [{ role: "user", content: `Sarlavha: ${a.title}\n\nMatn:\n${a.excerpt || "(matn yo'q, faqat sarlavha bo'yicha yozing)"}` }],
   });
   if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("qisqartirish: javob yo'q");
