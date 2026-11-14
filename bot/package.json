@@ -1,0 +1,24 @@
+{
+  "name": "stepolog-bot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "start": "tsx --env-file=.env src/index.ts",
+    "db:init": "tsx --env-file=.env src/db/init.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "grammy": "^1.46.0",
+    "pg": "^8.23.1",
+    "rss-parser": "^3.13.0",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "typescript": "^7.0.2"
+  }
+}
