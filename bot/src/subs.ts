@@ -7,7 +7,7 @@ import { channelFor } from "./publisher.ts";
 type Sub = { id: number; tg_id: string; field: string; product: string; months: number; amount: number; status: string; receipt_file_id: string | null; ends_at: Date | null };
 const getSub = async (id: number) => (await db.query<Sub>("SELECT * FROM subscriptions WHERE id = $1", [id])).rows[0];
 const monthsLabel = (m: number) => (m === 12 ? "1 yil" : `${m} oy`);
-const subName = (s: Sub) => (s.product === "pro" ? `Dayjest Pro · ${FIELD_NAMES[s.field] ?? s.field}` : `${FIELD_NAMES[s.field] ?? s.field} kanali`);
+const subName = (s: Sub) => (s.product === "pro" ? "Dayjest Pro" : `${FIELD_NAMES[s.field] ?? s.field} kanali`);
 const fmtDate = (d: Date) => new Intl.DateTimeFormat("uz-UZ", { timeZone: config.tz, day: "2-digit", month: "2-digit", year: "numeric" }).format(d);
 
 export async function notifyAdminReceipt(api: Api, subId: number) {

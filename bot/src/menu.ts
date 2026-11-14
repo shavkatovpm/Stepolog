@@ -29,7 +29,7 @@ const votes = async (id: string) =>
   new Set((await db.query<{ field: string }>("SELECT field FROM field_votes WHERE tg_id = $1", [id])).rows.map((r) => r.field));
 // product: "channel" = pullik kanal, "pro" = Dayjest Pro (yangiliklar botga chiqishi bilan)
 type Product = "channel" | "pro";
-const PRODUCT_NAME = (p: string, field: string) => (p === "pro" ? `Dayjest Pro · ${fieldName(field)}` : `${fieldName(field)} kanali`);
+const PRODUCT_NAME = (p: string, field: string) => (p === "pro" ? "Dayjest Pro" : `${fieldName(field)} kanali`);
 const activeSub = async (id: string, field: string, product: Product = "channel") =>
   (await db.query<{ id: number; months: number; status: string; ends_at: Date | null }>(
     `SELECT id, months, status, ends_at FROM subscriptions WHERE tg_id = $1 AND field = $2 AND product = $3 AND status IN ('pending', 'active')
@@ -45,7 +45,7 @@ async function subScreen(u: User, product: Product, field: string): Promise<Scre
   const name = PRODUCT_NAME(product, field);
   const back = product === "pro" ? "m:digest" : "m:channels";
   const what = product === "pro"
-    ? "Barcha saralangan yangiliklar chiqishi bilan shu botga keladi, har birida amaliy izoh. Kunlik dayjestni kutish shart emas."
+    ? "Oddiy dayjestdan farqi:\n\n• Yangiliklar kun oxirini kutmasdan, chiqishi bilan keladi\n• Faqat eng muhimlari emas, barcha saralangan yangiliklar\n• Muhim o'zgarishni boshqalardan oldin bilasiz"
     : "Barcha saralangan yangiliklar chiqishi bilan kanalda, har birida amaliy izoh. Dushanba: haftalik xulosa.";
   if (s?.status === "active") {
     return {
