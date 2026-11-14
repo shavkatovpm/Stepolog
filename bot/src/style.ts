@@ -27,7 +27,13 @@ Taqiqlangan:
 
 Emoji:
 - Postda faqat 1 ta emoji: amaliy izoh ("takeaway") boshida. Sarlavha va asosiy matnda emoji yo'q.
-- Mazmunga mos, jiddiy ko'rinadiganini tanlang: 💡 📈 📉 📊 ⚠️ 🔍 🛠 🎯 💰 🤖 📌.
+- Mazmunga qarab tanlang:
+  ⚠️ ogohlantirish, xavf, cheklov, qoida qattiqlashdi
+  📈 📉 raqam o'sdi yoki tushdi
+  🎯 yangi imkoniyat, sinab ko'rish kerak
+  💡 foydali g'oya yoki tavsiya
+  🤖 AI bilan bog'liq
+  💰 pul, narx, byudjet
 - Kulgili va hissiy emojilar (😂 🔥 🚀 😱 👀 💥) ishlatilmaydi.
 `.trim();
 
