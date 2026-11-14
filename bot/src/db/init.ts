@@ -8,9 +8,9 @@ await db.query(sql);
 
 for (const s of SOURCES) {
   await db.query(
-    `INSERT INTO sources (field, name, feed_url, lang, tier) VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (feed_url) DO UPDATE SET name = $2, field = $1, lang = $4, tier = $5`,
-    [s.field, s.name, s.feed, s.lang, s.tier],
+    `INSERT INTO sources (field, name, feed_url, lang, tier, active) VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (feed_url) DO UPDATE SET name = $2, field = $1, lang = $4, tier = $5, active = $6`,
+    [s.field, s.name, s.feed, s.lang, s.tier, s.active ?? true],
   );
 }
 

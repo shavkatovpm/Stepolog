@@ -10,6 +10,7 @@ const HOURS = [9, 21]; // faqat kunduzi chiqadi (Toshkent vaqti)
 const tashkentHour = () =>
   Number(new Intl.DateTimeFormat("en-GB", { timeZone: config.tz, hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 const MAX_AGE_H = 24; // bundan eski qoralama avtomatik chiqmaydi
+const PER_SOURCE = 2; // bitta manbadan kuniga ko'pi bilan
 
 export const isAuto = async () => (await kvGet("mode")) !== "manual";
 
@@ -57,10 +58,14 @@ export async function autoPublish(bot: Bot) {
     if (Number(s.today) >= MAX_PER_DAY) continue;
 
     const { rows: [post] } = await db.query<Post>(
-      `SELECT id, field, text, admin_msg_id FROM posts
-       WHERE field = $1 AND status = 'draft' AND created_at > now() - make_interval(hours => $2)
-       ORDER BY score DESC, id LIMIT 1`,
-      [field, MAX_AGE_H],
+      `SELECT p.id, p.field, p.text, p.admin_msg_id FROM posts p
+       JOIN articles a ON a.id = p.article_id
+       WHERE p.field = $1 AND p.status = 'draft' AND p.created_at > now() - make_interval(hours => $2)
+         AND (SELECT count(*) FROM posts p2 JOIN articles a2 ON a2.id = p2.article_id
+              WHERE a2.source_id = a.source_id AND p2.status = 'published'
+                AND p2.published_at > now() - interval '24 hours') < $3
+       ORDER BY p.score DESC, p.id LIMIT 1`,
+      [field, MAX_AGE_H, PER_SOURCE],
     );
     if (!post) continue;
     await publishPost(bot.api, post);
