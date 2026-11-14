@@ -1,7 +1,7 @@
 // Admin guruh: postni tasdiqlash, tahrirlash, o'chirish
 import { InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
-import { config } from "./config.ts";
+import { config, FIELD_NAMES } from "./config.ts";
 import { esc } from "./format.ts";
 import { channelFor, isAuto, publishPost } from "./publisher.ts";
 
@@ -14,22 +14,42 @@ const getPost = async (id: number) =>
   (await db.query<PostRow>("SELECT id, field, text, status, admin_msg_id FROM posts WHERE id = $1", [id])).rows[0];
 
 export function registerAdmin(bot: Bot) {
-  // Egasi botni kanalga admin qilsa, kanal avtomatik ulanadi (hozircha birinchi ochiq soha kanali sifatida)
+  // Egasi botni kanalga admin qilsa: qaysi yo'nalishning qaysi kanali ekani so'raladi (ochiq yoki yopiq)
   bot.on("my_chat_member", async (ctx) => {
     const u = ctx.myChatMember;
     if (u.chat.type !== "channel" || u.from.id !== config.adminChatId) return;
     const title = u.chat.title;
-    const field = config.fields[0];
     if (u.new_chat_member.status === "administrator") {
       if (!u.new_chat_member.can_post_messages) {
         return ctx.api.sendMessage(config.adminChatId, `"${title}" kanalida botga "Xabar joylash" huquqini bering.`);
       }
-      await kvSet(`channel:${field}`, String(u.chat.id));
-      await ctx.api.sendMessage(config.adminChatId, `✅ "${title}" kanali ulandi. Endi ✅ bosilgan postlar shu kanalga chiqadi.`);
+      const kb = new InlineKeyboard();
+      for (const f of config.fields) {
+        kb.text(`🌐 ${FIELD_NAMES[f] ?? f} · ochiq (bepul)`, `chk:public:${f}:${u.chat.id}`).row()
+          .text(`🔒 ${FIELD_NAMES[f] ?? f} · yopiq (Pro)`, `chk:pro:${f}:${u.chat.id}`).row();
+      }
+      await ctx.api.sendMessage(config.adminChatId, `"${title}" kanaliga qo'shildim. Bu qaysi kanal?`, { reply_markup: kb });
     } else if (["left", "kicked", "member"].includes(u.new_chat_member.status)) {
-      if ((await kvGet(`channel:${field}`)) === String(u.chat.id)) await db.query("DELETE FROM kv WHERE key = $1", [`channel:${field}`]);
-      await ctx.api.sendMessage(config.adminChatId, `"${title}" kanali uzildi. Postlar faqat bazada tasdiqlanadi.`);
+      const { rows } = await db.query<{ key: string }>("DELETE FROM kv WHERE key LIKE 'channel:%' AND value = $1 RETURNING key", [String(u.chat.id)]);
+      for (const r of rows) await db.query("DELETE FROM kv WHERE key = $1", [r.key.replace(/^channel:/, "channel_link:")]);
+      if (rows.length) await ctx.api.sendMessage(config.adminChatId, `"${title}" kanali uzildi.`);
     }
+  });
+
+  bot.callbackQuery(/^chk:(public|pro):([a-z]+):(-?\d+)$/, async (ctx) => {
+    if (ctx.from.id !== config.adminChatId) return ctx.answerCallbackQuery();
+    const [, kind, field, chatId] = ctx.match;
+    await kvSet(`channel:${field}:${kind}`, chatId);
+    let note = "barcha postlar chiqishi bilan shu yerga chiqadi";
+    if (kind === "public") {
+      const chat = await ctx.api.getChat(Number(chatId));
+      const link = "username" in chat && chat.username ? `https://t.me/${chat.username}`
+        : (await ctx.api.createChatInviteLink(Number(chatId), { name: "Stepolog: ochiq" })).invite_link;
+      await kvSet(`channel_link:${field}:public`, link);
+      note = "har kuni 20:00 da dayjest shu yerga chiqadi, userlarga havolasi beriladi";
+    }
+    await ctx.editMessageText(`✅ ${FIELD_NAMES[field] ?? field} · ${kind === "public" ? "ochiq kanal" : "yopiq kanal (Pro)"} ulandi: ${note}.`);
+    await ctx.answerCallbackQuery("Ulandi");
   });
 
   const admin = bot.filter((ctx) => ctx.chat?.id === config.adminChatId);

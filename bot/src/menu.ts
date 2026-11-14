@@ -4,6 +4,7 @@ import { InlineKeyboard, type Bot, type Context } from "grammy";
 import { db } from "./db/index.ts";
 import { config, FIELD_NAMES, SOON_FIELDS, SITE_LIMIT, PAY_CARD, SUPPORT, PRICING, priceFor, som, PRO_INCLUDED, PRO_EXTRA, proExtraCount, proPrice } from "./config.ts";
 import { addSite } from "./sites.ts";
+import { publicLink } from "./publisher.ts";
 import { notifyAdminReceipt } from "./subs.ts";
 
 type User = {
@@ -27,7 +28,7 @@ async function getUser(ctx: Context): Promise<User> {
 }
 const votes = async (id: string) =>
   new Set((await db.query<{ field: string }>("SELECT field FROM field_votes WHERE tg_id = $1", [id])).rows.map((r) => r.field));
-// product: "channel" = pullik kanal, "pro" = Dayjest Pro (yangiliklar botga chiqishi bilan)
+// product: "pro" = Dayjest Pro (yopiq kanal + yangiliklar chiqishi bilan). "channel" eski, ishlatilmaydi
 type Product = "channel" | "pro";
 const PRODUCT_NAME = (p: string, field: string) => (p === "pro" ? "Dayjest Pro" : `${fieldName(field)} kanali`);
 const openDirs = (u: User) => u.fields.filter((f) => config.fields.includes(f));
@@ -79,7 +80,6 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
     const kb = new InlineKeyboard().text("🗂 Yo'nalishlar", "m:fields").row();
     kb.text(pro?.status === "active" ? "⚡ Dayjest Pro · faol" : "⚡ Dayjest Pro", "m:pro:all");
     u.digest ? kb.text("🔕 O'chirish", "a:digest:off") : kb.text("🔔 Yoqish", "a:digest:on");
-    kb.row().text("📢 Kanallar", "m:channels");
     return {
       text: `📰 <b>Kunlik dayjest</b>\n\nKun davomida yangiliklarni men kuzataman. Siz esa kun yakunida eng muhimlarini bitta xabarda olasiz.\n\nPastdan yo'nalishlarni tanlang.${u.digest ? "" : "\n\nHozir dayjest o'chiq."}`,
       kb: kb.row().text("← Orqaga", "m:root"),
@@ -89,7 +89,12 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async fields(u) {
     const v = await votes(u.tg_id);
     const kb = new InlineKeyboard();
-    for (const f of config.fields) kb.text(`${u.fields.includes(f) ? "✅" : "⬜️"} ${fieldName(f)}`, `a:field:${f}`).row();
+    for (const f of config.fields) {
+      kb.text(`${u.fields.includes(f) ? "✅" : "⬜️"} ${fieldName(f)}`, `a:field:${f}`);
+      const link = u.fields.includes(f) ? await publicLink(f) : null;
+      if (link) kb.url("📢 Kanali", link);
+      kb.row();
+    }
     for (const [k, n] of SOON_FIELDS) kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}`).row();
     return {
       text: `🗂 <b>Yo'nalishlar</b>\n\nOchiq yo'nalishlarni belgilang. Yopiqlari uchun 🔔 bosing: ochilganda birinchi bo'lib xabar olasiz.\n\nDayjest Pro'da ${PRO_INCLUDED} tagacha yo'nalish narxga kiradi, har bir qo'shimchasi +${som(PRO_EXTRA[1])} / oy.`,
@@ -97,25 +102,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
     };
   },
 
-  async channels(u) {
-    const v = await votes(u.tg_id);
-    const kb = new InlineKeyboard();
-    for (const f of config.fields) {
-      const s = await activeSub(u.tg_id, f);
-      kb.text(`${fieldName(f)} · ${s?.status === "active" ? "✅ faol" : s ? "⏳ tekshirilmoqda" : "ochiq"}`, `m:ch:${f}`).row();
-    }
-    for (const [k, n] of SOON_FIELDS) kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}:channels`).row();
-    return {
-      text: "📢 <b>Yo'nalish kanallari</b> · pullik\n\nKanalda barcha saralangan yangiliklar chiqishi bilan keladi, har birida amaliy izoh. Dushanba kuni haftalik xulosa.\n\nBir nechta kanalga obuna: 3 ta kanal −20%, hammasi −35% (kanallar ochilgani sari).",
-      kb: kb.row().text("← Orqaga", "m:digest"),
-    };
-  },
-
-  async ch(u, field = config.fields[0]) {
-    return subScreen(u, "channel", field);
-  },
-
-  async pro(u, field = config.fields[0]) {
+  async pro(u, field = "all") {
     return subScreen(u, "pro", field);
   },
 
@@ -274,7 +261,7 @@ export function registerMenu(bot: Bot) {
         const [product, field, m] = arg.split(":");
         const months = Number(m);
         const okField = product === "pro" ? field === "all" : config.fields.includes(field);
-        if (!["channel", "pro"].includes(product) || !okField || !(months in PRICING.discounts)) break;
+        if (product !== "pro" || !okField || !(months in PRICING.discounts)) break;
         const amount = amountFor(u, product, months);
         const slots = Math.max(PRO_INCLUDED, openDirs(u).length);
         const { rows: [sub] } = await db.query<{ id: number }>(

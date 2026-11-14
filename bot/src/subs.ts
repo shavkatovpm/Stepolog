@@ -4,7 +4,7 @@ import { db } from "./db/index.ts";
 import { config, FIELD_NAMES, som } from "./config.ts";
 import { channelFor } from "./publisher.ts";
 
-type Sub = { id: number; tg_id: string; field: string; product: string; months: number; amount: number; status: string; receipt_file_id: string | null; ends_at: Date | null };
+type Sub = { id: number; tg_id: string; field: string; product: string; slots: number; months: number; amount: number; status: string; receipt_file_id: string | null; ends_at: Date | null };
 const getSub = async (id: number) => (await db.query<Sub>("SELECT * FROM subscriptions WHERE id = $1", [id])).rows[0];
 const monthsLabel = (m: number) => `${m} oy`;
 const subName = (s: Sub) => (s.product === "pro" ? "Dayjest Pro" : `${FIELD_NAMES[s.field] ?? s.field} kanali`);
@@ -44,7 +44,17 @@ export function registerSubs(bot: Bot) {
     if (prev) {
       await ctx.api.sendMessage(s.tg_id, `✅ To'lov tasdiqlandi. ${name} <b>${fmtDate(end)}</b> gacha uzaytirildi.`, { parse_mode: "HTML" });
     } else if (s.product === "pro") {
-      await ctx.api.sendMessage(s.tg_id, `🎉 <b>${name} faol!</b>\n\n<b>${fmtDate(end)}</b> gacha barcha saralangan yangiliklar chiqishi bilan shu yerga keladi.`, { parse_mode: "HTML" });
+      // Userning yo'nalishlari (to'langan soniga qadar) bo'yicha yopiq kanallarga bir martalik havolalar
+      const { rows: [u] } = await db.query<{ fields: string[] }>("SELECT fields FROM users WHERE tg_id = $1", [s.tg_id]);
+      const dirs = (u?.fields ?? []).filter((f) => config.fields.includes(f)).slice(0, s.slots);
+      const kb = new InlineKeyboard();
+      for (const f of dirs) {
+        const ch = await channelFor(f, "pro");
+        if (!ch) continue;
+        const link = await ctx.api.createChatInviteLink(ch, { member_limit: 1, expire_date: Math.floor(Date.now() / 1000) + 7 * 86400, name: `pro ${s.id}` });
+        kb.url(`🔒 ${FIELD_NAMES[f] ?? f} · yopiq kanal`, link.invite_link).row();
+      }
+      await ctx.api.sendMessage(s.tg_id, `🎉 <b>${name} faol!</b>\n\n<b>${fmtDate(end)}</b> gacha muhim yangiliklar chiqishi bilan keladi.\n\nYopiq kanalga kirish havolasi faqat siz uchun, bir martalik, 7 kun amal qiladi.`, { parse_mode: "HTML", reply_markup: kb });
     } else {
       const link = await ctx.api.createChatInviteLink(channel, {
         member_limit: 1, expire_date: Math.floor(Date.now() / 1000) + 7 * 86400, name: `sub ${s.id}`,
@@ -80,8 +90,10 @@ export async function checkExpiry(bot: Bot) {
 
   const { rows: expired } = await db.query<Sub>("SELECT * FROM subscriptions WHERE status = 'active' AND ends_at <= now()");
   for (const s of expired) {
-    const channel = s.product === "channel" ? await channelFor(s.field) : 0;
-    if (channel) {
+    const channels = s.product === "pro"
+      ? (await Promise.all(config.fields.map((f) => channelFor(f, "pro")))).filter(Boolean)
+      : [await channelFor(s.field)].filter(Boolean);
+    for (const channel of channels) {
       try {
         await bot.api.banChatMember(channel, Number(s.tg_id));
         await bot.api.unbanChatMember(channel, Number(s.tg_id), { only_if_banned: true });

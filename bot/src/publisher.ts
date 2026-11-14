@@ -14,9 +14,13 @@ const PER_SOURCE = 2; // bitta manbadan kuniga ko'pi bilan
 
 export const isAuto = async () => (await kvGet("mode")) !== "manual";
 
-export async function channelFor(field: string) {
-  return config.channels[field] || Number(await kvGet(`channel:${field}`)) || 0;
+// Har yo'nalishning ikki kanali: "pro" = yopiq (barcha postlar chiqishi bilan), "public" = ochiq (bepul, kunlik dayjest)
+export type ChannelKind = "pro" | "public";
+export async function channelFor(field: string, kind: ChannelKind = "pro") {
+  if (kind === "pro" && config.channels[field]) return config.channels[field];
+  return Number(await kvGet(`channel:${field}:${kind}`)) || (kind === "pro" ? Number(await kvGet(`channel:${field}`)) : 0) || 0;
 }
+export const publicLink = (field: string) => kvGet(`channel_link:${field}:public`);
 
 export const publishedKeyboard = (id: number) => new InlineKeyboard().text("🗑 Kanaldan o'chirish", `del:${id}`);
 

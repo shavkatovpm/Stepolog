@@ -2,6 +2,7 @@
 import { GrammyError, InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config, FIELD_NAMES, DIGEST_TIMES } from "./config.ts";
+import { channelFor } from "./publisher.ts";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -44,8 +45,19 @@ export async function sendDigest(bot: Bot, onlyTo?: number, slot = "20:00") {
                              AND s.status = 'active' AND s.ends_at > now())`, // Pro obunachilari hammasini allaqachon oladi
           [field],
         )).rows;
-    const kb = new InlineKeyboard().text("📢 Barcha yangiliklar: kanal", `o:ch:${field}`);
+    const kb = new InlineKeyboard().text("⚡ Hammasi chiqishi bilan: Dayjest Pro", "o:pro:all");
     const head = `<b>${FIELD_NAMES[field] ?? field}: bugungi eng muhimi</b>`;
+
+    // Ochiq (bepul) kanalga ham shu dayjest chiqadi
+    const pub = onlyTo ? 0 : await channelFor(field, "public");
+    if (pub) {
+      try {
+        await bot.api.sendMessage(pub, head, { parse_mode: "HTML" });
+        for (const p of posts) await bot.api.sendMessage(pub, p.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
+      } catch (e) {
+        console.warn(`[digest] ochiq kanal ${field}:`, e instanceof Error ? e.message : e);
+      }
+    }
 
     let sent = 0;
     for (const u of users) {
