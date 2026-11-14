@@ -27,14 +27,40 @@ async function getUser(ctx: Context): Promise<User> {
 }
 const votes = async (id: string) =>
   new Set((await db.query<{ field: string }>("SELECT field FROM field_votes WHERE tg_id = $1", [id])).rows.map((r) => r.field));
-const activeSub = async (id: string, field: string) =>
+// product: "channel" = pullik kanal, "pro" = Dayjest Pro (yangiliklar botga chiqishi bilan)
+type Product = "channel" | "pro";
+const PRODUCT_NAME = (p: string, field: string) => (p === "pro" ? `Dayjest Pro · ${fieldName(field)}` : `${fieldName(field)} kanali`);
+const activeSub = async (id: string, field: string, product: Product = "channel") =>
   (await db.query<{ id: number; months: number; status: string; ends_at: Date | null }>(
-    `SELECT id, months, status, ends_at FROM subscriptions WHERE tg_id = $1 AND field = $2 AND status IN ('pending', 'active')
-     ORDER BY id DESC LIMIT 1`, [id, field])).rows[0];
+    `SELECT id, months, status, ends_at FROM subscriptions WHERE tg_id = $1 AND field = $2 AND product = $3 AND status IN ('pending', 'active')
+     ORDER BY id DESC LIMIT 1`, [id, field, product])).rows[0];
 const sites = async (id: string) =>
   (await db.query<{ id: number; url: string; title: string }>("SELECT id, url, title FROM user_sites WHERE tg_id = $1 ORDER BY id", [id])).rows;
 
 const fmtDate = (d: Date) => new Intl.DateTimeFormat("uz-UZ", { timeZone: config.tz, day: "2-digit", month: "2-digit", year: "numeric" }).format(d);
+
+// Pullik xizmat ekrani (kanal yoki Dayjest Pro): faol / tekshirilmoqda / sotib olish
+async function subScreen(u: User, product: Product, field: string): Promise<Screen> {
+  const s = await activeSub(u.tg_id, field, product);
+  const name = PRODUCT_NAME(product, field);
+  const back = product === "pro" ? "m:digest" : "m:channels";
+  const what = product === "pro"
+    ? "Barcha saralangan yangiliklar chiqishi bilan shu botga keladi, har birida amaliy izoh. Kunlik dayjestni kutish shart emas."
+    : "Barcha saralangan yangiliklar chiqishi bilan kanalda, har birida amaliy izoh. Dushanba: haftalik xulosa.";
+  if (s?.status === "active") {
+    return {
+      text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n✅ Faol: <b>${fmtDate(s.ends_at!)}</b> gacha.\nTugashidan 3 kun oldin eslatma yuboraman.`,
+      kb: new InlineKeyboard().text("🔁 Muddatni uzaytirish", `m:tariffs:${product}:${field}`).row().text("← Orqaga", back),
+    };
+  }
+  if (s) {
+    return { text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n⏳ Chekingiz tekshirilmoqda. Tasdiqlangach shu yerga xabar keladi.`, kb: new InlineKeyboard().text("← Orqaga", back) };
+  }
+  return {
+    text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n${what}\n\nOyiga ${som(PRICING.monthly)} dan.`,
+    kb: new InlineKeyboard().text("💳 Tarifni tanlash", `m:tariffs:${product}:${field}`).row().text("← Orqaga", back),
+  };
+}
 
 // ---------- Ekranlar ----------
 const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
@@ -48,10 +74,12 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
 
   async digest(u) {
     const open = u.fields.filter((f) => config.fields.includes(f)).map(fieldName).join(", ") || "soha tanlanmagan";
+    const pro = await activeSub(u.tg_id, config.fields[0], "pro");
     const kb = new InlineKeyboard().text("🗂 Sohalar", "m:fields").text("🕗 Vaqt", "m:time").row();
     u.digest ? kb.text("🔕 O'chirish", "a:digest:off") : kb.text("🔔 Yoqish", "a:digest:on");
+    kb.row().text(pro?.status === "active" ? "⭐ Dayjest Pro · faol" : "⭐ Dayjest Pro", `m:pro:${config.fields[0]}`);
     return {
-      text: `📰 <b>Kunlik dayjest</b> · bepul\n\nHar kuni tanlangan sohalar bo'yicha eng muhim 1-2 ta yangilik.\n\nHolat: <b>${u.digest ? `yoqilgan, ${u.digest_time}` : "o'chiq"}</b>\nSohalar: <b>${open}</b>`,
+      text: `📰 <b>Kunlik dayjest</b>\n\nHar kuni siz tanlagan vaqtda kun davomidagi eng muhim yangiliklarni yuboraman. Bu bepul.\n\nHozir: ${u.digest ? `har kuni <b>${u.digest_time}</b> da, <b>${open}</b> bo'yicha` : "<b>o'chiq</b>"}\n\n⭐ <b>Dayjest Pro</b>: barcha saralangan yangiliklar chiqishi bilan shu yerga keladi.`,
       kb: kb.row().text("← Orqaga", "m:root"),
     };
   },
@@ -91,52 +119,41 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
       if (i % 2 === 1) kb.row();
     });
     return {
-      text: "📢 <b>Soha kanallari</b> · pullik\n\nKanalda barcha muhim yangiliklar chiqishi bilan keladi, har birida amaliy izoh. Dushanba kuni haftalik xulosa.\n\nBir nechta kanalga obuna: 3 ta kanal −20%, hammasi −35% (kanallar ochilgani sari).",
+      text: "📢 <b>Soha kanallari</b> · pullik\n\nKanalda barcha saralangan yangiliklar chiqishi bilan keladi, har birida amaliy izoh. Dushanba kuni haftalik xulosa.\n\nBir nechta kanalga obuna: 3 ta kanal −20%, hammasi −35% (kanallar ochilgani sari).",
       kb: kb.row().text("← Orqaga", "m:root"),
     };
   },
 
   async ch(u, field = config.fields[0]) {
-    const s = await activeSub(u.tg_id, field);
-    const name = fieldName(field);
-    if (s?.status === "active") {
-      return {
-        text: `📢 <b>${name} kanali</b>\n\n✅ Obunangiz faol: <b>${fmtDate(s.ends_at!)}</b> gacha.\nTugashidan 3 kun oldin eslatma yuboraman.`,
-        kb: new InlineKeyboard().text("🔁 Muddatni uzaytirish", `m:tariffs:${field}`).row().text("← Orqaga", "m:channels"),
-      };
-    }
-    if (s) {
-      return {
-        text: `📢 <b>${name} kanali</b>\n\n⏳ Chekingiz tekshirilmoqda. Tasdiqlangach shu yerga kanal havolasi keladi.`,
-        kb: new InlineKeyboard().text("← Orqaga", "m:channels"),
-      };
-    }
-    return {
-      text: `📢 <b>${name} kanali</b>\n\nKuniga 3-5 ta saralangan yangilik, chiqishi bilan. Har birida amaliy izoh. Dushanba: haftalik xulosa.\n\nOyiga ${som(PRICING.monthly)} dan.`,
-      kb: new InlineKeyboard().text("💳 Tarifni tanlash", `m:tariffs:${field}`).row().text("← Orqaga", "m:channels"),
-    };
+    return subScreen(u, "channel", field);
   },
 
-  async tariffs(_u, field = config.fields[0]) {
+  async pro(u, field = config.fields[0]) {
+    return subScreen(u, "pro", field);
+  },
+
+  async tariffs(_u, arg = "") {
+    const [product, field] = arg.split(":");
     const kb = new InlineKeyboard();
     for (const m of [1, 3, 6, 12]) {
       const d = PRICING.discounts[m];
-      kb.text(`${monthsLabel(m)} · ${som(priceFor(m))}${d ? ` (−${d}%)` : ""}`, `m:pay:${field}:${m}`).row();
+      kb.text(`${monthsLabel(m)} · ${som(priceFor(m))}${d ? ` (−${d}%)` : ""}`, `m:pay:${product}:${field}:${m}`).row();
     }
-    return { text: "💳 Muddatni tanlang. Uzoqroq muddat arzonroq:", kb: kb.text("← Orqaga", `m:ch:${field}`) };
+    return { text: `💳 <b>${PRODUCT_NAME(product, field)}</b>\n\nMuddatni tanlang. Uzoqroq muddat arzonroq:`, kb: kb.text("← Orqaga", `m:${product === "pro" ? "pro" : "ch"}:${field}`) };
   },
 
-  async pay(u, arg = "") {
-    const [field, m] = arg.split(":");
+  async pay(_u, arg = "") {
+    const [product, field, m] = arg.split(":");
     const months = Number(m);
     const price = priceFor(months);
+    const after = product === "pro" ? "Dayjest Pro yoqiladi" : "kanal havolasi keladi";
     const kb = new InlineKeyboard();
-    if (PAY_CARD) kb.text("🧾 Chek yuborishga tayyorman", `a:receipt:${field}:${months}`).row();
+    if (PAY_CARD) kb.text("🧾 Chek yuborishga tayyorman", `a:receipt:${product}:${field}:${months}`).row();
     return {
       text: PAY_CARD
-        ? `💳 <b>${fieldName(field)} kanali · ${monthsLabel(months)}</b>\n\n1. Shu kartaga <b>${som(price)}</b> o'tkazing:\n<code>${PAY_CARD}</code>\n\n2. "Chek yuborishga tayyorman" tugmasini bosib, chek rasmini yuboring.\n\n3. Admin tasdiqlagach, kanal havolasi keladi.\n\nClick va Payme tez orada qo'shiladi.`
-        : `💳 <b>${fieldName(field)} kanali · ${monthsLabel(months)} · ${som(price)}</b>\n\nTo'lov tez orada ochiladi.${SUPPORT ? ` Hozir obuna bo'lish uchun yozing: ${SUPPORT}` : ""}`,
-      kb: kb.text("← Orqaga", `m:tariffs:${field}`),
+        ? `💳 <b>${PRODUCT_NAME(product, field)} · ${monthsLabel(months)}</b>\n\n1. Shu kartaga <b>${som(price)}</b> o'tkazing:\n<code>${PAY_CARD}</code>\n\n2. "Chek yuborishga tayyorman" tugmasini bosib, chek rasmini yuboring.\n\n3. Admin tasdiqlagach, ${after}.\n\nClick va Payme tez orada qo'shiladi.`
+        : `💳 <b>${PRODUCT_NAME(product, field)} · ${monthsLabel(months)} · ${som(price)}</b>\n\nTo'lov tez orada ochiladi.${SUPPORT ? ` Hozir obuna bo'lish uchun yozing: ${SUPPORT}` : ""}`,
+      kb: kb.text("← Orqaga", `m:tariffs:${product}:${field}`),
     };
   },
 
@@ -169,7 +186,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
 
   async help() {
     return {
-      text: `❓ <b>Yordam</b>\n\nStepolog xorijiy saytlardagi muhim yangiliklarni saralab, o'zbek tilida qisqa qilib yetkazadi.\n\n• Dayjest: har kuni 1-2 ta eng muhim yangilik, bepul\n• Kanallar: barcha yangiliklar chiqishi bilan, pullik\n• Saytlar: o'zingiz tanlagan sayt yangiliklari\n\nKabinetni ochish: /start${SUPPORT ? `\nSavol va taklif: ${SUPPORT}` : ""}`,
+      text: `❓ <b>Yordam</b>\n\nStepolog xorijiy saytlardagi muhim yangiliklarni saralab, o'zbek tilida qisqa qilib yetkazadi.\n\n• Dayjest: har kuni eng muhim yangiliklar, bepul\n• Dayjest Pro: barcha yangiliklar chiqishi bilan botga, pullik\n• Kanallar: barcha yangiliklar chiqishi bilan kanalda, pullik\n• Saytlar: o'zingiz tanlagan sayt yangiliklari\n\nKabinetni ochish: /start${SUPPORT ? `\nSavol va taklif: ${SUPPORT}` : ""}`,
       kb: new InlineKeyboard().text("← Orqaga", "m:root"),
     };
   },
@@ -264,12 +281,12 @@ export function registerMenu(bot: Bot) {
         screen = "site_list"; toast = "Sayt o'chirildi";
         break;
       case "receipt": {
-        const [field, m] = arg.split(":");
+        const [product, field, m] = arg.split(":");
         const months = Number(m);
-        if (!config.fields.includes(field) || !(months in PRICING.discounts)) break;
+        if (!["channel", "pro"].includes(product) || !config.fields.includes(field) || !(months in PRICING.discounts)) break;
         const { rows: [sub] } = await db.query<{ id: number }>(
-          "INSERT INTO subscriptions (tg_id, field, months, amount, status) VALUES ($1, $2, $3, $4, 'draft') RETURNING id",
-          [id, field, months, priceFor(months)],
+          "INSERT INTO subscriptions (tg_id, field, product, months, amount, status) VALUES ($1, $2, $3, $4, $5, 'draft') RETURNING id",
+          [id, field, product, months, priceFor(months)],
         );
         await db.query("UPDATE users SET state = $2 WHERE tg_id = $1", [id, `await_receipt:${sub.id}`]);
         await ctx.answerCallbackQuery();
@@ -306,7 +323,7 @@ export function registerMenu(bot: Bot) {
       await db.query("UPDATE subscriptions SET status = 'pending', receipt_file_id = $2 WHERE id = $1", [subId, photo]);
       await db.query("UPDATE users SET state = NULL WHERE tg_id = $1", [ctx.from.id]);
       await notifyAdminReceipt(ctx.api, subId);
-      await ctx.reply("⏳ Chek qabul qilindi. Admin tekshirgach, shu yerga kanal havolasi keladi.");
+      await ctx.reply("⏳ Chek qabul qilindi. Admin tekshirgach, shu yerga xabar keladi.");
       return render(ctx, "root");
     }
     return next();

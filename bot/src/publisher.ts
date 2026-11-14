@@ -31,6 +31,7 @@ export async function publishPost(api: Api, post: Post) {
     channelMsgId = msg.message_id;
   }
   await db.query("UPDATE posts SET status = 'published', channel_msg_id = $2, published_at = now() WHERE id = $1", [post.id, channelMsgId]);
+  await deliverPro(api, post);
   if (post.admin_msg_id) {
     await api
       .editMessageReplyMarkup(config.adminChatId, Number(post.admin_msg_id), {
@@ -39,6 +40,21 @@ export async function publishPost(api: Api, post: Post) {
       .catch(() => {});
   }
   return Boolean(channel);
+}
+
+// Dayjest Pro obunachilariga post chiqishi bilan botga yuboriladi
+async function deliverPro(api: Api, post: Post) {
+  const { rows } = await db.query<{ tg_id: string }>(
+    `SELECT DISTINCT s.tg_id FROM subscriptions s JOIN users u ON u.tg_id = s.tg_id
+     WHERE s.product = 'pro' AND s.field = $1 AND s.status = 'active' AND s.ends_at > now() AND NOT u.blocked`,
+    [post.field],
+  );
+  for (const r of rows) {
+    await api.sendMessage(r.tg_id, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } })
+      .catch((e) => console.warn(`[pro] ${r.tg_id}:`, e?.description ?? e));
+    await new Promise((res) => setTimeout(res, 50));
+  }
+  if (rows.length) console.log(`[pro] #${post.id} → ${rows.length} ta obunachi`);
 }
 
 // Har 5 daqiqada: navbatdagi eng yuqori balli qoralamani chiqaradi (oraliq va kunlik limit bilan)

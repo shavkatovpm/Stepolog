@@ -109,3 +109,6 @@ CREATE TABLE IF NOT EXISTS user_site_items (
   created_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (site_id, url)
 );
+
+-- v4: Dayjest Pro
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS product text NOT NULL DEFAULT 'channel'; -- channel | pro
