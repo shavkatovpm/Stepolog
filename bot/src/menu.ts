@@ -49,15 +49,15 @@ async function subScreen(u: User, product: Product, field: string): Promise<Scre
     : "Barcha saralangan yangiliklar chiqishi bilan kanalda, har birida amaliy izoh. Dushanba: haftalik xulosa.";
   if (s?.status === "active") {
     return {
-      text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n✅ Faol: <b>${fmtDate(s.ends_at!)}</b> gacha.\nTugashidan 3 kun oldin eslatma yuboraman.`,
+      text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n✅ Faol: <b>${fmtDate(s.ends_at!)}</b> gacha.\nTugashidan 3 kun oldin eslatma yuboraman.`,
       kb: new InlineKeyboard().text("🔁 Muddatni uzaytirish", `m:tariffs:${product}:${field}`).row().text("← Orqaga", back),
     };
   }
   if (s) {
-    return { text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n⏳ Chekingiz tekshirilmoqda. Tasdiqlangach shu yerga xabar keladi.`, kb: new InlineKeyboard().text("← Orqaga", back) };
+    return { text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n⏳ Chekingiz tekshirilmoqda. Tasdiqlangach shu yerga xabar keladi.`, kb: new InlineKeyboard().text("← Orqaga", back) };
   }
   return {
-    text: `${product === "pro" ? "⭐" : "📢"} <b>${name}</b>\n\n${what}\n\nOyiga ${som(PRICING.monthly)} dan.`,
+    text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n${what}\n\nOyiga ${som(PRICING.monthly)} dan.`,
     kb: new InlineKeyboard().text("💳 Tarifni tanlash", `m:tariffs:${product}:${field}`).row().text("← Orqaga", back),
   };
 }
@@ -75,8 +75,8 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async digest(u) {
     const pro = await activeSub(u.tg_id, config.fields[0], "pro");
     const kb = new InlineKeyboard().text("🗂 Sohalar", "m:fields").text("🕗 Vaqt", "m:time").row();
+    kb.text(pro?.status === "active" ? "⚡ Dayjest Pro · faol" : "⚡ Dayjest Pro", `m:pro:${config.fields[0]}`);
     u.digest ? kb.text("🔕 O'chirish", "a:digest:off") : kb.text("🔔 Yoqish", "a:digest:on");
-    kb.row().text(pro?.status === "active" ? "⭐ Dayjest Pro · faol" : "⭐ Dayjest Pro", `m:pro:${config.fields[0]}`);
     return {
       text: `📰 <b>Kunlik dayjest</b>\n\nKun davomida yangiliklarni men kuzataman. Siz esa kun yakunida eng muhimlarini bitta xabarda olasiz.\n\nPastdan sohalarni va o'zingizga qulay vaqtni tanlang.${u.digest ? "" : "\n\nHozir dayjest o'chiq."}`,
       kb: kb.row().text("← Orqaga", "m:root"),
