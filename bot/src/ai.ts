@@ -3,7 +3,7 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { config } from "./config.ts";
-import { STYLE_RULES, EXAMPLES, findBanned, scrub } from "./style.ts";
+import { STYLE_RULES, EXAMPLES, findBanned, scrub, limitEmoji } from "./style.ts";
 import { GENERAL_RULES, fieldPrompt } from "./criteria.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
@@ -100,5 +100,6 @@ export async function writePost(a: WriteInput): Promise<PostDraft> {
   if (bad.length) {
     p = await writeOnce(a, `\n\nOldingi variantda taqiqlangan iboralar bor edi: ${bad.join(", ")}. Ularsiz yozing.`);
   }
-  return { title: scrub(p.title), body: scrub(p.body), takeaway: scrub(p.takeaway) };
+  const [title, body, takeaway] = limitEmoji([scrub(p.title), scrub(p.body), scrub(p.takeaway)]);
+  return { title, body, takeaway };
 }

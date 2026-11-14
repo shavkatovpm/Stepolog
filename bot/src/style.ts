@@ -23,7 +23,13 @@ Taqiqlangan:
 - Uzun tire (—) va o'rta tire (–). Ularning o'rniga vergul, nuqta yoki ikki nuqta.
 - "shuni ta'kidlash joizki", "muhim ahamiyatga ega", "ushbu", "mazkur", "bugungi kunda", "zamonaviy dunyoda",
   "inqilobiy", "yangi davr", "o'yin qoidalarini o'zgartiradi", "keling, ko'rib chiqamiz".
-- Emoji, heshteg, undov belgilarini ko'paytirish.
+- Heshteg va undov belgilarini ko'paytirish.
+
+Emoji:
+- Postda 1 ta, ko'pi bilan 2 ta emoji. Faqat mazmunga mos, jiddiy ko'rinadiganlari:
+  📈 📉 📊 💡 ⚠️ 🔍 🛠 📱 🎯 💰 🤖 📌 ✅ 🔔.
+- Joyi: sarlavha boshida bitta, xohlasangiz amaliy izoh boshida bitta. Matn ichida emoji yo'q.
+- Kulgili va hissiy emojilar (😂 🔥 🚀 😱 👀 💥) ishlatilmaydi.
 `.trim();
 
 // Foydalanuvchi namunalari kelgach shu yerga qo'shiladi
@@ -41,3 +47,10 @@ export function findBanned(text: string) {
 
 // Oxirgi himoya: tirelarni almashtirish
 export const scrub = (s: string) => s.replace(/\s*[—–]\s*/g, ", ").replace(/,\s*,/g, ",").trim();
+
+// Postda ko'pi bilan 2 ta emoji qoladi (ortiqchasi olib tashlanadi)
+const EMOJI = /\p{Extended_Pictographic}\uFE0F?/gu;
+export function limitEmoji(parts: string[], max = 2): string[] {
+  let n = 0;
+  return parts.map((p) => p.replace(EMOJI, (m) => (++n <= max ? m : "")).replace(/ {2,}/g, " ").trim());
+}
