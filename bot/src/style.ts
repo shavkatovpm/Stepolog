@@ -14,8 +14,10 @@ Til:
 
 Mazmun:
 - Faqat manbadagi faktlar. O'zingizdan raqam, sana yoki da'vo qo'shmang.
-- Faqat yangilikning o'zi: nima bo'ldi, kimga tegishli, qachondan. Maslahat va xulosa qo'shmang.
-- Eng muhim tafsilot birinchi gapda bo'lsin.
+- "body": faqat yangilikning o'zi: nima bo'ldi, kimga tegishli, qachondan. Eng muhim tafsilot birinchi gapda.
+- "takeaway": alohida 1-2 gap, bu yangilik o'quvchi ishida nimani anglatadi yoki endi nima qilish kerak.
+  Aniq va amaliy bo'lsin, umumiy gap emas ("bu muhim yangilik", "kuzatib boring" kabi gaplar yozilmaydi).
+  "Siz uchun", "Xulosa", "Muhimi" kabi yorliq bilan boshlamang, to'g'ridan-to'g'ri gapdan boshlang.
 
 Taqiqlangan:
 - Uzun tire (—) va o'rta tire (–). Ularning o'rniga vergul, nuqta yoki ikki nuqta.
