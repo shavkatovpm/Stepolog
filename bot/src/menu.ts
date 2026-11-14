@@ -73,13 +73,12 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   },
 
   async digest(u) {
-    const open = u.fields.filter((f) => config.fields.includes(f)).map(fieldName).join(", ") || "soha tanlanmagan";
     const pro = await activeSub(u.tg_id, config.fields[0], "pro");
     const kb = new InlineKeyboard().text("🗂 Sohalar", "m:fields").text("🕗 Vaqt", "m:time").row();
     u.digest ? kb.text("🔕 O'chirish", "a:digest:off") : kb.text("🔔 Yoqish", "a:digest:on");
     kb.row().text(pro?.status === "active" ? "⭐ Dayjest Pro · faol" : "⭐ Dayjest Pro", `m:pro:${config.fields[0]}`);
     return {
-      text: `📰 <b>Kunlik dayjest</b>\n\nHar kuni siz tanlagan vaqtda kun davomidagi eng muhim yangiliklarni yuboraman. Bu bepul.\n\nHozir: ${u.digest ? `har kuni <b>${u.digest_time}</b> da, <b>${open}</b> bo'yicha` : "<b>o'chiq</b>"}\n\n⭐ <b>Dayjest Pro</b>: barcha saralangan yangiliklar chiqishi bilan shu yerga keladi.`,
+      text: `📰 <b>Kunlik dayjest</b>\n\nKun davomida yangiliklarni men kuzataman. Siz esa kun yakunida eng muhimlarini bitta xabarda olasiz.\n\nPastdan sohalarni va o'zingizga qulay vaqtni tanlang.${u.digest ? "" : "\n\nHozir dayjest o'chiq."}`,
       kb: kb.row().text("← Orqaga", "m:root"),
     };
   },
