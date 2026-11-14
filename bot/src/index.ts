@@ -39,4 +39,4 @@ for (const sig of ["SIGINT", "SIGTERM"] as const) {
 }
 
 console.log("Stepolog bot ishga tushdi");
-await bot.start({ allowed_updates: ["message", "callback_query"] });
+await bot.start({ allowed_updates: ["message", "callback_query", "my_chat_member"] });

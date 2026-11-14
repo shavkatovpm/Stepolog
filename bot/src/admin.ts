@@ -1,6 +1,6 @@
 // Admin guruh: postni tasdiqlash, tahrirlash, o'chirish
 import { InlineKeyboard, type Bot } from "grammy";
-import { db } from "./db/index.ts";
+import { db, kvGet, kvSet } from "./db/index.ts";
 import { config } from "./config.ts";
 import { esc } from "./format.ts";
 
@@ -12,13 +12,36 @@ type PostRow = { id: number; field: string; text: string; status: string; admin_
 const getPost = async (id: number) =>
   (await db.query<PostRow>("SELECT id, field, text, status, admin_msg_id FROM posts WHERE id = $1", [id])).rows[0];
 
+// Kanal: .env da berilgan bo'lsa o'sha, bo'lmasa bot admin qilingan kanal (kv da saqlanadi)
+export async function channelFor(field: string) {
+  return config.channels[field] || Number(await kvGet(`channel:${field}`)) || 0;
+}
+
 export function registerAdmin(bot: Bot) {
+  // Egasi botni kanalga admin qilsa, kanal avtomatik ulanadi (hozircha bitta soha: marketing)
+  bot.on("my_chat_member", async (ctx) => {
+    const u = ctx.myChatMember;
+    if (u.chat.type !== "channel" || u.from.id !== config.adminChatId) return;
+    const title = u.chat.title;
+    const field = config.fields[0];
+    if (u.new_chat_member.status === "administrator") {
+      if (!u.new_chat_member.can_post_messages) {
+        return ctx.api.sendMessage(config.adminChatId, `"${title}" kanalida botga "Xabar joylash" huquqini bering.`);
+      }
+      await kvSet(`channel:${field}`, String(u.chat.id));
+      await ctx.api.sendMessage(config.adminChatId, `✅ "${title}" kanali ulandi. Endi ✅ bosilgan postlar shu kanalga chiqadi.`);
+    } else if (["left", "kicked", "member"].includes(u.new_chat_member.status)) {
+      if ((await kvGet(`channel:${field}`)) === String(u.chat.id)) await db.query("DELETE FROM kv WHERE key = $1", [`channel:${field}`]);
+      await ctx.api.sendMessage(config.adminChatId, `"${title}" kanali uzildi. Postlar faqat bazada tasdiqlanadi.`);
+    }
+  });
+
   const admin = bot.filter((ctx) => ctx.chat?.id === config.adminChatId);
 
   admin.callbackQuery(/^pub:(\d+)$/, async (ctx) => {
     const post = await getPost(Number(ctx.match[1]));
     if (!post || post.status !== "draft") return ctx.answerCallbackQuery("Allaqachon ko'rib chiqilgan");
-    const channel = config.channels[post.field];
+    const channel = await channelFor(post.field);
     let channelMsgId: number | null = null;
     if (channel) {
       const msg = await ctx.api.sendMessage(channel, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } });
