@@ -12,7 +12,7 @@ type User = {
 type Screen = { text: string; kb: InlineKeyboard };
 
 const fieldName = (f: string) => FIELD_NAMES[f] ?? SOON_FIELDS.find(([k]) => k === f)?.[1] ?? f;
-const monthsLabel = (m: number) => (m === 12 ? "1 yil" : `${m} oy`);
+const monthsLabel = (m: number) => `${m} oy`;
 
 // ---------- Ma'lumot ----------
 async function getUser(ctx: Context): Promise<User> {

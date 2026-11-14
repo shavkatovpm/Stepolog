@@ -36,12 +36,13 @@ export const SOON_FIELDS: [string, string][] = [
   ["smm", "SMM"], ["ai", "Sun'iy intellekt"], ["it", "Dasturlash"], ["ecommerce", "E-commerce"], ["design", "Dizayn"],
 ];
 
-// Tariflar: oylik narx va muddat bo'yicha chegirma (sayt bilan bir xil)
+// Tariflar: aniq narxlar (so'm) va ko'rsatiladigan chegirma (sayt bilan bir xil bo'lishi kerak)
 export const PRICING = {
-  monthly: Number(process.env.PRICE_MONTHLY ?? 27000),
+  monthly: 27000,
+  plans: { 1: 27000, 12: 226000 } as Record<number, number>,
   discounts: { 1: 0, 12: 30 } as Record<number, number>,
 };
-export const priceFor = (months: number) => Math.round(PRICING.monthly * months * (1 - PRICING.discounts[months] / 100));
+export const priceFor = (months: number) => PRICING.plans[months];
 export const som = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
 
 export const DIGEST_TIMES = ["08:00", "13:00", "20:00", "22:00"];
