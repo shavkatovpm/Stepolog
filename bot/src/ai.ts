@@ -105,3 +105,22 @@ export async function writePost(a: WriteInput): Promise<PostDraft> {
   const [takeaway] = limitEmoji([scrub(p.takeaway)], 1);
   return { title, body, takeaway };
 }
+
+// ---------- 3. User saytlari uchun qisqa o'zbekcha mazmun (Haiku: arzon) ----------
+const Short = z.object({
+  title: z.string().describe("o'zbekcha sarlavha, 12 so'zdan oshmasin"),
+  body: z.string().describe("1-2 qisqa gap: maqola nima haqida"),
+});
+
+export async function summarizeShort(a: { title: string; excerpt: string }) {
+  const res = await client.messages.parse({
+    model: config.models.filter,
+    max_tokens: 1500,
+    output_config: { effort: "low", format: zodOutputFormat(Short) },
+    system: `${STYLE_RULES}\n\nBu userning o'zi tanlagan saytidan maqola. Uni o'zbek tilida qisqa qilib bering. Amaliy izoh va emoji kerak emas.`,
+    messages: [{ role: "user", content: `Sarlavha: ${a.title}\n\nMatn:\n${a.excerpt || "(matn yo'q, faqat sarlavha bo'yicha yozing)"}` }],
+  });
+  if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("qisqartirish: javob yo'q");
+  const [title, body] = limitEmoji([scrub(res.parsed_output.title), scrub(res.parsed_output.body)], 0);
+  return { title, body };
+}

@@ -71,3 +71,41 @@ CREATE TABLE IF NOT EXISTS kv (
 ALTER TABLE sources  ADD COLUMN IF NOT EXISTS tier text NOT NULL DEFAULT 'media'; -- official | media | blog
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS base_score int;  -- soha bo'yicha ball (AI)
 ALTER TABLE articles ADD COLUMN IF NOT EXISTS flags jsonb;     -- umumiy mezon belgilari (AI)
+
+-- v3: foydalanuvchi kabineti
+ALTER TABLE users ADD COLUMN IF NOT EXISTS digest_time text NOT NULL DEFAULT '20:00';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS state text;                 -- kutilayotgan kiritish: await_site | await_receipt:<sub_id>
+ALTER TABLE users ADD COLUMN IF NOT EXISTS autopost_wait boolean NOT NULL DEFAULT false;
+
+CREATE TABLE IF NOT EXISTS field_votes (               -- yopiq sohalarga "menga kerak"
+  tg_id      bigint NOT NULL REFERENCES users(tg_id) ON DELETE CASCADE,
+  field      text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (tg_id, field)
+);
+
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS receipt_file_id text;
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS admin_msg_id bigint;
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS reminded boolean NOT NULL DEFAULT false;
+
+CREATE TABLE IF NOT EXISTS user_sites (                -- user kuzatayotgan saytlar
+  id         serial PRIMARY KEY,
+  tg_id      bigint NOT NULL REFERENCES users(tg_id) ON DELETE CASCADE,
+  url        text NOT NULL,
+  feed_url   text NOT NULL,
+  title      text NOT NULL,
+  last_error text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (tg_id, feed_url)
+);
+
+CREATE TABLE IF NOT EXISTS user_site_items (
+  id         serial PRIMARY KEY,
+  site_id    int NOT NULL REFERENCES user_sites(id) ON DELETE CASCADE,
+  url        text NOT NULL,
+  title      text NOT NULL,
+  excerpt    text NOT NULL DEFAULT '',
+  sent       boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (site_id, url)
+);

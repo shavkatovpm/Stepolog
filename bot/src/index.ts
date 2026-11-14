@@ -1,7 +1,9 @@
 import { Bot } from "grammy";
 import { config } from "./config.ts";
 import { registerAdmin } from "./admin.ts";
-import { registerUsers } from "./users.ts";
+import { registerMenu } from "./menu.ts";
+import { registerSubs, checkExpiry } from "./subs.ts";
+import { checkUserSites } from "./sites.ts";
 import { fetchAll } from "./fetcher.ts";
 import { scorePending, writeDrafts } from "./pipeline.ts";
 import { maybeSendDigest, sendDigest } from "./digest.ts";
@@ -9,7 +11,8 @@ import { autoPublish } from "./publisher.ts";
 
 const bot = new Bot(config.botToken);
 registerAdmin(bot);
-registerUsers(bot);
+registerSubs(bot);
+registerMenu(bot);
 bot.catch((err) => console.error("[bot]", err.error));
 
 // Asosiy tsikl: o'qish → saralash → yozish. Bir vaqtda faqat bittasi ishlaydi.
@@ -21,6 +24,7 @@ async function cycle() {
     await fetchAll();
     await scorePending();
     await writeDrafts(bot);
+    await checkUserSites(bot);
   } catch (e) {
     console.error("[cycle]", e);
   } finally {
@@ -48,6 +52,7 @@ if (config.autoCycle) {
   setInterval(cycle, config.fetchEveryMin * 60_000);
   setInterval(() => autoPublish(bot).catch((e) => console.error("[publish]", e)), 5 * 60_000);
   setInterval(() => maybeSendDigest(bot).catch((e) => console.error("[digest]", e)), 5 * 60_000);
+  setInterval(() => checkExpiry(bot).catch((e) => console.error("[expiry]", e)), 60 * 60_000);
   void cycle();
 } else {
   console.log("Test rejimi: avtomatik tsikl o'chiq, /yangila bilan ishga tushiring");

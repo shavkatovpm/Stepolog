@@ -1,7 +1,7 @@
-// Kechki dayjest: soat 20:00 da bugungi eng muhim 1-2 post bepul foydalanuvchilarga
+// Kunlik dayjest: har user o'zi tanlagan vaqtda (08:00/13:00/20:00/22:00) bugungi eng muhim 1-2 post
 import { GrammyError, InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
-import { config, FIELD_NAMES } from "./config.ts";
+import { config, FIELD_NAMES, DIGEST_TIMES } from "./config.ts";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -15,16 +15,19 @@ function tashkentNow() {
 
 export async function maybeSendDigest(bot: Bot) {
   const { date, hour } = tashkentNow();
-  if (hour < config.digestHour) return;
-  const key = `digest:${date}`;
-  if (await kvGet(key)) return;
-  await kvSet(key, "sending");
-  await sendDigest(bot);
-  await kvSet(key, "done");
+  for (const slot of DIGEST_TIMES) {
+    const h = Number(slot.slice(0, 2));
+    if (hour < h || hour >= h + 2) continue; // kechikib ishga tushsa, eski vaqtdagi dayjest yuborilmaydi
+    const key = `digest:${date}:${slot}`;
+    if (await kvGet(key)) continue;
+    await kvSet(key, "sending");
+    await sendDigest(bot, undefined, slot);
+    await kvSet(key, "done");
+  }
 }
 
 // onlyTo berilsa, faqat o'sha chatga yuboriladi (test uchun)
-export async function sendDigest(bot: Bot, onlyTo?: number) {
+export async function sendDigest(bot: Bot, onlyTo?: number, slot = "20:00") {
   for (const field of config.fields) {
     const { rows: posts } = await db.query<{ text: string }>(
       `SELECT text FROM posts WHERE field = $1 AND status = 'published' AND published_at > now() - interval '24 hours'
@@ -36,11 +39,10 @@ export async function sendDigest(bot: Bot, onlyTo?: number) {
     const users = onlyTo
       ? [{ tg_id: String(onlyTo) }]
       : (await db.query<{ tg_id: string }>(
-          "SELECT tg_id FROM users WHERE digest AND NOT blocked AND $1 = ANY(fields)",
-          [field],
+          "SELECT tg_id FROM users WHERE digest AND NOT blocked AND $1 = ANY(fields) AND digest_time = $2",
+          [field, slot],
         )).rows;
-    const link = config.channelLinks[field];
-    const kb = link ? new InlineKeyboard().url("Barcha yangiliklar kanalda", link) : undefined;
+    const kb = new InlineKeyboard().text("📢 Barcha yangiliklar: kanal", `o:ch:${field}`);
     const head = `<b>${FIELD_NAMES[field] ?? field}: bugungi eng muhimi</b>`;
 
     let sent = 0;

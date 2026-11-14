@@ -30,3 +30,22 @@ export const config = {
 };
 
 export const FIELD_NAMES: Record<string, string> = { marketing: "Marketing" };
+
+// Hali ochilmagan sohalar: userlar "menga kerak" deb ovoz beradi
+export const SOON_FIELDS: [string, string][] = [
+  ["smm", "SMM"], ["ai", "Sun'iy intellekt"], ["it", "Dasturlash"], ["ecommerce", "E-commerce"], ["design", "Dizayn"],
+];
+
+// Tariflar: oylik narx va muddat bo'yicha chegirma (sayt bilan bir xil)
+export const PRICING = {
+  monthly: Number(process.env.PRICE_MONTHLY ?? 49000),
+  discounts: { 1: 0, 3: 5, 6: 10, 12: 15 } as Record<number, number>,
+};
+export const priceFor = (months: number) => Math.round(PRICING.monthly * months * (1 - PRICING.discounts[months] / 100));
+export const som = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
+
+export const DIGEST_TIMES = ["08:00", "13:00", "20:00", "22:00"];
+export const SITE_LIMIT = Number(process.env.SITE_LIMIT ?? 2); // bepul tarifda kuzatiladigan sayt
+export const SITE_DAILY = 10; // bitta userga saytlardan kuniga ko'pi bilan
+export const PAY_CARD = process.env.PAY_CARD ?? ""; // to'lov uchun karta raqami
+export const SUPPORT = process.env.SUPPORT ?? ""; // yordam uchun @username
