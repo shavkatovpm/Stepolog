@@ -70,7 +70,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async root() {
     return {
       text: "Salom! Men Stepolog 👋\n\nHar kuni siz uchun kerakli ma'lumotlarni qidiraman, ular orasidan eng muhimlarini saralab yuborib turaman.\n\nSiz esa xizmatlarimdan qaysilari kerakligini tanlang. Pastdagi tugmalar orqali 👇",
-      kb: new InlineKeyboard().text("📰 Dayjest", "m:digest").text("📣 Avtopost", "m:autopost"),
+      kb: new InlineKeyboard().text("📰 Dayjest", "m:digest").text("📣 Avtopost", "m:autopost").row().text("❓ Yordam", "m:help"),
     };
   },
 
