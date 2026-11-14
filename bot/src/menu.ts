@@ -45,7 +45,7 @@ async function subScreen(u: User, product: Product, field: string): Promise<Scre
   const name = PRODUCT_NAME(product, field);
   const back = product === "pro" ? "m:digest" : "m:channels";
   const what = product === "pro"
-    ? "Oddiy dayjestdan farqi:\n\n• Yangiliklar kun oxirini kutmasdan, chiqishi bilan keladi\n• Faqat eng muhimlari emas, barcha saralangan yangiliklar\n• Muhim o'zgarishni boshqalardan oldin bilasiz"
+    ? "Oddiy dayjest kun yakunida bir marta keladi. Pro'da kuniga 5 tagacha muhim yangilikni chiqishi bilan ko'rasiz."
     : "Barcha saralangan yangiliklar chiqishi bilan kanalda, har birida amaliy izoh. Dushanba: haftalik xulosa.";
   if (s?.status === "active") {
     return {
@@ -57,7 +57,7 @@ async function subScreen(u: User, product: Product, field: string): Promise<Scre
     return { text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n⏳ Chekingiz tekshirilmoqda. Tasdiqlangach shu yerga xabar keladi.`, kb: new InlineKeyboard().text("← Orqaga", back) };
   }
   return {
-    text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n${what}\n\nOyiga ${som(PRICING.monthly)} dan.`,
+    text: `${product === "pro" ? "⚡" : "📢"} <b>${name}</b>\n\n${what}\n\nOyiga ${som(PRICING.monthly)}.`,
     kb: new InlineKeyboard().text("💳 Tarifni tanlash", `m:tariffs:${product}:${field}`).row().text("← Orqaga", back),
   };
 }
