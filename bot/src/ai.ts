@@ -4,7 +4,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { config } from "./config.ts";
 import { STYLE_RULES, EXAMPLES, findBanned, scrub } from "./style.ts";
-import { GENERAL_RULES, FIELD_RULES } from "./criteria.ts";
+import { GENERAL_RULES, fieldPrompt } from "./criteria.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
 
@@ -23,6 +23,8 @@ const Verdicts = z.object({
       promo: z.boolean(),
       stale: z.boolean(),
       duplicate_of: z.number().nullable(),
+      category: z.string().describe("soha turlaridan birining id si yoki other"),
+      hype: z.boolean(),
       score: z.number().describe("1-10, soha mezonlari bo'yicha"),
       reason: z.string().describe("bitta qisqa gap, o'zbekcha"),
     }),
@@ -32,7 +34,7 @@ export type Verdict = z.infer<typeof Verdicts>["items"][number];
 
 // recent: shu sohada oxirgi 48 soatda qabul qilingan yangiliklar (takrorni aniqlash uchun)
 export async function scoreArticles(field: string, list: Candidate[], recent: { id: number; title: string }[]) {
-  const system = `Siz yangilik saralovchisiz. Har bir maqola uchun belgilar va ball qo'ying.\n\n${GENERAL_RULES}\n\n${FIELD_RULES[field]}`;
+  const system = `Siz yangilik saralovchisiz. Har bir maqola uchun belgilar va ball qo'ying.\n\n${GENERAL_RULES}\n\n${fieldPrompt(field)}`;
   const prev = recent.length ? recent.map((r) => `id=${r.id}: ${r.title}`).join("\n") : "(hali yo'q)";
   const input = list.map((a) => `id=${a.id} | ${a.source}\n${a.title}\n${a.excerpt.slice(0, 500)}`).join("\n\n---\n\n");
 

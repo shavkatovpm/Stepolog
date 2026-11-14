@@ -5,7 +5,7 @@ import { config } from "./config.ts";
 import { scoreArticles, writePost, type Candidate } from "./ai.ts";
 import { renderPost } from "./format.ts";
 import { draftKeyboard } from "./admin.ts";
-import { finalScore, type Flags, type Tier } from "./criteria.ts";
+import { finalScore, fieldCheck, type Flags, type Tier } from "./criteria.ts";
 
 const BATCH = 20;
 
@@ -37,12 +37,15 @@ export async function scorePending() {
         const art = chunk.find((c) => c.id === v.id);
         if (!art || seen.has(v.id)) continue;
         seen.add(v.id);
-        const { id, score: base, reason, ...flags } = v;
-        const { score, reject } = finalScore(base, flags, art.tier);
+        const { id, score: base, reason, category, hype, ...flags } = v;
+        const f = fieldCheck(field, category, hype, base);
+        const g = finalScore(f.score, flags, art.tier);
+        const reject = g.reject ?? f.reject;
+        const score = reject ? 0 : g.score;
         const keep = !reject && score >= config.minScore;
         await db.query(
           "UPDATE articles SET verdict = $2, score = $3, base_score = $4, flags = $5, reason = $6 WHERE id = $1",
-          [id, keep ? "keep" : "skip", score, Math.round(base), JSON.stringify(flags), reject ? `${reject}. ${reason}` : reason],
+          [id, keep ? "keep" : "skip", score, Math.round(base), JSON.stringify({ ...flags, category, hype }), reject ? `${reject}. ${reason}` : reason],
         );
       }
       // AI javob bermagan maqolalar qayta-qayta aylanmasligi uchun o'tkazib yuboriladi
