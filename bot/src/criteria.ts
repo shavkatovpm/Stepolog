@@ -56,6 +56,7 @@ export const FIELD_SUBS: Record<string, Sub[]> = {
   marketing: [
     { id: "smm", name: "SMM va ijtimoiy tarmoqlar", desc: "Instagram, Telegram, TikTok, YouTube, Facebook, Threads: yangi funksiyalar, algoritmlar, kontent formatlari, auditoriya raqamlari" },
     { id: "target", name: "Target va reklama", desc: "Meta Ads, Google Ads, TikTok Ads, Yandex Direct kabinetlari: yangi vositalar, reklama qoidalari, moderatsiya, narxlar" },
+    { id: "tgads", name: "Telegram Ads", desc: "Telegram Ads platformasi, Telegram kanallarida reklama va kanal xaridi, Telegram'ning reklama qoidalari, narxlari va yangi formatlari" },
     { id: "seo", name: "SEO va GEO", desc: "Google qidiruvi, AI qidiruv (AI Overviews, ChatGPT qidiruvi), sayt trafigi, veb analitika" },
     { id: "brand", name: "Brend va kampaniyalar", desc: "brend strategiyasi, taniqli kampaniyalar, rebrending, muvaffaqiyatli va muvaffaqiyatsiz keyslar" },
     { id: "ai", name: "Marketingda AI", desc: "reklama va kontent tayyorlashdagi AI vositalari, chatbotlar va AI agentlarning marketingga ta'siri" },
