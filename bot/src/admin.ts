@@ -114,6 +114,19 @@ export function registerAdmin(bot: Bot) {
     await ctx.reply("✏️ Yangilandi. Tasdiqlash uchun ✅ ni bosing.");
   });
 
+  // Namuna yangiliklarga baho: ✅ kerak / ❌ kerak emas (filtrni sozlash uchun)
+  admin.callbackQuery(/^fb:(\d+):([01])$/, async (ctx) => {
+    const [, id, v] = ctx.match;
+    await db.query(
+      "INSERT INTO feedback (article_id, useful) VALUES ($1, $2) ON CONFLICT (article_id) DO UPDATE SET useful = $2, created_at = now()",
+      [Number(id), v === "1"],
+    );
+    await ctx.editMessageReplyMarkup({
+      reply_markup: new InlineKeyboard().text(v === "1" ? "✅ Kerak · belgilandi" : "✅ Kerak", `fb:${id}:1`).text(v === "0" ? "❌ Kerak emas · belgilandi" : "❌ Kerak emas", `fb:${id}:0`),
+    });
+    await ctx.answerCallbackQuery(v === "1" ? "Kerak deb belgilandi" : "Kerak emas deb belgilandi");
+  });
+
   admin.command("admin", (ctx) =>
     ctx.reply(`Admin buyruqlari:
 

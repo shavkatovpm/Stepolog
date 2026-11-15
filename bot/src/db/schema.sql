@@ -114,3 +114,10 @@ CREATE TABLE IF NOT EXISTS user_site_items (
 -- v5: Pro barcha tanlangan yo'nalishlar uchun (field = 'all'), slots = to'langan yo'nalishlar soni
 ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS slots int NOT NULL DEFAULT 3;
 ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS product text NOT NULL DEFAULT 'channel'; -- channel | pro
+
+-- v6: egasining baholari (qaysi yangilik kerak / kerak emas) — filtrni sozlash uchun
+CREATE TABLE IF NOT EXISTS feedback (
+  article_id int PRIMARY KEY REFERENCES articles(id) ON DELETE CASCADE,
+  useful     boolean NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
