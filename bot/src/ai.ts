@@ -147,21 +147,67 @@ Mazmun, raqamlar, nomlar, emoji va gaplar tartibini o'zgartirmang. Uzunlikni o'z
   return res.parsed_output;
 }
 
-// ---------- 3. User saytlari uchun qisqa mazmun (Haiku: arzon) ----------
-const Short = z.object({
-  title: z.string().describe("sarlavha, 12 so'zdan oshmasin"),
-  body: z.string().describe("1-2 qisqa gap: maqola nima haqida"),
+// ---------- 3. User o'zi qo'shgan saytlar va Telegram kanallar ----------
+
+// 3a. Filtr (Haiku): userning mavzulari bo'yicha qaysi maqolalar yuborishga arziydi
+const UserVerdicts = z.object({
+  items: z.array(z.object({
+    id: z.number(),
+    score: z.number().describe("1-10: shu user uchun qanchalik muhim va foydali"),
+  })),
 });
 
-export async function summarizeShort(a: { title: string; excerpt: string }) {
+export async function scoreForUser(topics: string[], items: { id: number; title: string; excerpt: string; source: string }[]) {
   const res = await client.messages.parse({
     model: config.models.filter,
-    max_tokens: 1500,
-    output_config: { effort: "low", format: zodOutputFormat(Short) },
-    system: `${STYLE_RULES}\n\nBu userning o'zi tanlagan saytidan maqola. Uni post tilida qisqa qilib bering. Amaliy izoh va emoji kerak emas.`,
-    messages: [{ role: "user", content: `Sarlavha: ${a.title}\n\nMatn:\n${a.excerpt || "(matn yo'q, faqat sarlavha bo'yicha yozing)"}` }],
+    max_tokens: 3000,
+    output_config: { effort: "low", format: zodOutputFormat(UserVerdicts) },
+    system: `Siz yangilik saralovchisiz. Foydalanuvchi bu manbalarni o'zi tanlagan, lekin unga faqat foydali maqolalar kerak.
+Foydalanuvchi qiziqishlari: ${topics.join(", ") || "umumiy"}.
+
+Ball (1-10):
+- 7-10: aniq yangilik yoki foydali ma'lumot, qiziqishlariga mos.
+- 4-6: o'rtacha, qiziqishlariga qisman mos.
+- 1-3: reklama, aksiya, vakansiya, tadbir e'loni, tabrik, mazmunsiz post, qiziqishlariga aloqasiz mavzu.`,
+    messages: [{ role: "user", content: items.map((i) => `id=${i.id} | ${i.source}\n${i.title}\n${i.excerpt.slice(0, 400)}`).join("\n\n---\n\n") }],
   });
-  if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("qisqartirish: javob yo'q");
-  const [title, body] = limitEmoji([scrub(res.parsed_output.title), scrub(res.parsed_output.body)], 0);
+  if (res.stop_reason === "refusal") throw new Error("user filtri: refusal");
+  return res.parsed_output?.items ?? [];
+}
+
+// 3b. Qisqa post (Haiku, to'liq matn bilan) + imlo tekshiruvi. null: yozishga arziydigan fakt yo'q
+const UserPost = z.object({
+  title: z.string().describe("sarlavha, 12 so'zdan oshmasin"),
+  body: z.string().describe("ko'pi bilan 3 qisqa gap: asosiy fakt"),
+  skip: z.boolean().describe("matnda aniq fakt bo'lmasa true"),
+});
+
+export async function writeUserItem(a: { title: string; text: string }): Promise<{ title: string; body: string } | null> {
+  const once = async (extra = "") => {
+    const res = await client.messages.parse({
+      model: config.models.filter,
+      max_tokens: 2000,
+      output_config: { effort: "low", format: zodOutputFormat(UserPost) },
+      system: `${STYLE_RULES}\n\nBu foydalanuvchi o'zi kuzatayotgan manbadan maqola yoki post. Uni post tilida qisqa qilib bering. Emoji va amaliy izoh kerak emas.`,
+      messages: [{ role: "user", content: `Sarlavha: ${a.title}\n\nMatn:\n${a.text || "(matn yo'q)"}${extra}` }],
+    });
+    if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("qisqartirish: javob yo'q");
+    return res.parsed_output;
+  };
+  let p = await once();
+  if (p.skip) return null;
+  const bad = (x: typeof p) => [
+    ...findBanned(`${x.title} ${x.body}`).map((b) => `taqiqlangan ibora "${b}"`),
+    ...(hasCyrillic(`${x.title} ${x.body}`) ? ["kirill harflari aralashgan"] : []),
+    ...(sentences(x.body) > 3 ? ["ko'pi bilan 3 gap"] : []),
+  ];
+  if (bad(p).length) {
+    p = await once(`\n\nOldingi variantda xatolar bor edi: ${bad(p).join("; ")}. Ularsiz qayta yozing.`);
+    if (p.skip) return null;
+  }
+  const fixed = await proofread({ title: p.title, body: p.body, takeaway: "-" }).catch(() => null);
+  if (fixed && !hasCyrillic(`${fixed.title} ${fixed.body}`)) p = { ...p, title: fixed.title, body: fixed.body };
+  if (hasCyrillic(`${p.title} ${p.body}`)) return null;
+  const [title, body] = limitEmoji([scrub(normalizeUz(p.title)), scrub(normalizeUz(p.body))], 0);
   return { title, body };
 }

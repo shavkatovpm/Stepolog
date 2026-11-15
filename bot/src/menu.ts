@@ -153,8 +153,8 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
   async sites(u) {
     const list = await sites(u.tg_id);
     return {
-      text: `✨ <b>Maxsus yo'nalish</b>\n\nO'zingizga alohida yo'nalish tuzing: kuzatmoqchi bo'lgan saytlaringizni qo'shing. Ularda yangi maqola chiqsa, qisqa qilib yuboraman.\n\nSaytlaringiz: <b>${list.length} ta</b> · ${SITE_LIMIT} tagacha`,
-      kb: new InlineKeyboard().text("➕ Sayt qo'shish", "a:site_add").text("📋 Saytlarim", "m:site_list").row().text("← Orqaga", "m:fields"),
+      text: `✨ <b>Maxsus yo'nalish</b>\n\nO'zingizga alohida yo'nalish tuzing: kuzatmoqchi bo'lgan sayt yoki ochiq Telegram kanallarni qo'shing. Ulardagi yangiliklardan faqat sizning mavzularingizga mos va foydalilarini qisqa qilib yuboraman.\n\nManbalaringiz: <b>${list.length} ta</b> · ${SITE_LIMIT} tagacha`,
+      kb: new InlineKeyboard().text("➕ Manba qo'shish", "a:site_add").text("📋 Manbalarim", "m:site_list").row().text("← Orqaga", "m:fields"),
     };
   },
 
@@ -163,7 +163,7 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
     const kb = new InlineKeyboard();
     for (const s of list) kb.text(`🗑 ${s.title.slice(0, 40)}`, `a:site_del:${s.id}`).row(); // tugma matni HTML emas
     return {
-      text: list.length ? "📋 <b>Kuzatilayotgan saytlar</b>\n\n" + list.map((s, i) => `${i + 1}. ${esc(s.title)}\n${esc(s.url)}`).join("\n\n") + "\n\nO'chirish uchun bosing:" : "Hali sayt qo'shilmagan.",
+      text: list.length ? "📋 <b>Kuzatilayotgan manbalar</b>\n\n" + list.map((s, i) => `${i + 1}. ${esc(s.title)}\n${esc(s.url)}`).join("\n\n") + "\n\nO'chirish uchun bosing:" : "Hali sayt qo'shilmagan.",
       kb: kb.text("← Orqaga", "m:sites"),
     };
   },
@@ -274,7 +274,7 @@ export function registerMenu(bot: Bot) {
         if (n >= SITE_LIMIT) { screen = "site_list"; toast = `Bepul tarifda ${SITE_LIMIT} ta sayt. Avval bittasini o'chiring`; break; }
         await db.query("UPDATE users SET state = 'await_site' WHERE tg_id = $1", [id]);
         await ctx.answerCallbackQuery();
-        await ctx.editMessageText("✨ Sayt manzilini yozib yuboring.\nMasalan: <b>techcrunch.com</b>\n\nBekor qilish: /start", { parse_mode: "HTML" });
+        await ctx.editMessageText("✨ Sayt yoki Telegram kanal manzilini yozib yuboring.\nMasalan: <b>techcrunch.com</b> yoki <b>t.me/kanal_nomi</b>\n\nBekor qilish: /start", { parse_mode: "HTML" });
         return;
       }
       case "site_del":
@@ -311,12 +311,12 @@ export function registerMenu(bot: Bot) {
 
     if (state === "await_site") {
       const text = ctx.message.text?.trim();
-      if (!text) return ctx.reply("Sayt manzilini matn ko'rinishida yuboring. Bekor qilish: /start");
+      if (!text) return ctx.reply("Sayt yoki kanal manzilini matn ko'rinishida yuboring. Bekor qilish: /start");
       await ctx.replyWithChatAction("typing");
       const res = await addSite(ctx.from.id, text);
       if (!res.ok) return ctx.reply(`⚠️ ${res.error}\n\nBoshqa manzil yuboring yoki bekor qiling: /start`);
       await db.query("UPDATE users SET state = NULL WHERE tg_id = $1", [ctx.from.id]);
-      await ctx.reply(`✅ <b>${esc(res.title)}</b> maxsus yo'nalishingizga qo'shildi.\n\nHar ${config.fetchEveryMin} daqiqada tekshiraman, yangi maqola chiqsa qisqa qilib yuboraman.`, { parse_mode: "HTML" });
+      await ctx.reply(`✅ <b>${esc(res.title)}</b> maxsus yo'nalishingizga qo'shildi (${res.kind}).\n\nHar ${config.fetchEveryMin} daqiqada tekshiraman. Yangi chiqqanlardan sizga foydalilarini qisqa qilib yuboraman.`, { parse_mode: "HTML" });
       return render(ctx, "sites");
     }
 

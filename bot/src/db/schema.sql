@@ -141,3 +141,4 @@ CREATE TABLE IF NOT EXISTS pro_deliveries (
   PRIMARY KEY (tg_id, post_id)
 );
 ALTER TABLE user_site_items ADD COLUMN IF NOT EXISTS delivered_at timestamptz;
+ALTER TABLE user_site_items ADD COLUMN IF NOT EXISTS score int;
