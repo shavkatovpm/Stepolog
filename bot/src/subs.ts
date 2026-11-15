@@ -1,7 +1,7 @@
 // Pullik kanal obunasi: chekni admin tasdiqlaydi → bir martalik havola; muddat tugashi oldidan eslatma, tugaganda chiqarish
 import { GrammyError, InlineKeyboard, type Api, type Bot } from "grammy";
 import { db } from "./db/index.ts";
-import { config, FIELD_NAMES, som } from "./config.ts";
+import { config, FIELD_NAMES, som, PRO_SLOTS } from "./config.ts";
 import { channelFor } from "./publisher.ts";
 
 type Sub = { id: number; tg_id: string; field: string; product: string; slots: number; months: number; amount: number; status: string; receipt_file_id: string | null; ends_at: Date | null };
@@ -44,8 +44,8 @@ export function registerSubs(bot: Bot) {
     if (!u) return ctx.reply("Bu user topilmadi. U avval botda /start bosgan bo'lishi kerak.");
     const { rows: [sub] } = await db.query<Sub>(
       `INSERT INTO subscriptions (tg_id, field, product, months, amount, slots, status)
-       VALUES ($1, 'all', 'pro', $2, 0, GREATEST(3, $3), 'pending') RETURNING *`,
-      [u.tg_id, months, u.fields.filter((f) => config.fields.includes(f)).length],
+       VALUES ($1, 'all', 'pro', $2, 0, $3, 'pending') RETURNING *`,
+      [u.tg_id, months, PRO_SLOTS],
     );
     const end = await activateSub(ctx.api, sub, "🎁 Admin sizga Dayjest Pro'ni taqdim etdi.");
     await ctx.reply(`✅ ${label(u)} uchun Dayjest Pro yoqildi: ${fmtDate(end)} gacha.`);
