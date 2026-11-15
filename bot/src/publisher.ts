@@ -72,7 +72,7 @@ export async function autoPublish(bot: Bot, force = false) {
     if (!force && !(await channelFor(field))) continue;
     const { rows: [s] } = await db.query<{ last: Date | null; today: string }>(
       `SELECT max(published_at) AS last,
-              count(*) FILTER (WHERE published_at > now() - interval '24 hours') AS today
+              count(*) FILTER (WHERE published_at >= (date_trunc('day', now() AT TIME ZONE 'Asia/Tashkent') AT TIME ZONE 'Asia/Tashkent')) AS today -- Toshkent bo'yicha bugun
        FROM posts WHERE field = $1 AND status = 'published' AND channel_msg_id IS NOT NULL`,
       [field],
     );
@@ -85,7 +85,7 @@ export async function autoPublish(bot: Bot, force = false) {
        WHERE p.field = $1 AND p.status = 'draft' AND p.created_at > now() - make_interval(hours => $2)
          AND (SELECT count(*) FROM posts p2 JOIN articles a2 ON a2.id = p2.article_id
               WHERE a2.source_id = a.source_id AND p2.status = 'published'
-                AND p2.published_at > now() - interval '24 hours') < $3
+                AND p2.published_at >= (date_trunc('day', now() AT TIME ZONE 'Asia/Tashkent') AT TIME ZONE 'Asia/Tashkent')) < $3
        ORDER BY p.score DESC, p.id LIMIT 1`,
       [field, MAX_AGE_H, PER_SOURCE],
     );
