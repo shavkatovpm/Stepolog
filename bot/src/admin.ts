@@ -114,6 +114,19 @@ export function registerAdmin(bot: Bot) {
     await ctx.reply("✏️ Yangilandi. Tasdiqlash uchun ✅ ni bosing.");
   });
 
+  admin.command("admin", (ctx) =>
+    ctx.reply(`Admin buyruqlari:
+
+/holat · bugungi statistika
+/pro @username 12 · userga Pro berish (oxirgi raqam: necha oy)
+/prooff @username · Pro'ni o'chirish
+/prolist · faol Pro obunachilar
+/avto · postlar kanalga o'zi chiqadi
+/qolda · postlar faqat ✅ bilan chiqadi
+/yangila · manbalarni hozir tekshirish
+/chiqar · navbatdagi postni hozir chiqarish
+/dayjest · dayjestni o'zimga yuborish`));
+
   admin.command("holat", async (ctx) => {
     const { rows: [s] } = await db.query<Record<string, string>>(`
       SELECT
