@@ -2,7 +2,8 @@
 import { GrammyError, InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config, FIELD_NAMES, DIGEST_TIMES } from "./config.ts";
-import { channelFor, channelSubs } from "./publisher.ts";
+import { channelFor, channelSubs, READY } from "./publisher.ts";
+import { sendSafe } from "./tg.ts";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -44,25 +45,20 @@ export async function sendDigest(bot: Bot, onlyTo?: number, _slot = "20:00") {
   let sent = 0;
   for (const u of users) {
     const { rows: posts } = await db.query<{ text: string }>(
-      `SELECT text FROM posts WHERE status NOT IN ('rejected', 'deleted') AND created_at > now() - interval '24 hours'
+      `SELECT text FROM posts WHERE status = ANY($3) AND created_at > now() - interval '24 hours'
          AND sub = ANY($1) ORDER BY score DESC, id DESC LIMIT $2`,
-      [u.subs.slice(0, 3), PER_USER],
+      [u.subs.slice(0, 3), PER_USER, READY],
     );
     if (!posts.length) continue;
-    try {
-      await bot.api.sendMessage(u.tg_id, "<b>Bugungi eng muhimi</b>", { parse_mode: "HTML" });
-      for (let i = 0; i < posts.length; i++) {
-        await bot.api.sendMessage(u.tg_id, posts[i].text, {
-          parse_mode: "HTML", link_preview_options: { is_disabled: true },
-          reply_markup: i === posts.length - 1 ? kb : undefined,
-        });
-      }
-      sent++;
-    } catch (e) {
-      if (e instanceof GrammyError && e.error_code === 403) {
-        await db.query("UPDATE users SET blocked = true WHERE tg_id = $1", [u.tg_id]);
-      } else console.warn(`[digest] ${u.tg_id}:`, e instanceof Error ? e.message : e);
+    // sendSafe: 429 bo'lsa kutib qayta urinadi, 403 bo'lsa userni "bloklagan" deb belgilaydi
+    if (!(await sendSafe(bot.api, u.tg_id, "<b>Bugungi eng muhimi</b>", { parse_mode: "HTML" }))) continue;
+    for (let i = 0; i < posts.length; i++) {
+      await sendSafe(bot.api, u.tg_id, posts[i].text, {
+        parse_mode: "HTML", link_preview_options: { is_disabled: true },
+        reply_markup: i === posts.length - 1 ? kb : undefined,
+      });
     }
+    sent++;
     await sleep(120); // Telegram limiti: sekundiga ~30 xabar
   }
   console.log(`[digest] ${sent}/${users.length}`);
@@ -73,9 +69,9 @@ export async function sendDigest(bot: Bot, onlyTo?: number, _slot = "20:00") {
     const pub = await channelFor(field, "public");
     if (!pub) continue;
     const { rows: top } = await db.query<{ text: string }>(
-      `SELECT text FROM posts WHERE field = $1 AND status NOT IN ('rejected', 'deleted') AND created_at > now() - interval '24 hours'
+      `SELECT text FROM posts WHERE field = $1 AND status = ANY($3) AND created_at > now() - interval '24 hours'
          AND sub = ANY($2) ORDER BY score DESC LIMIT 2`,
-      [field, await channelSubs(field)],
+      [field, await channelSubs(field), READY],
     );
     if (!top.length) continue;
     try {

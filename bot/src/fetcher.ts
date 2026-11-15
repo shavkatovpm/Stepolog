@@ -21,10 +21,11 @@ export async function fetchAll() {
   for (const s of sources) {
     try {
       const feed = await parser.parseURL(s.feed_url);
-      for (const it of feed.items) {
+      for (const [i, it] of feed.items.entries()) {
         const url = it.link?.trim();
         if (!url || !it.title) continue;
         const date = it.isoDate ? new Date(it.isoDate) : null;
+        if (!date && i >= 10) continue; // sanasiz lentada faqat eng yangi 10 tasi (eski arxiv baholanmasin)
         if (date && Date.now() - date.getTime() > config.maxAgeH * 3600_000) continue;
 
         const r = await db.query(

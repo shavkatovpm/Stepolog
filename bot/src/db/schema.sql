@@ -126,3 +126,18 @@ CREATE TABLE IF NOT EXISTS feedback (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS subs text[] NOT NULL DEFAULT '{brand,smm,target}'; -- tartibi muhim: bepulda birinchi 3 tasi
 ALTER TABLE posts ADD COLUMN IF NOT EXISTS sub text;
 UPDATE posts p SET sub = a.flags->>'sub' FROM articles a WHERE a.id = p.article_id AND p.sub IS NULL AND a.flags ? 'sub';
+
+-- v8: post oqimi (draft → approved → published), Pro navbati, urinishlar soni
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS pro_sent boolean NOT NULL DEFAULT false;
+UPDATE posts SET pro_sent = true WHERE pro_sent = false AND created_at < now() - interval '1 hour'; -- eski postlar qayta yuborilmasin
+UPDATE posts SET approved_at = published_at WHERE approved_at IS NULL AND status = 'published';
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS attempts int NOT NULL DEFAULT 0;
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS receipt_kind text NOT NULL DEFAULT 'photo';
+CREATE TABLE IF NOT EXISTS pro_deliveries (
+  tg_id   bigint NOT NULL,
+  post_id int NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  sent_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (tg_id, post_id)
+);
+ALTER TABLE user_site_items ADD COLUMN IF NOT EXISTS delivered_at timestamptz;

@@ -6,11 +6,11 @@ import { scoreArticles, writePost, type Candidate } from "./ai.ts";
 import { renderPost } from "./format.ts";
 import { draftKeyboard } from "./admin.ts";
 import { fetchArticleText } from "./article.ts";
-import { deliverPro } from "./publisher.ts";
 import { subName } from "./criteria.ts";
 import { finalScore, fieldCheck, type Flags, type Tier } from "./criteria.ts";
 
 const BATCH = 20;
+const MAX_ATTEMPTS = 3; // AI xatosida shuncha urinishdan keyin maqola o'tkazib yuboriladi
 
 type Row = Candidate & { url: string; field: string; tier: Tier };
 
@@ -35,7 +35,21 @@ export async function scorePending() {
   for (const [field, list] of byField) {
     for (let i = 0; i < list.length; i += BATCH) {
       const chunk = list.slice(i, i + BATCH);
-      const verdicts = await scoreArticles(field, chunk, await recentKept(field));
+      let verdicts: Awaited<ReturnType<typeof scoreArticles>>;
+      try {
+        verdicts = await scoreArticles(field, chunk, await recentKept(field));
+      } catch (e) {
+        // Bitta guruhdagi xato butun tsiklni to'xtatmasin; ko'p marta xato bo'lsa, maqola o'tkaziladi
+        console.error(`[score] ${field}:`, e instanceof Error ? e.message : e);
+        await db.query(
+          `UPDATE articles SET attempts = attempts + 1,
+             verdict = CASE WHEN attempts + 1 >= $2 THEN 'skip' ELSE verdict END,
+             reason = CASE WHEN attempts + 1 >= $2 THEN 'baholashda xato' ELSE reason END
+           WHERE id = ANY($1)`,
+          [chunk.map((c) => c.id), MAX_ATTEMPTS],
+        );
+        continue;
+      }
       const seen = new Set<number>();
       for (const v of verdicts) {
         const art = chunk.find((c) => c.id === v.id);
@@ -69,7 +83,8 @@ export async function writeDrafts(bot: Bot) {
     `SELECT a.id, a.title, a.excerpt, a.url, a.score, a.flags, COALESCE(a.published_at, a.created_at) AS published_at, s.name AS source, s.field, s.tier
      FROM articles a JOIN sources s ON s.id = a.source_id
      LEFT JOIN posts p ON p.article_id = a.id
-     WHERE a.verdict = 'keep' AND p.id IS NULL ORDER BY a.score DESC LIMIT $1`,
+     WHERE a.verdict = 'keep' AND p.id IS NULL AND a.created_at > now() - interval '48 hours'
+     ORDER BY a.score DESC LIMIT $1`,
     [config.writeLimit],
   );
 
@@ -87,8 +102,7 @@ export async function writeDrafts(bot: Bot) {
         `INSERT INTO posts (article_id, field, sub, text, original_text, score) VALUES ($1, $2, $3, $4, $4, $5) RETURNING id`,
         [a.id, a.field, sub, html, a.score],
       );
-      // Pro obunachilar yangilikni darhol oladi (o'z sub-yo'nalishlari bo'yicha)
-      await deliverPro(bot.api, { id: post.id, sub, text: html });
+      // Admin xabari darhol: post userlarga faqat tasdiqlangach boradi (✅ yoki avtomatik rejimda 30 daqiqadan keyin)
       const msg = await bot.api.sendMessage(config.adminChatId, `${html}\n\n<i>${sub ? subName(sub) : "-"} · Ball: ${a.score}/10 · ${statusLabel(a.flags)} · #${post.id}</i>`, {
         parse_mode: "HTML",
         link_preview_options: { is_disabled: true },
@@ -97,6 +111,13 @@ export async function writeDrafts(bot: Bot) {
       await db.query("UPDATE posts SET admin_msg_id = $2 WHERE id = $1", [post.id, msg.message_id]);
     } catch (e) {
       console.error(`[write] ${a.id}:`, e instanceof Error ? e.message : e);
+      await db.query(
+        `UPDATE articles SET attempts = attempts + 1,
+           verdict = CASE WHEN attempts + 1 >= $2 THEN 'skip' ELSE verdict END,
+           reason = CASE WHEN attempts + 1 >= $2 THEN 'yozishda xato' ELSE reason END
+         WHERE id = $1`,
+        [a.id, MAX_ATTEMPTS],
+      );
     }
   }
 }

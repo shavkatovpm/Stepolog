@@ -3,11 +3,11 @@ import { InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config, FIELD_NAMES } from "./config.ts";
 import { esc } from "./format.ts";
-import { channelFor, channelSubs, isAuto, publishPost } from "./publisher.ts";
+import { approvePost, channelFor, channelSubs, isAuto, publishToChannel } from "./publisher.ts";
 import { FIELD_SUBS, subName } from "./criteria.ts";
 
 export const draftKeyboard = (id: number) =>
-  new InlineKeyboard().text("✅ Chiqarish", `pub:${id}`).text("❌ Kerak emas", `rej:${id}`);
+  new InlineKeyboard().text("✅ Tasdiqlash", `ok:${id}`).text("📢 Kanalga", `pub:${id}`).row().text("❌ Kerak emas", `rej:${id}`);
 
 type PostRow = { id: number; field: string; text: string; status: string; admin_msg_id: number | null };
 
@@ -55,11 +55,20 @@ export function registerAdmin(bot: Bot) {
 
   const admin = bot.filter((ctx) => ctx.chat?.id === config.adminChatId);
 
+  // ✅ Tasdiqlash: userlarga (Pro va dayjest) boradi, kanalga navbat bilan chiqadi
+  admin.callbackQuery(/^ok:(\d+)$/, async (ctx) => {
+    const ok = await approvePost(ctx.api, Number(ctx.match[1]));
+    await ctx.answerCallbackQuery(ok ? "Tasdiqlandi" : "Allaqachon ko'rib chiqilgan");
+  });
+
+  // 📢 Kanalga: hozir kanalga chiqaradi (va tasdiqlaydi)
   admin.callbackQuery(/^pub:(\d+)$/, async (ctx) => {
-    const post = await getPost(Number(ctx.match[1]));
-    if (!post || post.status !== "draft") return ctx.answerCallbackQuery("Allaqachon ko'rib chiqilgan");
-    const toChannel = await publishPost(ctx.api, post);
-    await ctx.answerCallbackQuery(toChannel ? "Kanalga chiqdi" : "Tasdiqlandi (kanal ulanmagan)");
+    const r = await publishToChannel(ctx.api, Number(ctx.match[1])).catch((e) => {
+      console.error("[pub]", e);
+      return "error" as const;
+    });
+    const msg = { published: "Kanalga chiqdi", approved: "Tasdiqlandi (kanal ulanmagan)", busy: "Allaqachon ko'rib chiqilgan", error: "Kanalga chiqmadi: bot huquqlarini tekshiring" }[r];
+    await ctx.answerCallbackQuery({ text: msg, show_alert: r === "error" });
   });
 
   admin.callbackQuery(/^del:(\d+)$/, async (ctx) => {
@@ -75,34 +84,39 @@ export function registerAdmin(bot: Bot) {
 
   admin.command("avto", async (ctx) => {
     await kvSet("mode", "auto");
-    await ctx.reply("Avtomatik rejim: postlar o'zi kanalga chiqadi (09:00-21:00 orasida, kamida 2 soat oraliq bilan, kuniga 5 tagacha). Chiqishidan oldin ❌ bilan to'xtatishingiz mumkin.");
+    await ctx.reply("Avtomatik rejim: qoralama 30 daqiqada o'zi tasdiqlanadi (shu vaqt ichida ❌ bosib to'xtatishingiz mumkin). Kanalga 09:00-21:00 orasida, 2 soat oraliq bilan, kuniga 5 tagacha chiqadi.");
   });
 
   admin.command("qolda", async (ctx) => {
     await kvSet("mode", "manual");
-    await ctx.reply("Qo'lda rejim: postlar faqat ✅ bosganingizda chiqadi.");
+    await ctx.reply("Qo'lda rejim: postlar faqat ✅ bosganingizda userlarga va kanalga boradi.");
   });
 
   admin.callbackQuery(/^rej:(\d+)$/, async (ctx) => {
     const id = Number(ctx.match[1]);
-    await db.query("UPDATE posts SET status = 'rejected' WHERE id = $1 AND status = 'draft'", [id]);
+    const { rowCount } = await db.query("UPDATE posts SET status = 'rejected' WHERE id = $1 AND status IN ('draft', 'approved')", [id]);
+    if (!rowCount) {
+      const p = await getPost(id);
+      return ctx.answerCallbackQuery({ text: p?.status === "published" ? "Post kanalga chiqib bo'lgan: 🗑 tugmasi bilan o'chiring" : "Allaqachon ko'rib chiqilgan", show_alert: true });
+    }
     await ctx.deleteMessage().catch(() => {});
-    await ctx.answerCallbackQuery("O'chirildi");
+    await ctx.answerCallbackQuery("Bekor qilindi");
   });
 
   // Tahrirlash: qoralama xabariga javob (reply) qilib yangi matn yozasiz.
   // Birinchi qator sarlavha bo'ladi, "Manba" qatori avtomatik saqlanadi.
   admin.on("message:text", async (ctx, next) => {
     const replyTo = ctx.message.reply_to_message?.message_id;
-    if (!replyTo) return next();
+    if (!replyTo || ctx.message.text.startsWith("/")) return next(); // buyruqlar tahrir emas
     const { rows } = await db.query<PostRow>(
-      "SELECT id, field, text, status, admin_msg_id FROM posts WHERE admin_msg_id = $1 AND status = 'draft'",
+      "SELECT id, field, text, status, admin_msg_id FROM posts WHERE admin_msg_id = $1 AND status IN ('draft', 'approved')",
       [replyTo],
     );
     const post = rows[0];
     if (!post) return next();
 
-    const source = post.text.split("\n\n").find((p) => p.startsWith("Manba:")) ?? "";
+    // Oxirgi blok: "· Manba: ..." va sana qatori (o'zgarmaydi)
+    const source = post.text.split("\n\n").find((p) => p.startsWith("· Manba:") || p.startsWith("Manba:")) ?? "";
     const [first, ...rest] = ctx.message.text.trim().split("\n");
     const html = [`<b>${esc(first)}</b>`, esc(rest.join("\n").trim()), source].filter(Boolean).join("\n\n");
 
@@ -112,6 +126,7 @@ export function registerAdmin(bot: Bot) {
       link_preview_options: { is_disabled: true },
       reply_markup: draftKeyboard(post.id),
     });
+    if (post.status === "approved") await db.query("UPDATE posts SET status = 'draft' WHERE id = $1 AND status = 'approved'", [post.id]);
     await ctx.reply("✏️ Yangilandi. Tasdiqlash uchun ✅ ni bosing.");
   });
 
@@ -150,8 +165,8 @@ export function registerAdmin(bot: Bot) {
 /pro @username 12 · userga Pro berish (oxirgi raqam: necha oy)
 /prooff @username · Pro'ni o'chirish
 /prolist · faol Pro obunachilar
-/avto · postlar kanalga o'zi chiqadi
-/qolda · postlar faqat ✅ bilan chiqadi
+/avto · qoralamalar 30 daqiqada o'zi tasdiqlanadi
+/qolda · faqat ✅ bilan
 /yangila · manbalarni hozir tekshirish
 /chiqar · navbatdagi postni hozir chiqarish
 /dayjest · dayjestni o'zimga yuborish
@@ -163,11 +178,12 @@ export function registerAdmin(bot: Bot) {
         (SELECT count(*) FROM articles WHERE created_at > now() - interval '24 hours') AS seen,
         (SELECT count(*) FROM articles WHERE verdict = 'keep' AND created_at > now() - interval '24 hours') AS kept,
         (SELECT count(*) FROM posts WHERE status = 'draft') AS drafts,
+        (SELECT count(*) FROM posts WHERE status = 'approved' AND approved_at > now() - interval '24 hours') AS approved,
         (SELECT count(*) FROM posts WHERE status = 'published' AND published_at > now() - interval '24 hours') AS published,
         (SELECT count(*) FROM users WHERE NOT blocked) AS users,
         (SELECT count(*) FROM sources WHERE last_error IS NOT NULL) AS broken`);
     await ctx.reply(
-      `Rejim: ${(await isAuto()) ? "avtomatik (/qolda)" : "qo'lda (/avto)"}\n\nSo'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
+      `Rejim: ${(await isAuto()) ? "avtomatik (/qolda)" : "qo'lda (/avto)"}\n\nSo'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nTasdiqlangan (userlarga): ${s.approved}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
     );
   });
 }
