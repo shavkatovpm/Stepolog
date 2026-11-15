@@ -56,7 +56,7 @@ export async function scoreArticles(field: string, list: Candidate[], recent: { 
 const Post = z.object({
   title: z.string().describe("sarlavha, 12 so'zdan oshmasin, nuqtasiz"),
   body: z.string().describe("2-4 qisqa gap: nima bo'ldi va eng muhim tafsilotlar"),
-  takeaway: z.string().describe("bitta gap: bu o'quvchi ishida nimani anglatadi yoki nima qilish kerak. Yorliqsiz, to'g'ridan-to'g'ri gap"),
+  takeaway: z.string().describe("1-2 qisqa gap: yangilikni oddiy, tabiiy tilda tushuntirish (aslida nimani anglatadi). Maslahat emas, yorliqsiz"),
   skip: z.boolean().describe("manbada aniq fakt bo'lmasa true: post yozilmaydi"),
 });
 export type PostDraft = Omit<z.infer<typeof Post>, "skip">;
@@ -111,7 +111,7 @@ export async function writePost(a: WriteInput): Promise<PostDraft | null> {
     ...findBanned(all(x)).map((b) => `taqiqlangan ibora "${b}"`),
     ...(hasCyrillic(all(x)) ? ["kirill harflari aralashgan, faqat lotin yozuvi"] : []),
     ...(sentences(x.body) > 3 ? [`asosiy matn ${sentences(x.body)} gap, ko'pi bilan 3 ta qisqa gap bo'lsin, eng muhimini qoldiring`] : []),
-    ...(sentences(x.takeaway) > 1 || x.takeaway.length > 220 ? ["amaliy izoh bitta qisqa gap bo'lsin"] : []),
+    ...(sentences(x.takeaway) > 2 || x.takeaway.length > 260 ? ["tushuntirish 1-2 qisqa gap bo'lsin"] : []),
   ];
   let bad = problems(p);
   if (bad.length) {

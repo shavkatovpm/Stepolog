@@ -22,9 +22,10 @@ Mazmun:
 - Manbada nima YO'QLIGI haqida yozmang: "manbada aytilmagan", "aniq emas", "tafsilot berilmagan", "rasmiy tasdiq yo'q" kabi gaplar posni bo'sh qiladi.
   Bilganingizni yozing, bilmaganingizni tilga olmang.
 - Manbada aniq fakt bo'lmasa (faqat e'lon, reklama, mazmunsiz anons), "skip": true qiling, post yozilmaydi.
-- "takeaway": bitta gap, bu yangilik o'quvchi ishida nimani anglatadi yoki endi nima qilish kerak.
-  Aniq va amaliy bo'lsin, umumiy gap emas ("bu muhim yangilik", "kuzatib boring" kabi gaplar yozilmaydi).
-  "Siz uchun", "Xulosa", "Muhimi" kabi yorliq bilan boshlamang, to'g'ridan-to'g'ri gapdan boshlang.
+- "takeaway": yangilikni oddiy, tabiiy tilda tushuntiruvchi 1-2 qisqa gap: bu aslida nimani anglatadi.
+  Do'stingizga "gap bunda" deb tushuntirgandek yozing. Atama va raqamlarni oddiy so'z bilan ochib bering.
+  Maslahat va buyruq bermang ("qiling", "tekshiring", "sinab ko'ring" yo'q). Yangi fakt qo'shmang.
+  "Siz uchun", "Xulosa", "Ya'ni", "Muhimi" kabi yorliq bilan boshlamang, to'g'ridan-to'g'ri gapdan boshlang.
 
 Taqiqlangan:
 - Uzun tire (—) va o'rta tire (–). Ularning o'rniga vergul, nuqta yoki ikki nuqta.
