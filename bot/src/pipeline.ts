@@ -5,6 +5,7 @@ import { config } from "./config.ts";
 import { scoreArticles, writePost, type Candidate } from "./ai.ts";
 import { renderPost } from "./format.ts";
 import { draftKeyboard } from "./admin.ts";
+import { fetchArticleText } from "./article.ts";
 import { finalScore, fieldCheck, type Flags, type Tier } from "./criteria.ts";
 
 const BATCH = 20;
@@ -62,8 +63,8 @@ const CONF: Record<string, string> = { official: "rasmiy", reported: "OAV xabari
 const statusLabel = (f: Flags | null) => [f ? CONF[f.confirmation] : "", f?.testing ? "test" : ""].filter(Boolean).join(", ") || "-";
 
 export async function writeDrafts(bot: Bot) {
-  const { rows } = await db.query<Row & { score: number; flags: Flags | null }>(
-    `SELECT a.id, a.title, a.excerpt, a.url, a.score, a.flags, s.name AS source, s.field, s.tier
+  const { rows } = await db.query<Row & { score: number; flags: Flags | null; published_at: Date }>(
+    `SELECT a.id, a.title, a.excerpt, a.url, a.score, a.flags, COALESCE(a.published_at, a.created_at) AS published_at, s.name AS source, s.field, s.tier
      FROM articles a JOIN sources s ON s.id = a.source_id
      LEFT JOIN posts p ON p.article_id = a.id
      WHERE a.verdict = 'keep' AND p.id IS NULL ORDER BY a.score DESC LIMIT $1`,
@@ -72,8 +73,13 @@ export async function writeDrafts(bot: Bot) {
 
   for (const a of rows) {
     try {
-      const draft = await writePost(a);
-      const html = renderPost(draft, a.source, a.url);
+      const fullText = await fetchArticleText(a.url);
+      const draft = await writePost({ ...a, fullText });
+      if (!draft) {
+        await db.query("UPDATE articles SET verdict = 'skip', reason = 'yozishga arziydigan fakt yo''q' WHERE id = $1", [a.id]);
+        continue;
+      }
+      const html = renderPost(draft, a.source, a.url, a.published_at);
       const { rows: [post] } = await db.query<{ id: number }>(
         `INSERT INTO posts (article_id, field, text, original_text, score) VALUES ($1, $2, $3, $3, $4) RETURNING id`,
         [a.id, a.field, html, a.score],

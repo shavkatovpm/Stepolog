@@ -3,8 +3,9 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { config } from "./config.ts";
-import { STYLE_RULES, EXAMPLES, findBanned, scrub, limitEmoji } from "./style.ts";
+import { STYLE_RULES, EXAMPLES, findBanned, scrub, limitEmoji, normalizeUz } from "./style.ts";
 import { GENERAL_RULES, fieldPrompt, FIELD_AUDIENCE } from "./criteria.ts";
+import { AUDIENCE } from "./audience.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
 
@@ -55,24 +56,31 @@ export async function scoreArticles(field: string, list: Candidate[], recent: { 
 const Post = z.object({
   title: z.string().describe("sarlavha, 12 so'zdan oshmasin, nuqtasiz"),
   body: z.string().describe("2-4 qisqa gap: nima bo'ldi va eng muhim tafsilotlar"),
-  takeaway: z.string().describe("1-2 gap: bu o'quvchi ishida nimani anglatadi yoki nima qilish kerak. Yorliqsiz, to'g'ridan-to'g'ri gap"),
+  takeaway: z.string().describe("bitta gap: bu o'quvchi ishida nimani anglatadi yoki nima qilish kerak. Yorliqsiz, to'g'ridan-to'g'ri gap"),
+  skip: z.boolean().describe("manbada aniq fakt bo'lmasa true: post yozilmaydi"),
 });
-export type PostDraft = z.infer<typeof Post>;
+export type PostDraft = Omit<z.infer<typeof Post>, "skip">;
 
 function system(field: string) {
   const ex = EXAMPLES.length ? `\n\nNamuna postlar (ohangini ushlang):\n\n${EXAMPLES.join("\n\n---\n\n")}` : "";
   return `${STYLE_RULES}\n\n${FIELD_AUDIENCE[field] ?? ""}${ex}`;
 }
 
-type WriteInput = Candidate & { url: string; field: string; flags?: { confirmation?: string; testing?: boolean } | null };
+type WriteInput = Candidate & { url: string; field: string; fullText?: string; flags?: { confirmation?: string; testing?: boolean } | null };
 
+// Faqat haqiqatan muhim holatlar matnda bir marta, qisqa aytiladi (ortiqcha shubha gaplari postni zaiflashtiradi)
 function statusNote(f: WriteInput["flags"]) {
   const n: string[] = [];
-  if (f?.confirmation === "reported") n.push("Rasmiy tasdiq yo'q: matnda \"xabar qilinishicha\" yoki manba nomi bilan ayting.");
-  if (f?.confirmation === "rumor") n.push("Bu hali tasdiqlanmagan xabar: buni matnda aniq ayting.");
-  if (f?.testing) n.push("Funksiya hali test bosqichida: buni matnda ayting.");
+  if (f?.confirmation === "rumor") n.push("Bu hali tasdiqlanmagan xabar: buni bitta qisqa iborada ayting (masalan, \"hali rasman e'lon qilinmagan\").");
+  if (f?.testing) n.push("Funksiya hali sinov bosqichida: buni bitta qisqa iborada ayting.");
   return n.length ? `\n\nHolat: ${n.join(" ")}` : "";
 }
+
+// Gaplar soni (raqamdagi nuqta va qisqartmalarni hisobga olmaydi)
+const sentences = (t: string) => t.split(/(?<=[.!?])\s+(?=[A-Z0-9А-ЯЎҚҒҲ"«'])/).filter((x) => x.trim().length > 3).length;
+
+// Lotin yozuvidagi postga kirill harflari aralashib ketmasin
+const hasCyrillic = (s: string) => /[\u0400-\u04FF]/.test(s);
 
 async function writeOnce(a: WriteInput, extra = "") {
   const res = await client.beta.messages.parse({
@@ -85,7 +93,7 @@ async function writeOnce(a: WriteInput, extra = "") {
     messages: [
       {
         role: "user",
-        content: `Manba: ${a.source}\nHavola: ${a.url}\n\nSarlavha: ${a.title}\n\nMatn:\n${a.excerpt}${statusNote(a.flags)}${extra}`,
+        content: `Manba: ${a.source}\nHavola: ${a.url}\n\nSarlavha: ${a.title}\n\nMatn:\n${a.fullText || a.excerpt}${statusNote(a.flags)}${extra}`,
       },
     ],
   });
@@ -94,16 +102,48 @@ async function writeOnce(a: WriteInput, extra = "") {
   return res.parsed_output;
 }
 
-export async function writePost(a: WriteInput): Promise<PostDraft> {
+// null qaytsa: manbada yozishga arziydigan fakt yo'q yoki sifatli matn chiqmadi, post bo'lmaydi
+export async function writePost(a: WriteInput): Promise<PostDraft | null> {
   let p = await writeOnce(a);
-  const bad = findBanned(`${p.title} ${p.body} ${p.takeaway}`);
+  if (p.skip) return null;
+  const all = (x: typeof p) => `${x.title} ${x.body} ${x.takeaway}`;
+  const problems = (x: typeof p) => [
+    ...findBanned(all(x)).map((b) => `taqiqlangan ibora "${b}"`),
+    ...(hasCyrillic(all(x)) ? ["kirill harflari aralashgan, faqat lotin yozuvi"] : []),
+    ...(sentences(x.body) > 3 ? [`asosiy matn ${sentences(x.body)} gap, ko'pi bilan 3 ta qisqa gap bo'lsin, eng muhimini qoldiring`] : []),
+    ...(sentences(x.takeaway) > 1 || x.takeaway.length > 220 ? ["amaliy izoh bitta qisqa gap bo'lsin"] : []),
+  ];
+  let bad = problems(p);
   if (bad.length) {
-    p = await writeOnce(a, `\n\nOldingi variantda taqiqlangan iboralar bor edi: ${bad.join(", ")}. Ularsiz yozing.`);
+    p = await writeOnce(a, `\n\nOldingi variantda xatolar bor edi: ${bad.join("; ")}. Ularsiz qayta yozing.`);
+    if (p.skip) return null;
+    bad = problems(p);
+    if (hasCyrillic(all(p))) return null; // ikkinchi urinishda ham bo'lsa, chiqarmaymiz
   }
+  // Imlo tekshiruvi (arzon model): faqat imlo va grammatika, mazmun o'zgarmaydi
+  const fixed = await proofread({ title: p.title, body: p.body, takeaway: p.takeaway }).catch(() => null);
+  if (fixed && !hasCyrillic(all({ ...p, ...fixed }))) p = { ...p, ...fixed };
+  if (hasCyrillic(all(p))) return null;
+
   // Emoji faqat amaliy izohda, bitta: sarlavha va matndan olib tashlanadi
-  const [title, body] = limitEmoji([scrub(p.title), scrub(p.body)], 0);
-  const [takeaway] = limitEmoji([scrub(p.takeaway)], 1);
+  const [title, body] = limitEmoji([scrub(normalizeUz(p.title)), scrub(normalizeUz(p.body))], 0);
+  const [takeaway] = limitEmoji([scrub(normalizeUz(p.takeaway))], 1);
   return { title, body, takeaway };
+}
+
+const Proof = z.object({ title: z.string(), body: z.string(), takeaway: z.string() });
+async function proofread(p: z.infer<typeof Proof>) {
+  const res = await client.messages.parse({
+    model: config.models.filter,
+    max_tokens: 2000,
+    output_config: { effort: "low", format: zodOutputFormat(Proof) },
+    system: `Siz korrektorsiz. Matn tili: ${AUDIENCE.lang}. Faqat imlo, tinish belgisi va grammatika xatolarini tuzating.
+Boshqa yozuv harflari (masalan, lotin matn ichida kirill harfi) bo'lsa, to'g'ri harfga almashtiring.
+Mazmun, raqamlar, nomlar, emoji va gaplar tartibini o'zgartirmang. Uzunlikni o'zgartirmang. Xato bo'lmasa, matnni o'zgarishsiz qaytaring.`,
+    messages: [{ role: "user", content: JSON.stringify(p) }],
+  });
+  if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("korrektura: javob yo'q");
+  return res.parsed_output;
 }
 
 // ---------- 3. User saytlari uchun qisqa mazmun (Haiku: arzon) ----------

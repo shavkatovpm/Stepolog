@@ -14,7 +14,7 @@ export const AUDIENCES: Record<string, Audience> = {
     lang: "o'zbek tili (lotin yozuvi, o' va g' da oddiy apostrof ')",
     writeAs: "O'zbek odami qanday gapirsa, shunday yozing.",
     market: "O'zbekiston",
-    platforms: "Asosiy platformalar: Instagram, Telegram, Meta Ads, Google Ads, YouTube, TikTok. Ishlamaydiganlari: Amazon, Walmart, eBay, Etsy, Shopify reklamalari, AQSh retail media.",
+    platforms: "Asosiy platformalar: Instagram, Telegram, Meta Ads, Google Ads, YouTube, TikTok. Kam ishlatiladigan yoki ishlamaydiganlari: Amazon, Walmart, eBay, Etsy, Shopify reklamalari, AQSh retail media, Microsoft Advertising (Bing), Google DV360 va boshqa yirik korporativ reklama tizimlari, Rossiyaning MAX messenjeri.",
   },
   // ru: { ... }, en: { ... } — keyinroq
 };

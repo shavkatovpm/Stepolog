@@ -8,6 +8,7 @@ Post tili: ${AUDIENCE.lang}. O'quvchilar bozori: ${AUDIENCE.market}.
 Stepolog istalgan soha uchun ishlaydi. O'quvchilar kimligi pastda, soha bo'limida beriladi.
 
 Til:
+- Imlo to'g'ri bo'lsin. Oy nomlari: yanvar, fevral, mart, aprel, may, iyun, iyul, avgust, sentyabr, oktyabr, noyabr, dekabr.
 - Oddiy, savodli suhbat tili. Kitobiy va rasmiy uslub emas.
 - Gaplar qisqa: bitta gapda bitta fikr.
 - O'quvchiga "siz" deb murojaat qiling.
@@ -16,8 +17,12 @@ Til:
 
 Mazmun:
 - Faqat manbadagi faktlar. O'zingizdan raqam, sana yoki da'vo qo'shmang.
-- "body": faqat yangilikning o'zi: nima bo'ldi, kimga tegishli, qachondan. Eng muhim tafsilot birinchi gapda.
-- "takeaway": alohida 1-2 gap, bu yangilik o'quvchi ishida nimani anglatadi yoki endi nima qilish kerak.
+- "body": ko'pi bilan 3 qisqa gap. Faqat yangilikning o'zi: nima bo'ldi, kimga tegishli, qachondan. Eng muhim tafsilot birinchi gapda.
+- O'quvchi bilmasligi mumkin bo'lgan nom yoki mahsulotni bir necha so'z bilan tushuntiring (masalan: "Muse, Meta'ning AI agenti").
+- Manbada nima YO'QLIGI haqida yozmang: "manbada aytilmagan", "aniq emas", "tafsilot berilmagan", "rasmiy tasdiq yo'q" kabi gaplar posni bo'sh qiladi.
+  Bilganingizni yozing, bilmaganingizni tilga olmang.
+- Manbada aniq fakt bo'lmasa (faqat e'lon, reklama, mazmunsiz anons), "skip": true qiling, post yozilmaydi.
+- "takeaway": bitta gap, bu yangilik o'quvchi ishida nimani anglatadi yoki endi nima qilish kerak.
   Aniq va amaliy bo'lsin, umumiy gap emas ("bu muhim yangilik", "kuzatib boring" kabi gaplar yozilmaydi).
   "Siz uchun", "Xulosa", "Muhimi" kabi yorliq bilan boshlamang, to'g'ridan-to'g'ri gapdan boshlang.
 
@@ -35,7 +40,7 @@ Emoji:
   📈 📉 raqam o'sdi yoki tushdi
   🎯 yangi imkoniyat, sinab ko'rish kerak
   💡 foydali g'oya yoki tavsiya
-  🤖 AI bilan bog'liq
+  🤖 faqat yangilikning o'zi AI haqida bo'lsa (boshqa mavzuga qo'ymang)
   💰 pul, narx, byudjet
 - Kulgili va hissiy emojilar (😂 🔥 🚀 😱 👀 💥) ishlatilmaydi.
 `.trim();
@@ -46,6 +51,7 @@ export const EXAMPLES: string[] = [];
 export const BANNED = [
   "—", "–", "shuni ta'kidlash joiz", "muhim ahamiyatga ega", "ushbu", "mazkur", "bugungi kunda",
   "zamonaviy dunyoda", "inqilobiy", "yangi davr", "o'yin qoidalari", "yarat",
+  "manbada", "aniq aytilmagan", "aniq emas", "rasmiy tasdiq", "tafsilot berilmagan", "deb xabar qilindi", "hozircha noma'lum",
 ];
 
 export function findBanned(text: string) {
@@ -61,4 +67,15 @@ const EMOJI = /\p{Extended_Pictographic}\uFE0F?/gu;
 export function limitEmoji(parts: string[], max = 1): string[] {
   let n = 0;
   return parts.map((p) => p.replace(EMOJI, (m) => (++n <= max ? m : "")).replace(/ {2,}/g, " ").trim());
+}
+
+// Imloni bir xil holatga keltirish: tutuq belgisi va oy nomlari (lotin o'zbek yozuvi)
+const MONTHS: [RegExp, string][] = [
+  [/\boktabr/gi, "oktyabr"], [/\bsentabr/gi, "sentyabr"], [/\bnoyabir/gi, "noyabr"], [/\bdekabir/gi, "dekabr"],
+  [/\bfevrall/gi, "fevral"], [/\biyunda\b/gi, "iyunda"],
+];
+export function normalizeUz(s: string) {
+  let t = s.replace(/[‘’ʻʼ`´]/g, "'");
+  for (const [re, to] of MONTHS) t = t.replace(re, (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
+  return t;
 }
