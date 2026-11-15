@@ -10,7 +10,7 @@ const parser = new Parser({
 
 
 const clean = (s = "") =>
-  s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 1200);
+  s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&#x27;|&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/\s+/g, " ").trim().slice(0, 1200);
 
 export async function fetchAll() {
   const { rows: sources } = await db.query<{ id: number; name: string; feed_url: string }>(

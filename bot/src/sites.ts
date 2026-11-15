@@ -8,7 +8,7 @@ import { esc } from "./format.ts";
 
 const UA = "Mozilla/5.0 (compatible; StepologBot/1.0; +https://www.stepolog.uz)";
 const parser = new Parser({ timeout: 8000, headers: { "User-Agent": UA } });
-const clean = (s = "") => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 1200);
+const clean = (s = "") => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&#x27;|&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/\s+/g, " ").trim().slice(0, 1200);
 
 function normalize(input: string): URL | null {
   const raw = input.trim().replace(/\s+/g, "");

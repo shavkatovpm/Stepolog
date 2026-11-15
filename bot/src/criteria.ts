@@ -84,7 +84,8 @@ Maqsad: duch kelgan yangilik emas, faqat o'quvchining ishiga aniq foyda beradiga
 "category": maqola quyidagi turlardan qaysi biriga to'liq mos keladi. Hech biriga aniq mos kelmasa "other".
 {CATEGORIES}
 
-"hype": bu mavzu hozir butun sohada qizg'in muhokama qilinyaptimi (ko'p OAV yozmoqda, mutaxassislar gapirmoqda).
+"hype": bu mavzu hozir aynan SHU SOHADA qizg'in muhokama qilinyaptimi (soha OAV va mutaxassislari gapirmoqda).
+Shaxsiy hayot, janjal, sensatsiya, sohaga aloqasi yo'q mashhur voqealar hayp emas: false.
 Oddiy yangilik hayp emas. true faqat haqiqatan ham katta, hamma gapirayotgan voqea uchun.
 
 "score" (1-10) foyda testi:
@@ -105,7 +106,8 @@ export function fieldPrompt(field: string) {
 // Soha qoidasi: tur ro'yxatda bo'lishi shart, hayp mavzu esa turidan qat'i nazar o'tadi
 export function fieldCheck(field: string, category: string, hype: boolean, score: number): { score: number; reject: string | null } {
   const allowed = FIELD_CATEGORIES[field].some((c) => c.id === category);
-  if (hype) return { score: Math.max(score, 7), reject: null };
+  // Hayp faqat sohaga aloqador bo'lsa o'tadi (soha bo'yicha ball kamida 5): sohaga aloqasiz sensatsiya o'tmaydi
+  if (hype && score >= 5) return { score: Math.max(score, 7), reject: null };
   if (!allowed) return { score: 0, reject: "kerakli tur emas" };
   return { score, reject: null };
 }
