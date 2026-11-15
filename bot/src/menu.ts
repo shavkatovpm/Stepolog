@@ -229,7 +229,7 @@ export function registerMenu(bot: Bot) {
     const [, act, arg = ""] = ctx.match;
     const u = await getUser(ctx);
     const id = u.tg_id;
-    let screen = "root", sarg: string | undefined, toast = "";
+    let screen = "root", sarg: string | undefined, toast = "", alert = false;
 
     switch (act) {
       case "digest":
@@ -242,7 +242,8 @@ export function registerMenu(bot: Bot) {
         const has = u.subs.includes(subId);
         if (!has && u.subs.length >= FREE_SUBS && !(await isPro(u))) {
           screen = "subs"; sarg = field;
-          toast = `Bepulda ${FREE_SUBS} tagacha mavzu. Ko'proq uchun ⚡ Dayjest Pro`;
+          toast = `Bepul tarifda ${FREE_SUBS} tagacha mavzu tanlash mumkin.\n\nKo'proq mavzu uchun ⚡ Dayjest Pro'ga o'ting yoki bitta mavzuni olib tashlang.`;
+          alert = true; // oyna "OK" bosilguncha turadi
           break;
         }
         await db.query(`UPDATE users SET subs = ${has ? "array_remove(subs, $2)" : "array_append(subs, $2)"} WHERE tg_id = $1`, [id, subId]);
@@ -300,7 +301,7 @@ export function registerMenu(bot: Bot) {
       }
     }
     await render(ctx, screen, sarg);
-    await ctx.answerCallbackQuery(toast || undefined);
+    await ctx.answerCallbackQuery(toast ? { text: toast, show_alert: alert } : undefined);
   });
 
   // Kutilayotgan kiritishlar: sayt manzili yoki chek rasmi
