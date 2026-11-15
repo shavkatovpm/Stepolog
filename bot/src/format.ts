@@ -12,13 +12,13 @@ export function fmtNewsDate(d: Date | string | null | undefined) {
   return `${g("day")}-${MONTH_UZ[g("month") - 1]} ${g("year")}`;
 }
 
-// Kanal posti (Telegram HTML). Oxirgi qator: manba va yangilik chiqqan sana
+// Kanal posti (Telegram HTML). Oxirida ikki qator: "· Manba: ..." va "· 13-noyabr 2026" (yangilik chiqqan sana)
 export function renderPost(p: PostDraft, source: string, url: string, date?: Date | string | null) {
   const d = fmtNewsDate(date);
   return [
     `<b>${esc(p.title)}</b>`,
     esc(p.body),
     esc(p.takeaway),
-    `Manba: <a href="${esc(url)}">${esc(source)}</a>${d ? ` · ${d}` : ""}`,
+    [`· Manba: <a href="${esc(url)}">${esc(source)}</a>`, d ? `· ${d}` : ""].filter(Boolean).join("\n"),
   ].join("\n\n");
 }
