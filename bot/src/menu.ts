@@ -5,10 +5,11 @@ import { db } from "./db/index.ts";
 import { config, FIELD_NAMES, SOON_FIELDS, SITE_LIMIT, PAY_CARD, SUPPORT, PRICING, priceFor, som, PRO_INCLUDED, PRO_EXTRA, proExtraCount, proPrice } from "./config.ts";
 import { addSite } from "./sites.ts";
 import { publicLink } from "./publisher.ts";
+import { FIELD_SUBS, subName } from "./criteria.ts";
 import { notifyAdminReceipt } from "./subs.ts";
 
 type User = {
-  tg_id: string; fields: string[]; digest: boolean; digest_time: string; state: string | null; autopost_wait: boolean;
+  tg_id: string; fields: string[]; subs: string[]; digest: boolean; digest_time: string; state: string | null; autopost_wait: boolean;
 };
 type Screen = { text: string; kb: InlineKeyboard };
 
@@ -21,7 +22,7 @@ async function getUser(ctx: Context): Promise<User> {
   const { rows } = await db.query<User>(
     `INSERT INTO users (tg_id, first_name, username) VALUES ($1, $2, $3)
      ON CONFLICT (tg_id) DO UPDATE SET first_name = $2, username = $3, blocked = false
-     RETURNING tg_id, fields, digest, digest_time, state, autopost_wait`,
+     RETURNING tg_id, fields, subs, digest, digest_time, state, autopost_wait`,
     [f.id, f.first_name, f.username ?? null],
   );
   return rows[0];
@@ -31,9 +32,8 @@ const votes = async (id: string) =>
 // product: "pro" = Dayjest Pro (yopiq kanal + yangiliklar chiqishi bilan). "channel" eski, ishlatilmaydi
 type Product = "channel" | "pro";
 const PRODUCT_NAME = (p: string, field: string) => (p === "pro" ? "Dayjest Pro" : `${fieldName(field)} kanali`);
-const openDirs = (u: User) => u.fields.filter((f) => config.fields.includes(f));
 // Narx: kanal uchun oddiy tarif, Pro uchun tanlangan yo'nalishlar soniga qarab
-const amountFor = (u: User, product: string, months: number) => (product === "pro" ? proPrice(months, openDirs(u).length) : priceFor(months));
+const amountFor = (u: User, product: string, months: number) => (product === "pro" ? proPrice(months, u.subs.length) : priceFor(months));
 const activeSub = async (id: string, field: string, product: Product = "channel") =>
   (await db.query<{ id: number; months: number; status: string; ends_at: Date | null }>(
     `SELECT id, months, status, ends_at FROM subscriptions WHERE tg_id = $1 AND field = $2 AND product = $3 AND status IN ('pending', 'active')
@@ -90,17 +90,33 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
     const v = await votes(u.tg_id);
     const kb = new InlineKeyboard();
     for (const f of config.fields) {
-      kb.text(`${u.fields.includes(f) ? "✅" : "⬜️"} ${fieldName(f)}`, `a:field:${f}`);
-      const link = u.fields.includes(f) ? await publicLink(f) : null;
-      if (link) kb.url("📢 Kanali", link);
+      const n = u.subs.filter((x) => FIELD_SUBS[f]?.some((c) => c.id === x)).length;
+      kb.text(`📢 ${fieldName(f)} · ${n} ta tanlangan ›`, `m:subs:${f}`);
+      const link = await publicLink(f);
+      if (link) kb.url("Kanali", link);
       kb.row();
     }
     for (const [k, n] of SOON_FIELDS) kb.text(v.has(k) ? `✓ ${n} · kutyapsiz` : `🔔 ${n} · tez orada`, `a:vote:${k}`).row();
     return {
-      text: `🗂 <b>Yo'nalishlar</b>\n\nOchiq yo'nalishlarni belgilang. Yopiqlari uchun 🔔 bosing: ochilganda birinchi bo'lib xabar olasiz.\n\nDayjest Pro'da ${PRO_INCLUDED} tagacha yo'nalish narxga kiradi, har bir qo'shimchasi +${som(PRO_EXTRA[1])} / oy.`,
+      text: "🗂 <b>Yo'nalishlar</b>\n\nYo'nalishni oching va o'zingizga kerakli mavzularni belgilang. Yopiq yo'nalishlar uchun 🔔 bosing: ochilganda birinchi bo'lib xabar olasiz.",
       kb: kb.row().text(`✨ Maxsus · o'z saytlaringiz (${(await sites(u.tg_id)).length})`, "m:sites").row().text("← Orqaga", "m:digest"),
     };
   },
+
+  async subs(u, field = config.fields[0]) {
+    const kb = new InlineKeyboard();
+    for (const c of FIELD_SUBS[field] ?? []) {
+      const i = u.subs.indexOf(c.id);
+      kb.text(i >= 0 ? `✅ ${c.name}` : `⬜️ ${c.name}`, `a:sub:${c.id}:${field}`).row();
+    }
+    const chosen = u.subs.filter((x) => FIELD_SUBS[field]?.some((c) => c.id === x));
+    const extra = proExtraCount(chosen.length);
+    return {
+      text: `📢 <b>${fieldName(field)}</b>\n\nQaysi mavzular bo'yicha yuboray? Bot faqat siz belgilagan mavzulardagi yangiliklarni yuboradi.\n\n• Bepul dayjestda ${PRO_INCLUDED} tagacha mavzu\n• Dayjest Pro'da ${PRO_INCLUDED} tasi narxga kiradi, har bir qo'shimchasi +${som(PRO_EXTRA[1])} / oy${extra ? `\n\nSiz ${chosen.length} ta belgiladingiz: bepul dayjestga birinchi ${PRO_INCLUDED} tasi keladi.` : ""}`,
+      kb: kb.text("← Orqaga", "m:fields"),
+    };
+  },
+
 
   async pro(u, field = "all") {
     return subScreen(u, "pro", field);
@@ -113,10 +129,10 @@ const S: Record<string, (u: User, arg?: string) => Promise<Screen>> = {
       const d = PRICING.discounts[m];
       kb.text(`${monthsLabel(m)} · ${som(amountFor(u, product, m))}${d ? ` (−${d}%)` : ""}`, `m:pay:${product}:${field}:${m}`).row();
     }
-    const dirs = openDirs(u);
+    const dirs = u.subs;
     const extra = proExtraCount(dirs.length);
     const note = product === "pro"
-      ? `\n\nYo'nalishlar: <b>${dirs.map(fieldName).join(", ") || "tanlanmagan"}</b>\n${PRO_INCLUDED} tagacha narxga kiradi${extra ? `, qo'shimcha ${extra} ta: +${som(PRO_EXTRA[1] * extra)} / oy` : ""}.`
+      ? `\n\nMavzular: <b>${dirs.map(subName).join(", ") || "tanlanmagan"}</b>\n${PRO_INCLUDED} tagacha narxga kiradi${extra ? `, qo'shimcha ${extra} ta: +${som(PRO_EXTRA[1] * extra)} / oy` : ""}.`
       : "";
     return { text: `💳 <b>${PRODUCT_NAME(product, field)}</b>${note}\n\nMuddatni tanlang:`, kb: kb.text("← Orqaga", `m:${product === "pro" ? "pro" : "ch"}:${field}`) };
   },
@@ -225,6 +241,15 @@ export function registerMenu(bot: Bot) {
         await db.query("UPDATE users SET digest = $2 WHERE tg_id = $1", [id, arg === "on"]);
         screen = "digest"; toast = arg === "on" ? "Dayjest yoqildi" : "Dayjest o'chirildi";
         break;
+      case "sub": {
+        const [subId, field] = arg.split(":");
+        if (!FIELD_SUBS[field]?.some((c) => c.id === subId)) break;
+        const has = u.subs.includes(subId);
+        await db.query(`UPDATE users SET subs = ${has ? "array_remove(subs, $2)" : "array_append(subs, $2)"} WHERE tg_id = $1`, [id, subId]);
+        screen = "subs"; sarg = field;
+        toast = has ? `${subName(subId)}: o'chirildi` : `${subName(subId)}: qo'shildi`;
+        break;
+      }
       case "field": {
         const has = u.fields.includes(arg);
         await db.query(`UPDATE users SET fields = ${has ? "array_remove(fields, $2)" : "array_append(fields, $2)"} WHERE tg_id = $1`, [id, arg]);
@@ -263,7 +288,7 @@ export function registerMenu(bot: Bot) {
         const okField = product === "pro" ? field === "all" : config.fields.includes(field);
         if (product !== "pro" || !okField || !(months in PRICING.discounts)) break;
         const amount = amountFor(u, product, months);
-        const slots = Math.max(PRO_INCLUDED, openDirs(u).length);
+        const slots = Math.max(PRO_INCLUDED, u.subs.length);
         const { rows: [sub] } = await db.query<{ id: number }>(
           "INSERT INTO subscriptions (tg_id, field, product, months, amount, slots, status) VALUES ($1, $2, $3, $4, $5, $6, 'draft') RETURNING id",
           [id, field, product, months, amount, slots],

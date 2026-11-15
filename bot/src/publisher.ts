@@ -35,7 +35,6 @@ export async function publishPost(api: Api, post: Post) {
     channelMsgId = msg.message_id;
   }
   await db.query("UPDATE posts SET status = 'published', channel_msg_id = $2, published_at = now() WHERE id = $1", [post.id, channelMsgId]);
-  await deliverPro(api, post);
   if (post.admin_msg_id) {
     await api
       .editMessageReplyMarkup(config.adminChatId, Number(post.admin_msg_id), {
@@ -47,12 +46,14 @@ export async function publishPost(api: Api, post: Post) {
 }
 
 // Dayjest Pro obunachilariga post chiqishi bilan botga yuboriladi
-async function deliverPro(api: Api, post: Post) {
+// Pro obunachilarga yangilik yozilishi bilan yuboriladi: faqat ularning to'langan sub-yo'nalishlari bo'yicha
+export async function deliverPro(api: Api, post: { id: number; sub: string | null; text: string }) {
+  if (!post.sub) return;
   const { rows } = await db.query<{ tg_id: string }>(
     `SELECT DISTINCT s.tg_id FROM subscriptions s JOIN users u ON u.tg_id = s.tg_id
      WHERE s.product = 'pro' AND s.status = 'active' AND s.ends_at > now() AND NOT u.blocked
-       AND $1 = ANY(u.fields[1:s.slots])`, // to'langan yo'nalishlar soni bo'yicha
-    [post.field],
+       AND $1 = ANY(u.subs[1:s.slots])`,
+    [post.sub],
   );
   for (const r of rows) {
     await api.sendMessage(r.tg_id, post.text, { parse_mode: "HTML", link_preview_options: { is_disabled: true } })
@@ -60,6 +61,12 @@ async function deliverPro(api: Api, post: Post) {
     await new Promise((res) => setTimeout(res, 50));
   }
   if (rows.length) console.log(`[pro] #${post.id} → ${rows.length} ta obunachi`);
+}
+
+// Kanalga qaysi sub-yo'nalishlar chiqadi (egasi /kanal buyrug'i bilan sozlaydi). Standart: SEO'dan boshqa hammasi
+export async function channelSubs(field: string): Promise<string[]> {
+  const v = await kvGet(`channel_subs:${field}`);
+  return v ? v.split(",") : ["smm", "target", "brand", "ai", "ecom", "content"];
 }
 
 // Har 5 daqiqada: navbatdagi eng yuqori balli qoralamani chiqaradi (oraliq va kunlik limit bilan)
@@ -86,8 +93,9 @@ export async function autoPublish(bot: Bot, force = false) {
          AND (SELECT count(*) FROM posts p2 JOIN articles a2 ON a2.id = p2.article_id
               WHERE a2.source_id = a.source_id AND p2.status = 'published'
                 AND p2.published_at >= (date_trunc('day', now() AT TIME ZONE 'Asia/Tashkent') AT TIME ZONE 'Asia/Tashkent')) < $3
+         AND p.sub = ANY($4)
        ORDER BY p.score DESC, p.id LIMIT 1`,
-      [field, MAX_AGE_H, PER_SOURCE],
+      [field, MAX_AGE_H, PER_SOURCE, await channelSubs(field)],
     );
     if (!post) continue;
     await publishPost(bot.api, post);

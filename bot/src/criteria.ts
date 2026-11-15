@@ -48,25 +48,22 @@ export function finalScore(base: number, f: Flags, tier: Tier): { score: number;
   return { score: Math.max(1, Math.min(10, Math.round(s))), reject: null };
 }
 
-// ---------- 2-qavat: soha mezonlari ----------
-// Har soha uchun: qabul qilinadigan yangilik turlari (egasi tanlagan) va ball qoidasi.
-// AI har maqolaga "category" beradi; ro'yxatda yo'q tur rad etiladi (hayp mavzu bundan mustasno).
-export type Category = { id: string; name: string; desc: string };
+// ---------- 2-qavat: yo'nalish va sub-yo'nalishlar ----------
+// Har yangilik bitta sub-yo'nalishga ajratiladi. User o'zi tanlagan sub-yo'nalishlar bo'yicha xabar oladi.
+export type Sub = { id: string; name: string; desc: string };
 
-export const FIELD_CATEGORIES: Record<string, Category[]> = {
+export const FIELD_SUBS: Record<string, Sub[]> = {
   marketing: [
-    { id: "social_feature", name: "Ijtimoiy tarmoq funksiyasi", desc: "Instagram, Telegram, TikTok, YouTube, Facebook, Threads'dagi yangi funksiya (Reels, Stories, kanal, profil imkoniyatlari)" },
-    { id: "ads_tool", name: "Reklama kabineti vositasi", desc: "Meta Ads Manager, Google Ads, TikTok Ads'dagi yangi hisobot, sozlama, nishonlash yoki boshqaruv vositasi" },
-    { id: "moderation", name: "Moderatsiya va tasdiqlash", desc: "reklama yoki akkauntni tekshirish, tasdiqlash, bloklash, verifikatsiya tartibidagi o'zgarish" },
-    { id: "audience", name: "Auditoriya xulqi", desc: "platforma auditoriyasi, foydalanuvchilar soni, odamlar qanday foydalanayotgani haqida yangi raqamlar" },
-    { id: "content_perf", name: "Kontent samaradorligi", desc: "qaysi kontent yaxshi ishlashi haqida raqamlar va tadqiqot (format, uzunlik, vaqt)" },
-    { id: "brand_campaign", name: "Katta brend kampaniyasi", desc: "taniqli brendning ko'pchilik muhokama qilayotgan kampaniyasi yoki rebrendingi" },
-    { id: "small_biz_case", name: "Kichik biznes keysi", desc: "kichik biznes yoki bloger aniq usul bilan natijaga erishgani, raqamlar bilan" },
-    { id: "failed_campaign", name: "Muvaffaqiyatsiz kampaniya", desc: "kampaniya yoki rebrending muvaffaqiyatsiz bo'lgani va sababi" },
-    { id: "ads_ai", name: "Reklama platformasidagi AI", desc: "Meta, Google, TikTok reklamasiga qo'shilgan AI: kreativ tayyorlash, avtomatik kampaniya" },
-    { id: "chatbot_search", name: "Chatbot va qidiruv", desc: "ChatGPT, Gemini, Perplexity va AI qidiruvning marketingga ta'siri: reklama, brend ko'rinishi, xarid" },
+    { id: "smm", name: "SMM va ijtimoiy tarmoqlar", desc: "Instagram, Telegram, TikTok, YouTube, Facebook, Threads: yangi funksiyalar, algoritmlar, kontent formatlari, auditoriya raqamlari" },
+    { id: "target", name: "Target va reklama", desc: "Meta Ads, Google Ads, TikTok Ads, Yandex Direct kabinetlari: yangi vositalar, reklama qoidalari, moderatsiya, narxlar" },
+    { id: "seo", name: "SEO va GEO", desc: "Google qidiruvi, AI qidiruv (AI Overviews, ChatGPT qidiruvi), sayt trafigi, veb analitika" },
+    { id: "brand", name: "Brend va kampaniyalar", desc: "brend strategiyasi, taniqli kampaniyalar, rebrending, muvaffaqiyatli va muvaffaqiyatsiz keyslar" },
+    { id: "ai", name: "Marketingda AI", desc: "reklama va kontent tayyorlashdagi AI vositalari, chatbotlar va AI agentlarning marketingga ta'siri" },
+    { id: "ecom", name: "E-commerce va marketpleyslar", desc: "onlayn savdo, marketpleyslar (Uzum, Wildberries, Ozon, Yandex Market), xaridor xulqi" },
+    { id: "content", name: "Kontent va kopirayting", desc: "matn, video va vizual kontent, storytelling, kontent strategiyasi" },
   ],
 };
+export const subName = (id: string) => Object.values(FIELD_SUBS).flat().find((s) => s.id === id)?.name ?? id;
 
 // Post yozuvchi uchun: shu soha o'quvchilari va atamalari
 export const FIELD_AUDIENCE: Record<string, string> = {
@@ -81,16 +78,21 @@ ${AUDIENCE.platforms}
 
 Maqsad: duch kelgan yangilik emas, faqat o'quvchining ishiga aniq foyda beradigan yangilik.
 
-"category": maqola quyidagi turlardan qaysi biriga to'liq mos keladi. Hech biriga aniq mos kelmasa "other".
-{CATEGORIES}
+"sub": maqola qaysi sub-yo'nalishga eng to'g'ri keladi (bitta). Hech biriga aniq mos kelmasa "other".
+{SUBS}
+
+"uz_fit": bu yangilikdagi platforma, vosita yoki bozor ${AUDIENCE.market}da mavjud va ishlatiladimi.
+Masalan, AQSh televizori (CTV), AQSh do'konlari, Twitch, faqat AQShda ishlaydigan funksiya: false.
+Global platformalar (Instagram, Google, Meta, TikTok, YouTube, Telegram, ChatGPT) va umumiy brend saboqlari: true.
 
 "hype": bu mavzu hozir aynan SHU SOHADA qizg'in muhokama qilinyaptimi (soha OAV va mutaxassislari gapirmoqda).
 Shaxsiy hayot, janjal, sensatsiya, sohaga aloqasi yo'q mashhur voqealar hayp emas: false.
 Oddiy yangilik hayp emas. true faqat haqiqatan ham katta, hamma gapirayotgan voqea uchun.
 
-"score" (1-10) foyda testi:
-- 9-10: ${AUDIENCE.market} bozoridagi marketolog shu hafta ishida qo'llaydi yoki bilmasa zarar ko'radi (pul, qamrov, akkaunt).
-- 7-8: aniq foydali, ishiga bevosita tegishli, lekin shoshilinch emas.
+"score" (1-10) foyda testi: o'sha SUB-YO'NALISH mutaxassisi nuqtai nazaridan baholang
+(SEO yangiligini SEO mutaxassisi, target yangiligini targetolog, brend keysini brend menejeri baholagandek):
+- 9-10: ${AUDIENCE.market} bozoridagi shu soha mutaxassisi shu hafta ishida qo'llaydi yoki bilmasa zarar ko'radi.
+- 7-8: aniq foydali, uning ishiga bevosita tegishli, lekin shoshilinch emas.
 - 5-6: qiziq, lekin amaliy foydasi kam.
 - 1-4: umumiy gap, faqat boshqa bozorga tegishli, uzoq kelajak haqida, yoki o'quvchi hech narsa qilmaydi.
 Shu bozorda ishlamaydigan platformalar haqidagi yangiliklar: 1-2.
@@ -99,15 +101,15 @@ Shu bozorda ishlamaydigan platformalar haqidagi yangiliklar: 1-2.
 };
 
 export function fieldPrompt(field: string) {
-  const cats = FIELD_CATEGORIES[field].map((c) => `- ${c.id}: ${c.name}, ${c.desc}`).join("\n");
-  return FIELD_RULES[field].replace("{CATEGORIES}", cats);
+  const subs = FIELD_SUBS[field].map((c) => `- ${c.id}: ${c.name}, ${c.desc}`).join("\n");
+  return FIELD_RULES[field].replace("{SUBS}", subs);
 }
 
-// Soha qoidasi: tur ro'yxatda bo'lishi shart, hayp mavzu esa turidan qat'i nazar o'tadi
-export function fieldCheck(field: string, category: string, hype: boolean, score: number): { score: number; reject: string | null } {
-  const allowed = FIELD_CATEGORIES[field].some((c) => c.id === category);
-  // Hayp faqat sohaga aloqador bo'lsa o'tadi (soha bo'yicha ball kamida 5): sohaga aloqasiz sensatsiya o'tmaydi
+// Yo'nalish qoidasi: bozorga mos bo'lishi va sub-yo'nalishi aniq bo'lishi shart.
+// Hayp (sohada hamma gapirayotgan mavzu) sub-yo'nalishi bo'lsa, ball 7 dan kam bo'lmaydi.
+export function fieldCheck(field: string, sub: string, hype: boolean, score: number, uzFit: boolean): { score: number; reject: string | null } {
+  if (!uzFit) return { score: 0, reject: "bozorga mos emas" };
+  if (!FIELD_SUBS[field].some((c) => c.id === sub)) return { score: 0, reject: "sub-yo'nalishi yo'q" };
   if (hype && score >= 5) return { score: Math.max(score, 7), reject: null };
-  if (!allowed) return { score: 0, reject: "kerakli tur emas" };
   return { score, reject: null };
 }

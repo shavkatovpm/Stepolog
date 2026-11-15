@@ -6,6 +6,8 @@ import { scoreArticles, writePost, type Candidate } from "./ai.ts";
 import { renderPost } from "./format.ts";
 import { draftKeyboard } from "./admin.ts";
 import { fetchArticleText } from "./article.ts";
+import { deliverPro } from "./publisher.ts";
+import { subName } from "./criteria.ts";
 import { finalScore, fieldCheck, type Flags, type Tier } from "./criteria.ts";
 
 const BATCH = 20;
@@ -39,15 +41,15 @@ export async function scorePending() {
         const art = chunk.find((c) => c.id === v.id);
         if (!art || seen.has(v.id)) continue;
         seen.add(v.id);
-        const { id, score: base, reason, category, hype, ...flags } = v;
-        const f = fieldCheck(field, category, hype, base);
+        const { id, score: base, reason, sub, uz_fit, hype, ...flags } = v;
+        const f = fieldCheck(field, sub, hype, base, uz_fit);
         const g = finalScore(f.score, flags, art.tier);
         const reject = g.reject ?? f.reject;
         const score = reject ? 0 : g.score;
         const keep = !reject && score >= config.minScore;
         await db.query(
           "UPDATE articles SET verdict = $2, score = $3, base_score = $4, flags = $5, reason = $6 WHERE id = $1",
-          [id, keep ? "keep" : "skip", score, Math.round(base), JSON.stringify({ ...flags, category, hype }), reject ? `${reject}. ${reason}` : reason],
+          [id, keep ? "keep" : "skip", score, Math.round(base), JSON.stringify({ ...flags, sub, uz_fit, hype }), reject ? `${reject}. ${reason}` : reason],
         );
       }
       // AI javob bermagan maqolalar qayta-qayta aylanmasligi uchun o'tkazib yuboriladi
@@ -80,11 +82,14 @@ export async function writeDrafts(bot: Bot) {
         continue;
       }
       const html = renderPost(draft, a.source, a.url, a.published_at);
+      const sub = (a.flags as { sub?: string } | null)?.sub ?? null;
       const { rows: [post] } = await db.query<{ id: number }>(
-        `INSERT INTO posts (article_id, field, text, original_text, score) VALUES ($1, $2, $3, $3, $4) RETURNING id`,
-        [a.id, a.field, html, a.score],
+        `INSERT INTO posts (article_id, field, sub, text, original_text, score) VALUES ($1, $2, $3, $4, $4, $5) RETURNING id`,
+        [a.id, a.field, sub, html, a.score],
       );
-      const msg = await bot.api.sendMessage(config.adminChatId, `${html}\n\n<i>Ball: ${a.score}/10 · ${statusLabel(a.flags)} · #${post.id}</i>`, {
+      // Pro obunachilar yangilikni darhol oladi (o'z sub-yo'nalishlari bo'yicha)
+      await deliverPro(bot.api, { id: post.id, sub, text: html });
+      const msg = await bot.api.sendMessage(config.adminChatId, `${html}\n\n<i>${sub ? subName(sub) : "-"} · Ball: ${a.score}/10 · ${statusLabel(a.flags)} · #${post.id}</i>`, {
         parse_mode: "HTML",
         link_preview_options: { is_disabled: true },
         reply_markup: draftKeyboard(post.id),

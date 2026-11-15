@@ -121,3 +121,8 @@ CREATE TABLE IF NOT EXISTS feedback (
   useful     boolean NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- v7: sub-yo'nalishlar
+ALTER TABLE users ADD COLUMN IF NOT EXISTS subs text[] NOT NULL DEFAULT '{brand,smm,target}'; -- tartibi muhim: bepulda birinchi 3 tasi
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS sub text;
+UPDATE posts p SET sub = a.flags->>'sub' FROM articles a WHERE a.id = p.article_id AND p.sub IS NULL AND a.flags ? 'sub';

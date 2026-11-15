@@ -3,7 +3,8 @@ import { InlineKeyboard, type Bot } from "grammy";
 import { db, kvGet, kvSet } from "./db/index.ts";
 import { config, FIELD_NAMES } from "./config.ts";
 import { esc } from "./format.ts";
-import { channelFor, isAuto, publishPost } from "./publisher.ts";
+import { channelFor, channelSubs, isAuto, publishPost } from "./publisher.ts";
+import { FIELD_SUBS, subName } from "./criteria.ts";
 
 export const draftKeyboard = (id: number) =>
   new InlineKeyboard().text("✅ Chiqarish", `pub:${id}`).text("❌ Kerak emas", `rej:${id}`);
@@ -127,6 +128,21 @@ export function registerAdmin(bot: Bot) {
     await ctx.answerCallbackQuery(v === "1" ? "Kerak deb belgilandi" : "Kerak emas deb belgilandi");
   });
 
+  // Kanalga qaysi mavzular chiqishini sozlash: /kanal smm,brand,target
+  admin.command("kanal", async (ctx) => {
+    const field = config.fields[0];
+    const all = FIELD_SUBS[field].map((c) => c.id);
+    const want = ctx.match.split(/[\s,]+/).filter(Boolean);
+    if (!want.length) {
+      const cur = await channelSubs(field);
+      return ctx.reply(`Kanalga chiqadigan mavzular: ${cur.map(subName).join(", ")}\n\nO'zgartirish: /kanal ${all.join(",")}\n(keraklilarini vergul bilan yozing)`);
+    }
+    const bad = want.filter((w) => !all.includes(w));
+    if (bad.length) return ctx.reply(`Noma'lum: ${bad.join(", ")}. Mavjudlari: ${all.join(", ")}`);
+    await kvSet(`channel_subs:${field}`, want.join(","));
+    await ctx.reply(`✅ Kanalga endi faqat shular chiqadi: ${want.map(subName).join(", ")}`);
+  });
+
   admin.command("admin", (ctx) =>
     ctx.reply(`Admin buyruqlari:
 
@@ -138,7 +154,8 @@ export function registerAdmin(bot: Bot) {
 /qolda · postlar faqat ✅ bilan chiqadi
 /yangila · manbalarni hozir tekshirish
 /chiqar · navbatdagi postni hozir chiqarish
-/dayjest · dayjestni o'zimga yuborish`));
+/dayjest · dayjestni o'zimga yuborish
+/kanal · kanalga qaysi mavzular chiqishi`));
 
   admin.command("holat", async (ctx) => {
     const { rows: [s] } = await db.query<Record<string, string>>(`

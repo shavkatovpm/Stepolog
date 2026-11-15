@@ -33,7 +33,7 @@ export const FIELD_NAMES: Record<string, string> = { marketing: "Marketing" };
 
 // Hali ochilmagan sohalar: userlar "menga kerak" deb ovoz beradi
 export const SOON_FIELDS: [string, string][] = [
-  ["smm", "SMM"], ["ai", "Sun'iy intellekt"], ["it", "Dasturlash"], ["ecommerce", "E-commerce"], ["design", "Dizayn"],
+  ["it", "Dasturlash va IT"], ["design", "Dizayn"], ["business", "Biznes va startaplar"], ["finance", "Moliya"], ["edu", "Ta'lim"],
 ];
 
 // Tariflar: aniq narxlar (so'm) va ko'rsatiladigan chegirma (sayt bilan bir xil bo'lishi kerak)
