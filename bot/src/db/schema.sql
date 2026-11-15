@@ -142,3 +142,16 @@ CREATE TABLE IF NOT EXISTS pro_deliveries (
 );
 ALTER TABLE user_site_items ADD COLUMN IF NOT EXISTS delivered_at timestamptz;
 ALTER TABLE user_site_items ADD COLUMN IF NOT EXISTS score int;
+
+-- v9: AI xarajati
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id                serial PRIMARY KEY,
+  at                timestamptz NOT NULL DEFAULT now(),
+  purpose           text NOT NULL,
+  model             text NOT NULL,
+  input_tokens      int NOT NULL DEFAULT 0,
+  output_tokens     int NOT NULL DEFAULT 0,
+  cache_read_tokens int NOT NULL DEFAULT 0,
+  cost_usd          numeric(10, 6) NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS ai_usage_at_idx ON ai_usage (at);

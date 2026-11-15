@@ -6,6 +6,7 @@ import { scoreArticles, writePost, type Candidate } from "./ai.ts";
 import { renderPost } from "./format.ts";
 import { draftKeyboard } from "./admin.ts";
 import { fetchArticleText } from "./article.ts";
+import { BudgetError } from "./usage.ts";
 import { subName } from "./criteria.ts";
 import { finalScore, fieldCheck, type Flags, type Tier } from "./criteria.ts";
 
@@ -39,6 +40,7 @@ export async function scorePending() {
       try {
         verdicts = await scoreArticles(field, chunk, await recentKept(field));
       } catch (e) {
+        if (e instanceof BudgetError) return; // byudjet tugadi: maqolalar ertaga baholanadi (urinish hisoblanmaydi)
         // Bitta guruhdagi xato butun tsiklni to'xtatmasin; ko'p marta xato bo'lsa, maqola o'tkaziladi
         console.error(`[score] ${field}:`, e instanceof Error ? e.message : e);
         await db.query(
@@ -110,6 +112,7 @@ export async function writeDrafts(bot: Bot) {
       });
       await db.query("UPDATE posts SET admin_msg_id = $2 WHERE id = $1", [post.id, msg.message_id]);
     } catch (e) {
+      if (e instanceof BudgetError) return; // byudjet tugadi: ertaga yoziladi
       console.error(`[write] ${a.id}:`, e instanceof Error ? e.message : e);
       await db.query(
         `UPDATE articles SET attempts = attempts + 1,

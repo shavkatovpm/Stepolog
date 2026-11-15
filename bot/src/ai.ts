@@ -6,6 +6,7 @@ import { config } from "./config.ts";
 import { STYLE_RULES, EXAMPLES, findBanned, scrub, limitEmoji, normalizeUz } from "./style.ts";
 import { GENERAL_RULES, fieldPrompt, FIELD_AUDIENCE } from "./criteria.ts";
 import { AUDIENCE } from "./audience.ts";
+import { guard, track } from "./usage.ts";
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY
 
@@ -40,6 +41,7 @@ export async function scoreArticles(field: string, list: Candidate[], recent: { 
   const prev = recent.length ? recent.map((r) => `id=${r.id}: ${r.title}`).join("\n") : "(hali yo'q)";
   const input = list.map((a) => `id=${a.id} | ${a.source}\n${a.title}\n${a.excerpt.slice(0, 500)}`).join("\n\n---\n\n");
 
+  await guard();
   const res = await client.messages.parse({
     model: config.models.filter,
     max_tokens: 6000,
@@ -47,6 +49,7 @@ export async function scoreArticles(field: string, list: Candidate[], recent: { 
     system,
     messages: [{ role: "user", content: `Avval qabul qilinganlar:\n${prev}\n\nYangi maqolalar:\n\n${input}` }],
   });
+  await track("score", res);
 
   if (res.stop_reason === "refusal") throw new Error("saralash: refusal");
   return res.parsed_output?.items ?? [];
@@ -84,6 +87,7 @@ const sentences = (t: string) => t.split(/(?<=[.!?])\s+(?=[A-Z0-9А-ЯЎҚҒҲ"�
 const hasCyrillic = (s: string) => /[\u0400-\u04FF]/.test(s);
 
 async function writeOnce(a: WriteInput, extra = "") {
+  await guard();
   const res = await client.beta.messages.parse({
     model: config.models.writer,
     max_tokens: 4000,
@@ -98,6 +102,7 @@ async function writeOnce(a: WriteInput, extra = "") {
       },
     ],
   });
+  await track("write", res);
   if (res.stop_reason === "refusal") throw new Error("yozish: refusal");
   if (!res.parsed_output) throw new Error("yozish: javob o'qilmadi");
   return res.parsed_output;
@@ -134,6 +139,7 @@ export async function writePost(a: WriteInput): Promise<PostDraft | null> {
 
 const Proof = z.object({ title: z.string(), body: z.string(), takeaway: z.string() });
 async function proofread(p: z.infer<typeof Proof>) {
+  await guard();
   const res = await client.messages.parse({
     model: config.models.filter,
     max_tokens: 2000,
@@ -143,6 +149,7 @@ Boshqa yozuv harflari (masalan, lotin matn ichida kirill harfi) bo'lsa, to'g'ri 
 Mazmun, raqamlar, nomlar, emoji va gaplar tartibini o'zgartirmang. Uzunlikni o'zgartirmang. Xato bo'lmasa, matnni o'zgarishsiz qaytaring.`,
     messages: [{ role: "user", content: JSON.stringify(p) }],
   });
+  await track("proofread", res);
   if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("korrektura: javob yo'q");
   return res.parsed_output;
 }
@@ -158,6 +165,7 @@ const UserVerdicts = z.object({
 });
 
 export async function scoreForUser(topics: string[], items: { id: number; title: string; excerpt: string; source: string }[]) {
+  await guard();
   const res = await client.messages.parse({
     model: config.models.filter,
     max_tokens: 3000,
@@ -171,6 +179,7 @@ Ball (1-10):
 - 1-3: reklama, aksiya, vakansiya, tadbir e'loni, tabrik, mazmunsiz post, qiziqishlariga aloqasiz mavzu.`,
     messages: [{ role: "user", content: items.map((i) => `id=${i.id} | ${i.source}\n${i.title}\n${i.excerpt.slice(0, 400)}`).join("\n\n---\n\n") }],
   });
+  await track("user_filter", res);
   if (res.stop_reason === "refusal") throw new Error("user filtri: refusal");
   return res.parsed_output?.items ?? [];
 }
@@ -184,6 +193,7 @@ const UserPost = z.object({
 
 export async function writeUserItem(a: { title: string; text: string }): Promise<{ title: string; body: string } | null> {
   const once = async (extra = "") => {
+    await guard();
     const res = await client.messages.parse({
       model: config.models.filter,
       max_tokens: 2000,
@@ -191,6 +201,7 @@ export async function writeUserItem(a: { title: string; text: string }): Promise
       system: `${STYLE_RULES}\n\nBu foydalanuvchi o'zi kuzatayotgan manbadan maqola yoki post. Uni post tilida qisqa qilib bering. Emoji va amaliy izoh kerak emas.`,
       messages: [{ role: "user", content: `Sarlavha: ${a.title}\n\nMatn:\n${a.text || "(matn yo'q)"}${extra}` }],
     });
+    await track("user_write", res);
     if (res.stop_reason === "refusal" || !res.parsed_output) throw new Error("qisqartirish: javob yo'q");
     return res.parsed_output;
   };

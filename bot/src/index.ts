@@ -1,6 +1,7 @@
 import { Bot } from "grammy";
 import { run, sequentialize } from "@grammyjs/runner";
 import { db } from "./db/index.ts";
+import { onBudgetHit } from "./usage.ts";
 import { config } from "./config.ts";
 import { registerAdmin } from "./admin.ts";
 import { registerMenu } from "./menu.ts";
@@ -15,6 +16,8 @@ const bot = new Bot(config.botToken);
 // Bir vaqtda ko'p userga javob beradi; bitta chat ichida esa xabarlar navbat bilan (ikki marta bosish poygasi bo'lmaydi)
 bot.use(sequentialize((ctx) => String(ctx.chat?.id ?? ctx.from?.id ?? "")));
 registerAdmin(bot);
+// Kunlik AI byudjeti tugasa, adminga xabar
+onBudgetHit((text) => bot.api.sendMessage(config.adminChatId, text));
 registerSubs(bot);
 registerMenu(bot);
 bot.catch((err) => console.error("[bot]", err.error));

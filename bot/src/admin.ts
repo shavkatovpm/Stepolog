@@ -5,6 +5,7 @@ import { config, FIELD_NAMES } from "./config.ts";
 import { esc } from "./format.ts";
 import { approvePost, channelFor, channelSubs, isAuto, publishToChannel } from "./publisher.ts";
 import { FIELD_SUBS, subName } from "./criteria.ts";
+import { report, spentToday, DAILY_BUDGET } from "./usage.ts";
 
 export const draftKeyboard = (id: number) =>
   new InlineKeyboard().text("✅ Tasdiqlash", `ok:${id}`).text("📢 Kanalga", `pub:${id}`).row().text("❌ Kerak emas", `rej:${id}`);
@@ -170,7 +171,10 @@ export function registerAdmin(bot: Bot) {
 /yangila · manbalarni hozir tekshirish
 /chiqar · navbatdagi postni hozir chiqarish
 /dayjest · dayjestni o'zimga yuborish
-/kanal · kanalga qaysi mavzular chiqishi`));
+/kanal · kanalga qaysi mavzular chiqishi
+/xarajat · AI xarajati (bugun, hafta, oy)`));
+
+  admin.command("xarajat", async (ctx) => ctx.reply(await report(), { parse_mode: "HTML" }));
 
   admin.command("holat", async (ctx) => {
     const { rows: [s] } = await db.query<Record<string, string>>(`
@@ -183,7 +187,7 @@ export function registerAdmin(bot: Bot) {
         (SELECT count(*) FROM users WHERE NOT blocked) AS users,
         (SELECT count(*) FROM sources WHERE last_error IS NOT NULL) AS broken`);
     await ctx.reply(
-      `Rejim: ${(await isAuto()) ? "avtomatik (/qolda)" : "qo'lda (/avto)"}\n\nSo'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nTasdiqlangan (userlarga): ${s.approved}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
+      `Rejim: ${(await isAuto()) ? "avtomatik (/qolda)" : "qo'lda (/avto)"}\nAI xarajati bugun: $${(await spentToday()).toFixed(3)} / $${DAILY_BUDGET.toFixed(2)} (/xarajat)\n\nSo'nggi 24 soat:\nKo'rildi: ${s.seen}\nMuhim: ${s.kept}\nTasdiqlangan (userlarga): ${s.approved}\nKanalga chiqdi: ${s.published}\nKutayotgan qoralama: ${s.drafts}\n\nFoydalanuvchilar: ${s.users}\nIshlamayotgan manba: ${s.broken}`,
     );
   });
 }

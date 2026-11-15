@@ -1,7 +1,7 @@
 // Maqolaning to'liq matnini oladi: post yozuvchi RSS'dagi qisqa parcha bilan cheklanib qolmasligi uchun.
 // Oddiy usul: <article> (bo'lmasa butun sahifa) ichidagi <p> va <li> matnlari.
 import { fetchText } from "./net.ts";
-const MAX = 7000; // AI'ga beriladigan matn chegarasi (belgi)
+const MAX = 4000; // AI'ga beriladigan matn chegarasi (belgi): xarajat va sifat muvozanati
 
 const decode = (s: string) =>
   s.replace(/&nbsp;/g, " ").replace(/&#x27;|&#39;|&apos;|&rsquo;|&lsquo;/g, "'").replace(/&quot;|&ldquo;|&rdquo;/g, '"')
